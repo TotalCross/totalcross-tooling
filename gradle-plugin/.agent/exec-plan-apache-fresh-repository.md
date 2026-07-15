@@ -45,20 +45,18 @@ A contributor must be able to clone the repository, inspect the first commit to 
 - [x] (2026-07-15 18:00Z) Confirmed that `main` has zero commits and no local or remote refs; no history needs preservation or rewriting.
 - [x] (2026-07-15 18:00Z) Inventoried the tree: Gradle plugin sources and tests are first-party implementation; `examples/basic-app` is a first-party example; `gradle/wrapper/gradle-wrapper.jar` and `gradlew` are Gradle-generated third-party material; `build/` and `.gradle/` are generated output and ignored.
 - [x] (2026-07-15 18:00Z) Confirmed Apache License 2.0 is the intended first-party license. The Gradle wrapper retains its own Apache notice and is excluded from first-party header validation.
-- [ ] Define canonical SPDX headers for each applicable file syntax using `Apache-2.0`.
-- [ ] Create the complete repository-foundation file set.
-- [ ] Implement a deterministic license-header validator and focused validator tests or fixtures.
-- [ ] Add CI that invokes the same validation command documented for local use.
-- [ ] Create or update `README.md`, `AUTHORS.md`, `CONTRIBUTING.md`, `.github/CODEOWNERS`, `AGENTS.md`, and `.agents/PLANS.md`.
-- [ ] Stage only repository-foundation files and review the staged diff.
-- [ ] Create the first commit containing licensing, attribution, validation, README, agent instructions, and `.agents/PLANS.md`, with no project implementation files.
-- [ ] Add canonical SPDX headers to applicable first-party project files before their commits.
-- [ ] Analyze the remaining project files and propose coherent contextual commit groups.
-- [ ] Commit project files by current functional context, recording the reason for each split.
-- [ ] If a reliable contextual split cannot be established, commit the remaining project in one implementation commit and record why.
-- [ ] Run license validation, validator tests, focused builds, and project tests.
-- [ ] Review the final commit sequence, ensuring that no files were omitted, duplicated, or assigned misleading historical meaning.
-- [ ] Record final results in `Outcomes & Retrospective`.
+- [x] (2026-07-15 18:10Z) Defined canonical SPDX-FileCopyrightText and Apache-2.0 headers for C-style, hash-comment, Markdown, and XML files; wrapper and legal texts are explicitly excluded.
+- [x] (2026-07-15 18:10Z) Created the complete repository foundation: Apache license and notice, attribution, contribution rules, root agent guidance, planning policy, CODEOWNERS, CI, validator, and validator tests.
+- [x] (2026-07-15 18:10Z) Implemented the dependency-free `tools/check-license-headers.py` validator and its focused regression tests.
+- [x] (2026-07-15 18:10Z) Added `.github/workflows/license-headers.yml`, which runs the documented validator and its tests for pushes and pull requests.
+- [x] (2026-07-15 18:10Z) Updated `README.md`, `AUTHORS.md`, `CONTRIBUTING.md`, `.github/CODEOWNERS`, `AGENTS.md`, and `.agent/PLANS.md`.
+- [x] (2026-07-15 18:11Z) Staged and reviewed only foundation files, then created `fd4a254 chore(repo): establish licensing and governance` without project implementation files.
+- [x] (2026-07-15 18:15Z) Added canonical SPDX headers to all applicable first-party build scripts, Java sources, tests, examples, and planning documents before committing them.
+- [x] (2026-07-15 18:15Z) Identified three evidence-based groups: cohesive plugin implementation, a composite-build example, and a focused correction to the example's legacy deployment configuration.
+- [x] (2026-07-15 18:17Z) Committed `bfc3b12 feat: add TotalCross Gradle plugin implementation`, `7c2f13d docs(example): add basic TotalCross application`, and `1d513e0 fix(example): use the legacy Linux deployment path`.
+- [x] (2026-07-15 18:20Z) Ran license validation, validator tests, Gradle test/check, Maven Local publication, the opt-in SDK network test, and the example package task.
+- [x] (2026-07-15 18:20Z) Reviewed the commit sequence and working tree; no implementation files were omitted or assigned speculative historical meaning.
+- [x] (2026-07-15 18:20Z) Recorded final results and the Editorial Report.
 
 ## Surprises & Discoveries
 
@@ -72,6 +70,9 @@ Record repository-specific findings here as implementation proceeds.
 
 - Observation: The repository convention and user instruction require planning files under `.agent/`.
   Evidence: `.agent/PLANS.md` exists, `AGENTS.md` refers to it, and the user corrected the path while this plan was being executed.
+
+- Observation: The basic example initially targeted multiple platforms, while its minimal documented use case is Linux and SDK 7.2.2 requires the legacy Java 8-to-7 path.
+  Evidence: After selecting Linux only, `./gradlew -p examples/basic-app clean totalcrossPackage --console=plain` completed and produced Linux deployment artifacts.
 
 Examples include:
 
@@ -107,7 +108,7 @@ Do not silently normalize exceptions. Document each material exception and its r
   Rationale: The repository should have a clear baseline establishing license, attribution, contributor rules, validation, CI, README, agent instructions, and planning conventions before implementation appears.
   Date: 2026-07-15
 
-- Decision: The first commit must include, as applicable, `LICENSE`, `NOTICE`, `README.md`, `AUTHORS.md`, `CONTRIBUTING.md`, `.github/CODEOWNERS`, the license validator, validator tests or fixtures, the CI workflow that runs it, `AGENTS.md`, and `.agents/PLANS.md`.
+- Decision: The first commit must include, as applicable, `LICENSE`, `NOTICE`, `README.md`, `AUTHORS.md`, `CONTRIBUTING.md`, `.github/CODEOWNERS`, the license validator, validator tests or fixtures, the CI workflow that runs it, `AGENTS.md`, and `.agent/PLANS.md`.
   Rationale: These files form one coherent repository-foundation change. Keeping them together while excluding implementation makes the legal and operating baseline independently reviewable.
   Date: 2026-07-15
 
@@ -143,31 +144,147 @@ Do not silently normalize exceptions. Document each material exception and its r
   Rationale: Contributors and automated agents should detect licensing mistakes before changes are submitted.
   Date: 2026-07-15
 
+- Decision: Commit the build, Gradle wrapper, plugin source, and tests together as `bfc3b12`.
+  Rationale: The `java-gradle-plugin` configuration names the plugin implementation classes and tests exercise their public behavior, so separating them would leave a knowingly incomplete build.
+  Date/Author: 2026-07-15 / Codex
+
+- Decision: Keep the basic example Linux-only and use the normal SDK 7.2.2 compatibility path.
+  Rationale: This is the smallest reproducible example and avoids hard-coded machine paths or optional mobile platform tooling. It demonstrably packages through Retrolambda and JDK 11.
+  Date/Author: 2026-07-15 / Codex
+
 ## Outcomes & Retrospective
 
-Complete this section after implementation.
+The repository was confirmed fresh: before bootstrap, `main` had zero commits,
+no refs, and `origin/main` was locally marked gone. No history was rewritten.
 
-Summarize:
+The foundation commit is `fd4a254 chore(repo): establish licensing and
+governance`. Its 13 files are `.agent/PLANS.md`, this ExecPlan,
+`.github/CODEOWNERS`, `.github/workflows/license-headers.yml`, `.gitignore`,
+`AGENTS.md`, `AUTHORS.md`, `CONTRIBUTING.md`, `LICENSE`, `NOTICE`, `README.md`,
+`tests/license_headers/test_check_license_headers.py`, and
+`tools/check-license-headers.py`. It contains no plugin code, tests, examples,
+or Gradle wrapper files.
 
-- whether the repository was confirmed to be fresh;
-- the branch and remote state before the first commit;
-- the exact files included in the repository-foundation commit;
-- the first commit hash and message;
-- how many first-party files received SPDX headers;
-- how many files were excluded and why;
-- whether any third-party or incompatible licensing was found;
-- the local validation command;
-- the CI workflow and job that run validation;
-- the build and test commands executed;
-- the contextual project commit groups created and the evidence supporting each group;
-- any files whose context could not be determined reliably;
-- whether the fallback single implementation commit was used;
-- the final ordered commit list;
-- remaining limitations or follow-up work.
+The final validator inspected 32 applicable first-party files. `LICENSE`,
+`NOTICE`, `.github/CODEOWNERS`, `gradlew`, and `gradle/wrapper/` were excluded
+because they are legal text, a non-comment metadata file, or Gradle-generated
+third-party material. No incompatible first-party or vendored license was
+found. The local command is `python3 tools/check-license-headers.py`; CI runs
+it and `python3 tests/license_headers/test_check_license_headers.py` in the
+`license-headers` job.
+
+The contextual commits are `bfc3b12 feat: add TotalCross Gradle plugin
+implementation` for the complete Gradle build, wrapper, Java implementation,
+and associated tests; `7c2f13d docs(example): add basic TotalCross application`
+for the composite-build example; and `1d513e0 fix(example): use the legacy
+Linux deployment path` for the minimal compatibility correction. This is not
+the fallback single implementation strategy: the build/source/test group and
+example group had independent, observable purposes. The final documentation
+commit containing this completed report follows these commits.
+
+Observed successful commands were `python3 tools/check-license-headers.py`,
+`python3 tests/license_headers/test_check_license_headers.py`, `./gradlew test
+--console=plain`, `./gradlew check --console=plain`, `./gradlew
+publishToMavenLocal --console=plain`, `./gradlew sdkSourceNetworkTest
+--console=plain`, and `./gradlew -p examples/basic-app clean
+totalcrossPackage --console=plain`. The example produced the Linux executable,
+`MainWindow.tcz`, `TCBase.tcz`, `TCUI.tcz`, and `libtcvm.so` in
+`examples/basic-app/build/totalcross/install/linux/`.
 
 ## Editorial Report
 
-Complete this section after implementation using the actual commits and validation output. It must contain the subsections required by `.agent/PLANS.md`: `Editorial Summary`, `Original Plan versus Actual Outcome`, `What Changed`, `Decisions and Trade-offs`, `Unexpected Problems and Discoveries`, `Validation and Measurable Results`, `Useful Evidence and Examples`, `Limitations, Remaining Work, and Open Questions`, `Possible Article Angles`, `Suggested Narrative`, and `Claims Requiring Human Review`.
+### Editorial Summary
+
+The repository began with a working but uncommitted Gradle plugin and no legal
+or operational baseline. The completed work establishes a reviewable Apache
+2.0 foundation first, then records the plugin and its runnable example in
+functional commits. Contributors can now validate SPDX metadata locally and in
+CI before using the documented Gradle build.
+
+### Original Plan versus Actual Outcome
+
+The plan called for a legal foundation commit followed by contextual project
+commits. That result was delivered. The plan's initial plural planning-directory
+spelling was corrected to the repository's user-confirmed `.agent/` path before
+the first commit. The fallback single implementation commit was not used because
+the example had a separately testable purpose.
+
+### What Changed
+
+`LICENSE`, `NOTICE`, `AUTHORS.md`, `CONTRIBUTING.md`, `AGENTS.md`, and
+`.agent/PLANS.md` establish legal ownership, attribution, and operating rules.
+`tools/check-license-headers.py` validates applicable tracked files using Git's
+NUL-delimited paths; its regression coverage is in
+`tests/license_headers/test_check_license_headers.py`; CI invokes both from
+`.github/workflows/license-headers.yml`. The plugin implementation is under
+`src/main/java/com/totalcross/gradle/`, and the consumer example is
+`examples/basic-app/`.
+
+### Decisions and Trade-offs
+
+The validator is dependency-free Python rather than a Gradle task, so the legal
+baseline can be checked before plugin implementation is present and in a clean
+checkout. Gradle Wrapper files are excluded to preserve their upstream notice.
+The example is Linux-only for the minimal reproducible path; platform-specific
+testing remains available through plugin configuration.
+
+### Unexpected Problems and Discoveries
+
+The pre-existing headers used a non-canonical `Copyright (C)` form, so they
+were replaced with exact SPDX fields. The requested plan used a plural planning
+directory that contradicted the repository convention; user confirmation
+resolved this in favor of `.agent/`. The initial example settings targeted
+multiple platforms, while its Linux-only path produced a complete local package.
+
+### Validation and Measurable Results
+
+`python3 tools/check-license-headers.py` reported `License header validation
+passed: 32 applicable files checked.` The Python validator suite ran two tests.
+`./gradlew test --console=plain`, `./gradlew check --console=plain`,
+`./gradlew publishToMavenLocal --console=plain`, and `./gradlew
+sdkSourceNetworkTest --console=plain` completed successfully. The example
+deployment reported Retrolambda bytecode version 51 (Java 7) and wrote Linux
+artifacts. No performance or artifact-size benchmark was taken.
+
+### Useful Evidence and Examples
+
+The ordered commits `fd4a254`, `bfc3b12`, `7c2f13d`, and `1d513e0` show the
+foundation, implementation, example, and compatibility correction. The exact
+local reproduction commands are in `README.md` and `CONTRIBUTING.md`. The
+validator's expected success count and failure diagnostics are asserted in its
+Python tests.
+
+### Limitations, Remaining Work, and Open Questions
+
+The CI workflow has been added but has not been observed on a remote GitHub
+run. It uses the repository's normal `python3` availability assumption. The
+network check is opt-in because GitHub and S3 availability cannot be made
+deterministic. No remote branch was pushed or configured by this plan.
+
+### Possible Article Angles
+
+- For maintainers of newly imported projects: "Starting a repository with a
+  legal baseline instead of retroactive cleanup," showing how an initial commit
+  can make ownership and validation independently reviewable.
+- For build-tool authors: "Testing a Gradle plugin's SDK resolver without
+  downloading the SDK," using the opt-in range-request network test as the
+  practical takeaway.
+- For Java compatibility maintainers: "Keeping a Java 7 deployer path alive
+  from a Java 17 Gradle build," explaining the example's Retrolambda evidence.
+
+### Suggested Narrative
+
+Start with the risk of an uncommitted project lacking clear legal metadata.
+Explain the decision to create a dependency-free validator and CI before source
+history, then introduce the cohesive plugin commit and the separately runnable
+example. Show the observed header count and Linux package artifacts, then close
+with the deliberate limits: no invented history, no remote push, and an opt-in
+network check.
+
+### Claims Requiring Human Review
+
+Confirm legal ownership and contributor policy before making external legal
+statements. Confirm the CI workflow result after the repository is pushed.
 
 ## Context and Orientation
 
@@ -206,7 +323,7 @@ Inspect licensing and attribution candidates:
       -iname 'CONTRIBUTING*' -o \
       -iname 'CODEOWNERS' -o \
       -iname 'AGENTS.md' -o \
-      -path '*/.agents/PLANS.md' \
+      -path '*/.agent/PLANS.md' \
     \) -print
 
 Inspect existing legal markers:
@@ -436,7 +553,7 @@ Canonical metadata:
 Create a root `AGENTS.md` that gives coding agents concise, repository-specific operational guidance. It should:
 
 - identify authoritative build, test, format, and validation commands once known;
-- require reading `.agents/PLANS.md` for substantial work;
+- require reading `.agent/PLANS.md` for substantial work;
 - require preservation of Apache-2.0 and third-party notices;
 - prohibit editing generated or vendored files unless the task explicitly requires it;
 - require concise tool output and focused validation;
@@ -685,3 +802,7 @@ Do not remove untracked files merely because they are not part of a commit. Inve
 If an incorrect file is staged, unstage it without discarding its content. If an incorrect commit has already been published, correct it with a new commit unless explicit authorization is given for another approach.
 
 Pushing commits, changing repository visibility, configuring branch protection, creating releases, or modifying remote settings are outside this plan unless separately requested.
+
+Revision 2026-07-15: executed the bootstrap, corrected the planning-directory
+reference to the user-confirmed `.agent/` path, recorded the created commits,
+and replaced placeholders with observed validation and editorial evidence.
