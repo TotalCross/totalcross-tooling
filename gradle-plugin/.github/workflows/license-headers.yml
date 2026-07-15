@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+# SPDX-License-Identifier: Apache-2.0
+
+name: License headers
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  license-headers:
+    name: license-headers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate license headers
+        run: python3 tools/check-license-headers.py
+      - name: Test validator
+        run: python3 tests/license_headers/test_check_license_headers.py
