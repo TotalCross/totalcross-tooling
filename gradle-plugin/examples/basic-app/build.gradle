@@ -22,8 +22,8 @@ java {
     }
 }
 
-// The published tc.Deploy 7.2.2 runs on JDK 17 but currently accepts Java 8
-// classfiles only. This is direct javac output; Retrolambda is not used.
+// SDK 7.2.2 accepts Java 8 classfiles. The plugin converts them to Java 7 with
+// Retrolambda and runs the legacy deployer on its cached JDK 11.
 tasks.withType(JavaCompile).configureEach {
     options.release = 8
 }
@@ -34,7 +34,7 @@ dependencies {
 
 totalcross {
     applicationName = 'MainWindow'
-    platforms = ['linux', 'win32', 'ios', 'android']
+    platforms = ['linux']
 }
 
 // Isolated verification hook for a full SDK artifact that supports Java 17
