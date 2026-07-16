@@ -1,0 +1,17 @@
+{
+  "root_license": "Apache-2.0",
+  "current_maintainer": "Fabio Sobral",
+  "codeowner": "* @flsobral",
+  "obsolete_emails": [],
+  "projects": {
+    "maven-plugin": {"active": false},
+    "vscode-extension": {"active": false},
+    "gradle-plugin": {"active": false}
+  },
+  "exclusions": [
+    "LICENSE",
+    "NOTICE",
+    "migration/license-provenance.json",
+    "tools/license-policy.json"
+  ]
+}

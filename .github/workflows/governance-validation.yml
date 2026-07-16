@@ -1,0 +1,20 @@
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Governance validation
+
+on:
+  pull_request:
+  push:
+    branches: [main, migration/consolidate-tooling]
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python3 tools/check-license-headers.py
+      - run: python3 -m unittest discover -s tests/license_headers -p 'test_*.py'
