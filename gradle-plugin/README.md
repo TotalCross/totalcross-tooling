@@ -3,6 +3,13 @@ SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
 SPDX-License-Identifier: Apache-2.0
 -->
 
+> [!IMPORTANT]
+> This project has moved to the
+> [`TotalCross/totalcross-tooling`](https://github.com/TotalCross/totalcross-tooling)
+> repository under [`gradle-plugin/`](https://github.com/TotalCross/totalcross-tooling/tree/main/gradle-plugin).
+> Development continues there. This repository is retained for historical
+> issues, pull requests, releases, and links and is intended to be archived.
+
 # TotalCross Gradle Plugins
 
 The `com.totalcross.application` and `com.totalcross.library` plugins package Java
