@@ -24,9 +24,12 @@ repository.
   maintainer.
 - [x] (2026-07-16) Added the publication workflow and confirmed its release
   version check and TypeScript compilation.
-- [ ] Push `v0.0.16` at `e6fdae9`, push the workflow bootstrap commit, and
-  observe marketplace publication and the GitHub release.
-- [ ] Record the actual remote publication evidence and finalize this plan.
+- [x] (2026-07-16) Pushed annotated tag `v0.0.16` at `e6fdae9` and the
+  bootstrap workflow commits `f963600` and `572ab8b` to `main`.
+- [x] (2026-07-16) Observed successful Actions run `29540852105`, GitHub
+  release `v0.0.16`, its `.vsix` asset, and the Marketplace package endpoint
+  for version 0.0.16.
+- [x] (2026-07-16) Finalized the Editorial Report from observed evidence.
 
 ## Surprises & Discoveries
 
@@ -44,6 +47,11 @@ repository.
   validation because the Node expression contained literal escaped quotes.
   Evidence: Actions run `29540788570` failed in `Validate release version`
   with exit code 2 before the package or publish steps.
+- Observation: the Marketplace catalog query continued to return 0.0.15 after
+  the successful publish, while the version-specific package endpoint returned
+  HTTP 200 for 0.0.16.
+  Evidence: `POST extensionquery` listed cached 0.0.15; `GET
+  .../vscode-totalcross/0.0.16/vspackage` returned HTTP 200.
 
 ## Decision Log
 
@@ -60,27 +68,33 @@ repository.
 
 ## Outcomes & Retrospective
 
-The workflow is implemented and TypeScript compilation succeeded. The tag,
-Marketplace publication, and GitHub release remain pending. This section and
-the Editorial Report will be updated with the actual Actions run and release
-URLs once the remote run completes.
+Version 0.0.16 was published from `e6fdae9`. The repeatable workflow now lives
+in `.github/workflows/publish-vscode-extension.yml`; `v0.0.16` is an annotated
+remote tag, Actions run `29540852105` completed successfully, and the release
+contains `vscode-totalcross-0.0.16.vsix`. The extension-local legacy governance
+validator remains an intentionally deferred mismatch.
 
 ## Editorial Report
 
 ### Editorial Summary
 
-The workflow is ready; remote publication is pending.
+The repository can publish the TotalCross VS Code extension without exposing a
+Marketplace token in Git. Version 0.0.16 was packaged from `e6fdae9`, published
+through GitHub Actions, tagged, and released with its `.vsix` artifact.
 
 ### Original Plan versus Actual Outcome
 
-The original goal remains unchanged. The legacy extension-local governance
-validator is not part of this release because it conflicts with the later
-monorepo header policy.
+The original goal was delivered. The workflow was added after the historical
+release commit, so a one-time guarded bootstrap push was used instead of
+rewriting the tag. The legacy extension-local governance validator was left
+unchanged because its repair would be an unrelated bulk header migration.
 
 ### What Changed
 
-`.github/workflows/publish-vscode-extension.yml` packages, publishes, and
-releases the extension. This ExecPlan records the bootstrap and its evidence.
+`.github/workflows/publish-vscode-extension.yml` validates the tag and package
+version, packages a VSIX, publishes with `VSCE_PAT`, and creates or updates a
+GitHub release. `.agent/exec-plan-vscode-0.0.16-publication.md` records the
+historical bootstrap and its evidence.
 
 ### Decisions and Trade-offs
 
@@ -89,24 +103,33 @@ The bootstrap decision is recorded above. It is limited to the historical
 
 ### Unexpected Problems and Discoveries
 
-The missing historical workflow is documented above.
+The missing workflow at the historical tagged commit required a branch-push
+bootstrap. The first bootstrap run failed because an escaped quote reached the
+Node command literally; commit `572ab8b` corrected it and the second run
+succeeded.
 
 ### Validation and Measurable Results
 
 Observed locally: `npm ci` and `npm run compile` completed successfully in
-`vscode-extension`. The extension-local governance command failed for the
-preexisting header-policy mismatch documented above.
+`vscode-extension`; `python3 tools/check-license-headers.py --root .` passed.
+Actions run `29540852105` completed successfully. GitHub release `v0.0.16`
+targets `e6fdae94e814437d0f7cf0746d8042dcce1f1164` and serves
+`vscode-totalcross-0.0.16.vsix`. The Marketplace version-specific package
+endpoint returned HTTP 200 for 0.0.16. The extension-local governance command
+still fails for the documented historical-header mismatch.
 
 ### Useful Evidence and Examples
 
-The final evidence will name the Actions run, `v0.0.16`, and its GitHub
-release.
+Useful evidence includes Actions run `29540852105`, release
+`https://github.com/TotalCross/totalcross-tooling/releases/tag/v0.0.16`, and
+the release asset `vscode-totalcross-0.0.16.vsix`.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Publication remains dependent on the configured `VSCE_PAT` retaining permission
-to publish under the `TotalCross` marketplace publisher. The final remote run
-and public release evidence are still pending.
+Future publication remains dependent on `VSCE_PAT` retaining permission under
+the `TotalCross` publisher. Marketplace catalog listings may lag the successful
+version-specific package endpoint. The legacy extension-local header validator
+still needs a separately scoped reconciliation with the monorepo policy.
 
 ### Possible Article Angles
 
@@ -120,8 +143,8 @@ secret-backed Marketplace publish step, and the GitHub release artifact.
 
 ### Claims Requiring Human Review
 
-The Marketplace publication and public release must be checked after the
-remote workflow completes.
+No special claims remain beyond normal verification that the Marketplace UI has
+finished propagating its cached catalog listing.
 
 ## Context and Orientation
 
@@ -178,3 +201,5 @@ publication workflow and its tag-preserving bootstrap. Updated after local
 workflow validation to record the legacy header-validator mismatch.
 Updated after the first remote bootstrap attempt to record and correct the
 escaped-quote failure in the version check.
+Updated after the successful remote run to record release, asset, and
+Marketplace endpoint evidence.
