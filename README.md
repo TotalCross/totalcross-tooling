@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 # TotalCross Tooling
 
 This repository consolidates the developer tooling for TotalCross while keeping
-each project independently buildable, versioned, and released. The imported
-projects are ordered in first-parent history as follows:
+each project independently buildable, versioned, and released. The project
+directories appear in the current first-parent history in this order:
 
 1. `maven-plugin/`
 2. `vscode-extension/`
@@ -30,9 +30,11 @@ Run a project from its own directory:
     cd vscode-extension && npm ci && npm run audit && npm run compile && npm test
     cd gradle-plugin && ./gradlew clean test --console=plain
 
-`migration/license-provenance.json` and `migration/commit-maps/` record file
-provenance and old-to-new commit translations. Git history imports source code
-and commit identity, but does not transfer original issues, pull requests,
+`migration/license-provenance.json` records file provenance and exact copyright
+classification. The current branch does not claim a cross-repository old-to-new
+commit translation audit: `tools/check-imported-history.py` is retained for a
+future migration only when source mirrors and mapping inputs are supplied
+explicitly. Git history does not transfer original issues, pull requests,
 releases, stars, forks, or discussions. The original repositories remain the
 historical location for those resources until their separate move notices and
 archival decisions are completed.
