@@ -1,0 +1,2232 @@
+{
+  "files": [
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/.agent/PLANS.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/PLANS.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/.agent/exec-plan-apache-fresh-repository.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/exec-plan-apache-fresh-repository.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/.agent/totalcross-gradle-plugin-execplan.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/totalcross-gradle-plugin-execplan.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/.github/CODEOWNERS",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": ".github/CODEOWNERS",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/.github/workflows/license-headers.yml",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".github/workflows/license-headers.yml",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/.gitignore",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".gitignore",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/AGENTS.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "AGENTS.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/AUTHORS.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "AUTHORS.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/CONTRIBUTING.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "CONTRIBUTING.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/LICENSE",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "LICENSE",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/NOTICE",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "NOTICE",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/README.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "README.md",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/build.gradle",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "build.gradle",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/examples/basic-app/build.gradle",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7c2f13df4e5f9a2061e5164a005ecc69e52e1d3e",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "examples/basic-app/build.gradle",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/examples/basic-app/settings.gradle",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "examples/basic-app/settings.gradle",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/examples/basic-app/src/main/java/com/example/MainWindow.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7c2f13df4e5f9a2061e5164a005ecc69e52e1d3e",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "examples/basic-app/src/main/java/com/example/MainWindow.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/gradle/wrapper/gradle-wrapper.jar",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "gradle/wrapper/gradle-wrapper.jar",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/gradle/wrapper/gradle-wrapper.properties",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "generated Gradle Wrapper material",
+      "rename_following": "automatic",
+      "source_path": "gradle/wrapper/gradle-wrapper.properties",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/gradlew",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "gradlew",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/settings.gradle",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "settings.gradle",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/ArchiveDownloader.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/ArchiveDownloader.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/CacheLock.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/CacheLock.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/GitHubSdkReleaseLocator.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/GitHubSdkReleaseLocator.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/JavaTargetCompatibility.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/JavaTargetCompatibility.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/JdkResolver.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/JdkResolver.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/SdkReleaseLocator.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/SdkReleaseLocator.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/SdkResolver.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/SdkResolver.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/TotalCrossExtension.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/TotalCrossExtension.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/TotalCrossLibraryPlugin.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/TotalCrossLibraryPlugin.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/TotalCrossPackageTask.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/TotalCrossPackageTask.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/main/java/com/totalcross/gradle/TotalCrossPlugin.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/gradle/TotalCrossPlugin.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/test/java/com/totalcross/gradle/DeployLogLevelTest.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/com/totalcross/gradle/DeployLogLevelTest.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/test/java/com/totalcross/gradle/JavaTargetCompatibilityTest.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/com/totalcross/gradle/JavaTargetCompatibilityTest.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/test/java/com/totalcross/gradle/ResolverTest.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/com/totalcross/gradle/ResolverTest.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/test/java/com/totalcross/gradle/SdkSourceNetworkTest.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/com/totalcross/gradle/SdkSourceNetworkTest.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/src/test/java/com/totalcross/gradle/TotalCrossPluginFunctionalTest.java",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bfc3b12e458f68db8d5a67b3de3c7d03a523210b",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/com/totalcross/gradle/TotalCrossPluginFunctionalTest.java",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/tests/license_headers/test_check_license_headers.py",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "tests/license_headers/test_check_license_headers.py",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "gradle-plugin/tools/check-license-headers.py",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fd4a25425b4df9ceb1432f9f91586b99ca5d5458",
+      "introduction_year": 2026,
+      "original_license": "Apache-2.0",
+      "project": "gradle-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "tools/check-license-headers.py",
+      "source_repository": "totalcross-gradle-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/.github/workflows/ci.yml",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "30b93d25c5f6d720dca3de5271538c4adabc02ff",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".github/workflows/ci.yml",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/.gitignore",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "927db279cc0bb5aa94d61c436f923a6977ce8dff",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".gitignore",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/CHANGELOG.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "322e17bd29f0cb8fee7571d9d590c8f6d4adf40e",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "CHANGELOG.md",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/README.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "322e17bd29f0cb8fee7571d9d590c8f6d4adf40e",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "README.md",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/package.sh",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fa910b1c7d07be02ebe54c9d3514b536adf84301",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "package.sh",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/pom.xml",
+      "first_post_2021_substantive_year": 2022,
+      "introduction_commit": "fa910b1c7d07be02ebe54c9d3514b536adf84301",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "pom.xml",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/settings.xml",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "30b93d25c5f6d720dca3de5271538c4adabc02ff",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "settings.xml",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/DownloadManager.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "a0bc33d75ff309fec150655501c96ff86db8e6a0",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/DownloadManager.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/JavaJDKManager.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "79952b6ef3f175859a8e226322e4c5a43845b1ed",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/JavaJDKManager.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/TCZUtils.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "2b6fd899fc6cea5b3d7539bf5042d0e8be5fa206",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/TCZUtils.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/TotalCrossMojo.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "fa910b1c7d07be02ebe54c9d3514b536adf84301",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/TotalCrossMojo.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/TotalCrossRetroLambdaMojo.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "927db279cc0bb5aa94d61c436f923a6977ce8dff",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/TotalCrossRetroLambdaMojo.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/TotalCrossSDKManager.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "db397370f87ccf5dcc1561665f8e90dd8d81230f",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/TotalCrossSDKManager.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/main/java/com/totalcross/exception/SDKVersionNotFoundException.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "db397370f87ccf5dcc1561665f8e90dd8d81230f",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/main/java/com/totalcross/exception/SDKVersionNotFoundException.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/test/java/JavaJDKManagerTest.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "79952b6ef3f175859a8e226322e4c5a43845b1ed",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/JavaJDKManagerTest.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "maven-plugin/src/test/java/TotalCrossSDKManagerTest.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "6912e9c6daf9fb031141491a281465e299aa51d8",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "maven-plugin",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/java/TotalCrossSDKManagerTest.java",
+      "source_repository": "totalcross-maven-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.agent/PLANS.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/PLANS.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.agent/exec-plan-mit-to-apache-governance-refactor.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/exec-plan-mit-to-apache-governance-refactor.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.agent/exec-plan-totalcross-vscode-gradle-project-generation.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/exec-plan-totalcross-vscode-gradle-project-generation.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.agent/exec-plan-totalcross-vscode-maven-to-gradle-reminder.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "1422428f8ab4db022f8a20f182b6a33671c2631f",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".agent/exec-plan-totalcross-vscode-maven-to-gradle-reminder.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.github/CODEOWNERS",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": ".github/CODEOWNERS",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.github/workflows/governance-validation.yml",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".github/workflows/governance-validation.yml",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.gitignore",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".gitignore",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.vscode/extensions.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": ".vscode/extensions.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.vscode/launch.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": ".vscode/launch.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.vscode/settings.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": ".vscode/settings.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.vscode/tasks.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": ".vscode/tasks.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/.vscodeignore",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": ".vscodeignore",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/AGENTS.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "AGENTS.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/AUTHORS.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "AUTHORS.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/CHANGELOG.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "CHANGELOG.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/CONTRIBUTING.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "CONTRIBUTING.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/LICENSE",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "d5a1acd1eeb9e04d9d1082dc1e6ca3db0367c432",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "LICENSE",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/NOTICE",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "NOTICE",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/README.md",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "README.md",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/deployplugin.gif",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "4f6cca7cce2842d47f2a0116cbe39fc7b7411559",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "deployplugin.gif",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/icon.png",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "icon.png",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/package-lock.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "9a75e67b93c0f6096dba6a173cebf55672cfa2c5",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "package-lock.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/package.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": "package.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/.gitignore",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/.gitignore",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/build.gradle.template",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/build.gradle.template",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/gradle.properties.template",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/gradle.properties.template",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/gradle/wrapper/gradle-wrapper.jar",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/gradle/wrapper/gradle-wrapper.jar",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/gradle/wrapper/gradle-wrapper.properties",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/gradle/wrapper/gradle-wrapper.properties",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/gradlew",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/gradlew",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/gradlew.bat",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/gradlew.bat",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/settings.gradle.template",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/settings.gradle.template",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/gradle/src/main/java/Artifact.java.template",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "resources/gradle/src/main/java/Artifact.java.template",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/resources/maven-metadata.xml",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "external Maven metadata fixture",
+      "rename_following": "automatic",
+      "source_path": "resources/maven-metadata.xml",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/build-command.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/build-command.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/components/components.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bd2c5203318c33710b827a9c6c42735917dd36f4",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/components/components.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/config-checker.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "6ce95f72102443b7b263a8dcb34ca11d85397089",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/config-checker.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/creator.ts",
+      "first_post_2021_substantive_year": 2021,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/creator.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/deployer.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/deployer.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/extension.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/extension.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/maven-metadata.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "9a75e67b93c0f6096dba6a173cebf55672cfa2c5",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/maven-metadata.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/migration/convert-project.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "970ac3ecb327f321dfa27e891903ed7de3cb1b55",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/migration/convert-project.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/migration/gradle-renderer.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "00fc6eb13c6c142a19c85c33c1612788aeae26a4",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/migration/gradle-renderer.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/migration/maven-project.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "00fc6eb13c6c142a19c85c33c1612788aeae26a4",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/migration/maven-project.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/migration/migration-reminder.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "970ac3ecb327f321dfa27e891903ed7de3cb1b55",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/migration/migration-reminder.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/migration/project-classifier.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "1422428f8ab4db022f8a20f182b6a33671c2631f",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/migration/project-classifier.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/migration/reminder-state.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "1422428f8ab4db022f8a20f182b6a33671c2631f",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/migration/reminder-state.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/model/response.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bd2c5203318c33710b827a9c6c42735917dd36f4",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/model/response.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/packager.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/packager.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/project-generator.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/project-generator.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/project-layout.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/project-layout.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/runTest.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/runTest.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/config-checker.test.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "6ce95f72102443b7b263a8dcb34ca11d85397089",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/config-checker.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/convert-project.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "bea391aed8b46b96dc2b80220995535626d9f873",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/convert-project.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/create.test.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/create.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/extension.test.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/extension.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/index.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/index.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/maven-metadata.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "9a75e67b93c0f6096dba6a173cebf55672cfa2c5",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/maven-metadata.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/maven-project.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "00fc6eb13c6c142a19c85c33c1612788aeae26a4",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/maven-project.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/migration-classifier.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "1422428f8ab4db022f8a20f182b6a33671c2631f",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/migration-classifier.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/migration-reminder.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "970ac3ecb327f321dfa27e891903ed7de3cb1b55",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/migration-reminder.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/project-generator.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/project-generator.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/test/suite/project-layout.test.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "01b2ed13511f96eeaa1e135a92608aad7e666efc",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/test/suite/project-layout.test.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/util.ts",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "684b16750a77135426621f0eeb2d70bb609324f5",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/util.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/validators/creator.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/validators/creator.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/validators/deployer.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/validators/deployer.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/validators/login.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bd2c5203318c33710b827a9c6c42735917dd36f4",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/validators/login.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/src/validators/register.ts",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "bd2c5203318c33710b827a9c6c42735917dd36f4",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "src/validators/register.ts",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/test.sh",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "test.sh",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/tests/test_repository_governance.py",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "tests/test_repository_governance.py",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/tools/check-repository-governance.py",
+      "first_post_2021_substantive_year": 2026,
+      "introduction_commit": "7e9f62581a03c8526b2e17c9a50d0be879fc38da",
+      "introduction_year": 2026,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "tools/check-repository-governance.py",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/totalcross.gif",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "4f6cca7cce2842d47f2a0116cbe39fc7b7411559",
+      "introduction_year": 2020,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "binary, lockfile, license text, or generated wrapper material",
+      "rename_following": "automatic",
+      "source_path": "totalcross.gif",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/tsconfig.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": "tsconfig.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": true,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/tslint.json",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "format has no safe portable comment syntax",
+      "rename_following": "automatic",
+      "source_path": "tslint.json",
+      "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
+        "Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "Apache-2.0",
+      "final_path": "vscode-extension/vsc-extension-quickstart.md",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "b3d195afdbd3b5f42883cf7cd3918cc6d0c5e72f",
+      "introduction_year": 2019,
+      "original_license": "MIT",
+      "project": "vscode-extension",
+      "reason": "Git introduction year determines the required copyright header",
+      "rename_following": "automatic",
+      "source_path": "vsc-extension-quickstart.md",
+      "source_repository": "totalcross-vscode-plugin"
+    }
+  ]
+}

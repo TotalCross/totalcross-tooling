@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.
+  Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda.
+  SPDX-License-Identifier: Apache-2.0
+-->
 
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda.
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 # SPDX-License-Identifier: Apache-2.0
 
 """Validate tracked governance metadata and first-party license headers."""

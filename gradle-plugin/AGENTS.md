@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -14,12 +14,13 @@ comportamento ao alterar o projeto.
 
 ## Regras obrigatórias de licença e copyright
 
-Todo arquivo de primeira parte novo ou alterado deve ter o cabeçalho abaixo,
-adaptado ao formato de comentário do arquivo, antes de qualquer conteúdo
-executável ou de documentação:
-
-    SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
-    SPDX-License-Identifier: Apache-2.0
+Todo arquivo de primeira parte novo ou alterado deve usar a regra central de
+criação: arquivos criados até 2021 têm uma linha TotalCross de seu ano de
+criação até 2021 e uma linha Amalgam de 2022 até o ano atual; arquivos criados
+a partir de 2022 têm somente uma linha Amalgam de seu ano de criação até o ano
+atual. Quando início e fim coincidem, use somente um ano. Inclua também
+`SPDX-License-Identifier: Apache-2.0` e adapte o cabeçalho ao comentário do
+arquivo antes de conteúdo executável ou documentação.
 
 Use `//` em Java e Gradle Groovy, `#` em scripts shell, propriedades, YAML e
 `.gitignore`, e um comentário HTML em Markdown. Preserve shebangs e declarações

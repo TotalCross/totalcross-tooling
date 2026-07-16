@@ -1,3 +1,9 @@
+<!--
+Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.
+Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda.
+SPDX-License-Identifier: Apache-2.0
+-->
+
 > [!IMPORTANT]
 > This project has moved to the
 > [`TotalCross/totalcross-tooling`](https://github.com/TotalCross/totalcross-tooling)

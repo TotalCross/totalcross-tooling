@@ -1,0 +1,56 @@
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Tooling validation
+
+on:
+  pull_request:
+  push:
+    branches: [main, migration/consolidate-tooling]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      maven: ${{ steps.filter.outputs.maven }}
+      vscode: ${{ steps.filter.outputs.vscode }}
+      gradle: ${{ steps.filter.outputs.gradle }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            maven: ['maven-plugin/**', 'tools/**', 'migration/license-provenance.json']
+            vscode: ['vscode-extension/**', 'tools/**', 'migration/license-provenance.json']
+            gradle: ['gradle-plugin/**', 'tools/**', 'migration/license-provenance.json']
+  maven-plugin:
+    needs: changes
+    if: needs.changes.outputs.maven == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
+      - run: mvn --batch-mode --no-transfer-progress test package
+        working-directory: maven-plugin
+  vscode-extension:
+    needs: changes
+    if: needs.changes.outputs.vscode == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '25'}
+      - run: npm ci && npm run audit && npm run compile && npm test
+        working-directory: vscode-extension
+  gradle-plugin:
+    needs: changes
+    if: needs.changes.outputs.gradle == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: zulu, java-version: '17'}
+      - run: ./gradlew clean test publishToMavenLocal --console=plain
+        working-directory: gradle-plugin
