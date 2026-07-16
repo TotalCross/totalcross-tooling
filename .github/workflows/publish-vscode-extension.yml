@@ -1,0 +1,71 @@
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Publish VS Code extension
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, for example v0.0.17
+        required: true
+        type: string
+      ref:
+        description: Commit SHA or ref to package and release
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.ref, 'refs/tags/') ||
+      github.event.head_commit.message == 'ci(release): bootstrap VS Code extension 0.0.16'
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.tag || 'v0.0.16' }}
+      RELEASE_REF: ${{ startsWith(github.ref, 'refs/tags/') && github.sha || inputs.ref || 'e6fdae94e814437d0f7cf0746d8042dcce1f1164' }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_REF }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vscode-extension/package-lock.json
+
+      - name: Validate release version
+        working-directory: vscode-extension
+        run: |
+          version="$(node -p \"require('./package.json').version\")"
+          test "$RELEASE_TAG" = "v$version"
+
+      - name: Install and package extension
+        working-directory: vscode-extension
+        run: |
+          npm ci
+          npx --yes @vscode/vsce package --out "vscode-totalcross-${RELEASE_TAG#v}.vsix"
+
+      - name: Publish to Visual Studio Marketplace
+        working-directory: vscode-extension
+        run: npx --yes @vscode/vsce publish --packagePath "vscode-totalcross-${RELEASE_TAG#v}.vsix" --pat "$VSCE_PAT"
+
+      - name: Create or update GitHub release
+        working-directory: vscode-extension
+        run: |
+          asset="vscode-totalcross-${RELEASE_TAG#v}.vsix"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$asset" --clobber
+          else
+            gh release create "$RELEASE_TAG" "$asset" --target "$RELEASE_REF" --title "$RELEASE_TAG" --generate-notes
+          fi
