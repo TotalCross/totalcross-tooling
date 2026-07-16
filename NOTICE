@@ -1,0 +1,7 @@
+TotalCross Tooling
+Copyright 2026 Amalgam Solucoes em TI Ltda.
+
+This repository consolidates historically separate TotalCross tooling projects.
+Historical source and releases retain the notices and license grants supplied by
+their original repositories. In particular, the VS Code extension has earlier
+MIT-licensed material; current repository governance is Apache License 2.0.

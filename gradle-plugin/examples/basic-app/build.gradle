@@ -1,0 +1,65 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+plugins {
+    id 'java'
+    id 'com.totalcross.application'
+}
+
+repositories {
+    maven {
+        url = uri('http://maven.totalcross.com/artifactory/repo1')
+        allowInsecureProtocol = true
+    }
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// SDK 7.2.2 accepts Java 8 classfiles. The plugin converts them to Java 7 with
+// Retrolambda and runs the legacy deployer on its cached JDK 11.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8
+}
+
+dependencies {
+    implementation 'com.totalcross:totalcross-sdk:7.2.2'
+}
+
+totalcross {
+    applicationName = 'MainWindow'
+    platforms = ['linux']
+}
+
+// Isolated verification hook for a full SDK artifact that supports Java 17
+// classfiles. It never changes the plugin's default official SDK URL.
+def java17SdkHome = providers.gradleProperty('testTotalcrossHome')
+if (java17SdkHome.present) {
+    tasks.withType(JavaCompile).configureEach {
+        options.release = 17
+    }
+    totalcross {
+        sdkVersion = '7.3.0'
+        totalcrossHome = file(java17SdkHome.get())
+    }
+}
+
+def testDeploySdkJar = providers.gradleProperty('testDeploySdkJar')
+if (testDeploySdkJar.present) {
+    totalcross {
+        deploySdkJar = file(testDeploySdkJar.get())
+    }
+}
+
+def testJdkPath = providers.gradleProperty('testJdkPath')
+if (testJdkPath.present) {
+    totalcross {
+        jdkPath = file(testJdkPath.get())
+    }
+}
