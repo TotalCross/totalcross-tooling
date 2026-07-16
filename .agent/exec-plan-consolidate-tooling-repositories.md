@@ -94,11 +94,12 @@ Use UTC timestamps on every completed entry. Split partially completed entries i
 - [x] (2026-07-16) Normalize current-tree headers, attribution, notices, and repository links according to the provenance policy.
 - [x] (2026-07-16) Add path-aware CI without coupling the three project versions or build systems.
 - [x] (2026-07-16) Run the root validator and its current 17 regression tests; both pass on the reviewed working tree.
-- [ ] Establish a reproducible history audit for the actual `main` history; the current branch has no committed history-audit input set.
-- [ ] Validate a new clean clone after the Maven late-history refresh (completed: focused Maven package and root validation pass; remaining: full clean-clone rerun).
+- [x] (2026-07-16) Audit current `main` lineage against the read-only source mirrors; all 157 source commits are located, but exact preservation fails for 68 VS Code committer tuples, 6 Gradle committer tuples, and 3 project-boundary parent relationships. The result is recorded in `migration/history-audit-report.md`; no history rewrite was attempted.
+- [x] (2026-07-16) Validate an independent clean clone after the Maven late-history refresh: root and VS Code governance passed, Maven package passed with tests skipped, Gradle test/publication passed, and VS Code audit/compile/integration tests passed.
 - [x] (2026-07-16) Confirm repository-side VS Code 0.0.16 publication metadata: version `0.0.16`, tag `v0.0.16`, publication workflow, and monorepo repository URL are present.
 - [x] (2026-07-16) Confirm the public VS Code Marketplace item responds successfully and exposes version `0.0.16` with current monorepo links; older versions remain historical entries.
-- [ ] Validate Maven and Gradle publication metadata, remaining automation references, and archival prerequisites independently; these checks are separate from the confirmed VS Code publication.
+- [x] (2026-07-16) Validate local Maven and Gradle publication metadata: Maven package `com.totalcross:totalcross-maven-plugin:2.0.3` succeeds with tests skipped; Gradle tests and `publishToMavenLocal` succeed for the plugin markers and `com.totalcross:totalcross-gradle-plugin:0.1.0-SNAPSHOT`.
+- [ ] Validate any external Maven/Gradle registry metadata, remaining automation references, and archival prerequisites independently; these checks are separate from the confirmed local publications and VS Code Marketplace publication.
 - [ ] Archive the original repositories only after the new repository and move notices are published and independently verified.
 - [x] (2026-07-16) Reconcile this plan with the observed `main` state and record the remaining validation gaps.
 
@@ -119,13 +120,19 @@ Record repository-specific findings here as implementation proceeds. Do not sile
   Evidence: both candidate and clean-clone `mvn test` downloaded 301,209,836 bytes and then failed `JavaJDKManagerTest.downloadAndUnzip` at line 46 because its expected JDK directory did not exist. `mvn -DskipTests package` passed.
 
 - Observation: The current VS Code integration runner does not configure a short temporary user-data directory.
-  Evidence: `vscode-extension/src/test/runTest.ts` calls `runTests` with only `extensionDevelopmentPath` and `extensionTestsPath`. A short-path workaround was present in the earlier clean-clone experiment but is not part of `main`. Its relevance must be decided by the pending clean-clone rerun; do not import an unavailable commit by reference. If the path-length failure recurs, implement and test an equivalent narrowly scoped fix on `main`.
+  Evidence: `vscode-extension/src/test/runTest.ts` calls `runTests` with only `extensionDevelopmentPath` and `extensionTestsPath`. The current local and independent `/tmp` clean-clone runs passed 20 integration tests without reproducing the earlier path-length failure. No workaround was imported; revisit only if a different clean environment reproduces the failure.
+
+- Observation: The current `main` contains the source histories but does not preserve every original history object exactly.
+  Evidence: `migration/history-audit-report.md` located 83 Maven, 68 VS Code, and 6 Gradle source commits by author metadata, complete message, and changed paths. All 68 VS Code and all 6 Gradle commits differ in committer metadata, and three project-boundary parent relationships differ.
+
+- Observation: The nested VS Code governance command had stale blanket-year and MIT expectations.
+  Evidence: Before the fix it failed against current first-party headers; after delegating repository validation to `tools/check-license-headers.py --project vscode-extension`, the command and its 17 unit tests passed.
 
 - Observation: the first Gradle test invocation lost its command wrapper before reporting completion, although its worker completed normally.
   Evidence: `gradle-plugin/build/test-results/test/` contains four XML reports with 18 tests and zero failures; a separate `./gradlew publishToMavenLocal --console=plain --no-daemon` reported `BUILD SUCCESSFUL`.
 
 - Observation: Maven `master` advanced from the snapshot during the migration window.
-  Evidence: The current `maven-plugin/pom.xml` has the expected 2022 Amalgam provenance line. The source-revision evidence and a reproducible audit transcript are not present in `main`, so the historical commit count and rewrite claim remain unverified here.
+  Evidence: The current `maven-plugin/pom.xml` has the expected 2022 Amalgam provenance line. `migration/history-audit-report.md` records the source revision and the current-main comparison; it does not claim a filtered-history rewrite.
 
 - Observation: the imported project READMEs contain move notices, but the original-repository publication is external to this repository.
   Evidence: `maven-plugin/README.md`, `vscode-extension/README.md`, and `gradle-plugin/README.md` begin with links to their corresponding monorepo directories. The original-repository commit IDs are not part of `main` and are not used as evidence in this plan.
@@ -187,8 +194,12 @@ For every discovery, record concise evidence: repository-relative paths, origina
   Rationale: `tools/check-imported-history.py` compares original and rewritten commit metadata; it cannot establish those facts from the current tree alone. The script remains relevant as an optional audit tool for a future, separately evidenced history migration, but its result is not part of the current `main` acceptance evidence.
   Date/Author: 2026-07-16 / OpenAI
 
-- Decision: Defer any VS Code integration-runner portability change until the pending clean-clone rerun demonstrates that the current runner fails for the macOS path-length reason.
-  Rationale: The earlier workaround is not part of `main`; importing it without reproducing the failure would mix candidate history with the current branch and broaden the scope of this documentation revision.
+- Decision: Do not import a VS Code integration-runner portability workaround after the current clean-clone runs passed.
+  Rationale: The failure was not reproduced in the current environment, so adding a workaround would broaden the change without demonstrated benefit.
+  Date/Author: 2026-07-16 / OpenAI
+
+- Decision: Preserve the current `main` history and document exact-preservation failures instead of rewriting it.
+  Rationale: Repairing committer metadata and project-boundary parents would require prohibited history rewriting and force-pushing. The audit result is more trustworthy when the observed history remains unchanged.
   Date/Author: 2026-07-16 / OpenAI
 
 - Decision: Use Apache License 2.0 as the root license for current monorepo work.
@@ -853,7 +864,7 @@ Use a commit message equivalent to:
 
 `tools/check-imported-history.py` is a comparison tool, not a standalone validator of the current tree. It reads an external source root containing the three source mirrors, reads the target's source-revision and old-to-new commit mapping data, and compares author/committer metadata, messages, and parent topology for every mapped commit. Its command-line interface requires `--source-root`; invoking it without that argument is expected to fail with usage error 2.
 
-The script remains relevant only if a future, separately authorized history migration supplies those inputs and commits the resulting evidence. The current `main` tree has no such inputs, so this milestone is not marked complete and no history-audit result is claimed here.
+The script remains relevant for a future filtered-history migration, but it is not the correct tool for inventing a map for the current linear reconstruction. The current-tree comparison is complete and its failed exact-preservation result is recorded in `migration/history-audit-report.md`; no claim of exact author/committer/topology preservation is made.
 
 For every mapped commit, compare:
 
@@ -954,7 +965,7 @@ Use actual counts; do not copy the example numbers.
 
 Then run each project's checks from its directory, using clean dependency state where practical. Capture full output to `evidence/final/` and summarize only relevant success lines or failures.
 
-Create a clean clone from `main` or a local bare remote and repeat the checks there. This remains pending after the Maven late-history refresh; do not report clean-clone success until that rerun is observed.
+Create a clean clone from `main` or a local bare remote and repeat the checks there. The independent clone at `/tmp/totalcross-tooling-clean.6pgoDU` passed the root and project checks listed in this plan.
 
 Review the final commit sequence. Governance, each import, each normalization, and final integration must remain logically distinct. Do not squash source history or normalization into one giant commit.
 
@@ -1103,7 +1114,7 @@ The implementation is complete only when all of the following are observable.
 - Maven plugin focused tests and package validation pass or have a narrowly evidenced external limitation.
 - VS Code `npm ci`, audit, compile, and extension tests pass.
 - Gradle plugin tests and local publication validation pass.
-- Checks pass from a clean clone only after the pending rerun is observed.
+- Checks pass from an independent clean clone for the commands recorded in the validation evidence.
 - `git diff --check` and `git fsck --full` pass.
 
 ### Original repositories
@@ -1150,6 +1161,7 @@ If the original repositories are archived too early, unarchive them, correct the
 Retain these artifacts in the repository or migration evidence package:
 
 - `migration/license-provenance.json`;
+- `migration/history-audit-report.md`;
 - before/after ref inventories;
 - before/after commit counts;
 - before/after contributor shortlogs;
@@ -1216,27 +1228,27 @@ absent.
 
 ## Outcomes & Retrospective
 
-The reviewed `main` branch contains the three project directories, root Apache-2.0 governance, path-aware workflows, and the provenance files. Its first-parent history does not contain the governance-first import sequence described by the original draft, so this plan no longer presents that sequence as an outcome.
+The reviewed `main` branch contains the three project directories, root Apache-2.0 governance, path-aware workflows, and the provenance files. Its first-parent history is a linear reconstruction rather than the governance-first merge sequence described by the original draft, and the plan now records that fact.
 
-The current tree contains 11 Maven, 13 VS Code, and 1 Gradle namespaced tags. A cross-repository history audit was not observed: `tools/check-imported-history.py` requires external source and mapping inputs that are absent from `main`. No commit count, identity comparison, merge-topology comparison, or signature conclusion is claimed here.
+The current tree contains 11 Maven, 13 VS Code, and 1 Gradle namespaced tags. The current-tree audit located all 157 source commits, but exact history preservation fails for the VS Code and Gradle committer tuples and three project-boundary parent relationships. The supported filtered-history auditor remains conditional on explicit external mapping inputs.
 
 `migration/license-provenance.json` records 16 Maven paths (all applicable), 74 VS Code paths (56 applicable and 18 excluded), and 38 Gradle paths (32 applicable and 6 excluded). The VS Code audit expects 17 applicable 2019 starts and 7 2020 starts; 12 source generic `2020-2021` headers were corrected to 2019, while 7 are retained where file history supports 2020. Twelve VS Code records are mixed-period. Maven's absent historical license is recorded in its NOTICE, VS Code preserves MIT historical provenance, and Gradle retains Apache-2.0 provenance.
 
-The root validator passes and the current regression suite has 17 passing tests. Gradle evidence shows 18 tests with zero failures or errors and successful local publication. Maven package validation passes with skipped tests, while its three-test suite has one reproducible `JavaJDKManagerTest` failure after downloading the remote JDK. A full clean-clone rerun after the Maven refresh remains pending and must not be reported as passed. The repository-side VS Code 0.0.16 publication is present; the Marketplace item page returned HTTP 200 and displayed 0.0.16 with current monorepo links on 2026-07-16. Archival and independent verification of the original repositories remain pending.
+The root validator passes and the current regression suite has 17 passing tests. The independent clean clone passed root and VS Code governance, Maven package with tests skipped, Gradle's 18 tests and local publication, and VS Code `npm ci`, audit, compile, and 20 integration tests. Maven's three-test suite still has one reproducible `JavaJDKManagerTest` failure after downloading the remote JDK. The repository-side VS Code 0.0.16 publication is present; the Marketplace item page returned HTTP 200 and displayed 0.0.16 with current monorepo links on 2026-07-16. Archival and independent external registry verification remain pending.
 
 ## Editorial Report
 
 ### Editorial Summary
 
-The current `main` tree contains three independently buildable TotalCross tooling projects under their final subdirectories, with shared Apache-2.0 governance and per-file provenance validation. The repository does not currently provide the committed history-audit inputs needed to make a cross-repository history-preservation claim.
+The current `main` tree contains three independently buildable TotalCross tooling projects under their final subdirectories, with shared Apache-2.0 governance and per-file provenance validation. A read-only lineage report now records which source commits are present and which exact-history properties cannot be claimed without rewriting `main`.
 
 ### Original Plan versus Actual Outcome
 
-The requested directory layout, independent project builds, governance policy, provenance manifest, and VS Code year report are present. The original plan's candidate-branch commit sequence and history audit were removed from the current record because they are not part of `main`. The repository-side VS Code 0.0.16 publication is complete; external archival and source-repository settings remain pending.
+The requested directory layout, independent project builds, governance policy, provenance manifest, VS Code year report, and local validation are present. The original plan's candidate-branch commit sequence was removed from the current record because it is not part of `main`; the current lineage audit documents the resulting metadata/topology limitations. The repository-side VS Code 0.0.16 publication is complete; external archival and registry verification remain pending.
 
 ### What Changed
 
-The core artifacts are `migration/license-provenance.json`, `migration/vscode-year-report.md`, `tools/check-license-headers.py`, `tools/check-imported-history.py`, and the root workflows. The three imported projects are `maven-plugin/`, `vscode-extension/`, and `gradle-plugin/`.
+The core artifacts are `migration/license-provenance.json`, `migration/history-audit-report.md`, `migration/vscode-year-report.md`, `tools/check-license-headers.py`, `tools/check-imported-history.py`, and the root workflows. The three imported projects are `maven-plugin/`, `vscode-extension/`, and `gradle-plugin/`.
 
 ### Decisions and Trade-offs
 
@@ -1244,19 +1256,19 @@ Per-file provenance costs an actively maintained manifest but avoids fictitious 
 
 ### Unexpected Problems and Discoveries
 
-The evidence includes the unsafe VS Code 2020 blanket year, Maven's absent source license and macOS JDK test failure, and the fact that the current main branch differs from the candidate history described by the earlier draft. The clean-clone rerun after the Maven refresh remains unverified.
+The evidence includes the unsafe VS Code 2020 blanket year, Maven's absent source license and macOS JDK test failure, the current-main history mismatches, and the successful independent clean clone. The VS Code path-length workaround was not imported because the failure was not reproduced.
 
 ### Validation and Measurable Results
 
-Observed results are: 128 provenance records (16 Maven, 74 VS Code, 38 Gradle); root license validation passes; 17 root regression tests pass; 18 Gradle tests have zero failures/errors and local publication succeeds; Maven package succeeds but 1 of 3 Maven tests fails reproducibly for its remote JDK layout expectation; and the Marketplace item currently exposes VS Code 0.0.16 with monorepo links.
+Observed results are: 128 provenance records (16 Maven, 74 VS Code, 38 Gradle); root license validation passes; 17 root regression tests pass; 18 Gradle tests have zero failures/errors and local publication succeeds; 20 VS Code integration tests pass in the working tree and clean clone; Maven package succeeds but 1 of 3 Maven tests fails reproducibly for its remote JDK layout expectation; and the Marketplace item currently exposes VS Code 0.0.16 with monorepo links.
 
 ### Useful Evidence and Examples
 
-Use `migration/vscode-year-report.md`, the current first-parent graph, the clean-clone commands in this plan, the four Gradle XML reports under `gradle-plugin/build/test-results/test/`, and [the current Marketplace item](https://marketplace.visualstudio.com/items?itemName=TotalCross.vscode-totalcross) as concise evidence.
+Use `migration/history-audit-report.md`, `migration/vscode-year-report.md`, the current first-parent graph, the clean-clone commands in this plan, the four Gradle XML reports under `gradle-plugin/build/test-results/test/`, and [the current Marketplace item](https://marketplace.visualstudio.com/items?itemName=TotalCross.vscode-totalcross) as concise evidence.
 
 ### Limitations, Remaining Work, and Open Questions
 
-This monorepo does not migrate issues, pull requests, releases, stars, forks, discussions, or secrets. It does not unify releases or build systems. The Maven JDK test needs a separately scoped portability fix. The history audit remains unproven without external source and mapping inputs. The clean-clone rerun and archival remain pending; older Marketplace versions remain in version history even though 0.0.16 has current monorepo links.
+This monorepo does not migrate issues, pull requests, releases, stars, forks, discussions, or secrets. It does not unify releases or build systems. The Maven JDK test needs a separately scoped portability fix. Exact source committer/topology preservation cannot be claimed without rewriting `main`, which remains prohibited. External registry verification and archival remain pending; older Marketplace versions remain in version history even though 0.0.16 has current monorepo links.
 
 ### Possible Article Angles
 
@@ -1264,7 +1276,7 @@ Useful angles are preserving Git identity through multi-repository path rewrites
 
 ### Suggested Narrative
 
-Start with the need to consolidate tools without coupling their builds; show the VS Code per-file year discovery; explain the difference between the current tree and the unavailable history-audit evidence; then show validation, publication status, and remaining limitations.
+Start with the need to consolidate tools without coupling their builds; show the VS Code per-file year discovery; explain the current-main lineage audit and why exact history preservation cannot be repaired safely; then show clean-clone validation, publication status, and remaining limitations.
 
 ### Claims Requiring Human Review
 
@@ -1274,4 +1286,4 @@ The Maven prospective Apache assignment, copyright-holder descriptions, creator 
 
 Initial version created on 2026-07-16. It proposed consolidating the Maven, VS Code, and Gradle plugin repositories into `TotalCross/totalcross-tooling`, establishing Apache-2.0 governance, preserving original commit contributors through path rewrites, normalizing attribution and contacts, validating exact per-file copyright years, correcting the VS Code project's unsafe generic 2020 start-year rule, and redirecting the original repositories for archival.
 
-Review revision on 2026-07-16: removed candidate-only commit references and absent history-map claims; documented the purpose and conditional relevance of `tools/check-imported-history.py`; corrected the observed root test count to 17; kept the Maven clean-clone check pending; and updated the VS Code publication status to reflect the published 0.0.16 metadata and current monorepo links. No implementation or migration step was executed during this revision.
+Execution revision on 2026-07-16: clarified and committed the current-main history audit, made the history checker accept explicit inputs, delegated VS Code governance validation to the root provenance policy, completed working-tree and independent clean-clone validation, recorded the Maven portability failure, and confirmed VS Code 0.0.16 Marketplace metadata. Exact history repair, external registry checks, and archival remain subject to their documented constraints.
