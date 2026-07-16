@@ -125,6 +125,9 @@ Record repository-specific findings here as implementation proceeds. Do not sile
 - Observation: the first Gradle test invocation lost its command wrapper before reporting completion, although its worker completed normally.
   Evidence: `gradle-plugin/build/test-results/test/` contains four XML reports with 18 tests and zero failures; a separate `./gradlew publishToMavenLocal --console=plain --no-daemon` reported `BUILD SUCCESSFUL`.
 
+- Observation: GitHub cannot create a pull request from the orphan candidate to the existing placeholder `main`.
+  Evidence: `gh pr create --draft --base main --head migration/consolidate-tooling` returned `GraphQL: The migration/consolidate-tooling branch has no history in common with main (createPullRequest)`. The branch itself was pushed successfully.
+
 Add discoveries such as:
 
 - a file was copied into the repository and its Git introduction date differs from its actual upstream origin;
@@ -1227,7 +1230,7 @@ The default branches contributed 81 Maven, 67 VS Code, and 5 Gradle commits. Com
 
 `migration/license-provenance.json` records 16 Maven paths (all applicable), 74 VS Code paths (56 applicable and 18 excluded), and 38 Gradle paths (32 applicable and 6 excluded). The VS Code audit expects 17 applicable 2019 starts and 7 2020 starts; 12 source generic `2020-2021` headers were corrected to 2019, while 7 are retained where file history supports 2020. Twelve VS Code records are mixed-period. Maven's absent historical license is recorded in its NOTICE, VS Code preserves MIT historical provenance, and Gradle retains Apache-2.0 provenance.
 
-Root validation and its 18 tests pass in a clean clone. The VS Code extension passes 20 tests in a clean clone after using a short temporary user-data directory. Gradle's clean-clone XML reports show 18 tests with zero failures or errors, and `publishToMavenLocal` passes. Maven package validation passes with skipped tests, while its three-test suite reproducibly has one failure in `JavaJDKManagerTest` after downloading the remote JDK; that failure is not hidden. The candidate has not been pushed, so original README notices and archival remain pending explicit review and publication.
+Root validation and its 18 tests pass in a clean clone. The VS Code extension passes 20 tests in a clean clone after using a short temporary user-data directory. Gradle's clean-clone XML reports show 18 tests with zero failures or errors, and `publishToMavenLocal` passes. Maven package validation passes with skipped tests, while its three-test suite reproducibly has one failure in `JavaJDKManagerTest` after downloading the remote JDK; that failure is not hidden. The candidate is published as `origin/migration/consolidate-tooling`, but GitHub cannot open a PR against the unrelated placeholder `main`; original README notices and archival remain pending an explicit main-branch reconciliation decision.
 
 ## Editorial Report
 
@@ -1237,7 +1240,7 @@ The candidate consolidates three independently released TotalCross tooling proje
 
 ### Original Plan versus Actual Outcome
 
-The requested import order and subdirectory names were preserved. The remote placeholder and explicitly excluded `origin/work` branch were not used; an orphan review branch supplied the required governance-root history. Publication, move notices, and archival are deferred until this candidate is reviewed.
+The requested import order and subdirectory names were preserved. The remote placeholder and explicitly excluded `origin/work` branch were not used; an orphan review branch supplied the required governance-root history. The candidate was published, but GitHub cannot create a PR against the unrelated placeholder `main`; main reconciliation, move notices, and archival are deferred.
 
 ### What Changed
 
@@ -1261,7 +1264,7 @@ Use the commit maps, `migration/vscode-year-report.md`, the first-parent graph, 
 
 ### Limitations, Remaining Work, and Open Questions
 
-This candidate does not migrate issues, pull requests, releases, stars, forks, discussions, or secrets. It does not unify releases or build systems. The Maven JDK test needs a separately scoped portability fix. Main-branch publication, original move notices, package/Marketplace link review, and archival await review.
+This candidate does not migrate issues, pull requests, releases, stars, forks, discussions, or secrets. It does not unify releases or build systems. The Maven JDK test needs a separately scoped portability fix. Reconciling or replacing the unrelated placeholder `main`, original move notices, package/Marketplace link review, and archival await review.
 
 ### Possible Article Angles
 
@@ -1279,4 +1282,4 @@ The Maven prospective Apache assignment, copyright-holder descriptions, creator 
 
 Initial version created on 2026-07-16. It consolidates the Maven, VS Code, and Gradle plugin repositories into `TotalCross/totalcross-tooling`, establishes Apache-2.0 governance first, preserves original commit contributors through mapped path rewrites, normalizes attribution and contacts, validates exact per-file copyright years, corrects the VS Code project's unsafe generic 2020 start-year rule, and redirects the original repositories for archival.
 
-Execution revision on 2026-07-16: completed the local candidate branch, imported source histories in the specified order, recorded provenance and maps, added clean-clone evidence, and documented reproducible build limitations. Publication to `main`, source-repository move notices, and archival are deliberately deferred until candidate review.
+Execution revision on 2026-07-16: completed and pushed the `migration/consolidate-tooling` candidate branch, imported source histories in the specified order, recorded provenance and maps, added clean-clone evidence, and documented reproducible build limitations. The existing unrelated `main` placeholder prevents a GitHub PR; main reconciliation, source-repository move notices, and archival are deliberately deferred until review.
