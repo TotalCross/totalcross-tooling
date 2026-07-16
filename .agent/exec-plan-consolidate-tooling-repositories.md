@@ -62,7 +62,7 @@ After completion, a developer must be able to:
 
 The following facts describe the repository state reviewed on 2026-07-16:
 
-- `main` and `origin/main` point to `0c337b7`, `docs(release): record VS Code 0.0.16 publication`.
+- `main` and `origin/main` now include the execution commits produced by this plan; the reviewed release baseline was `0c337b7`, and the current head is recorded by `git log -1`.
 - The three projects are present under `maven-plugin/`, `vscode-extension/`, and `gradle-plugin/`.
 - The root contains Apache-2.0 governance, the provenance manifest, license validators, and path-aware workflows.
 - The Maven plugin currently has no top-level `LICENSE` file in its default branch.
@@ -99,8 +99,8 @@ Use UTC timestamps on every completed entry. Split partially completed entries i
 - [x] (2026-07-16) Confirm repository-side VS Code 0.0.16 publication metadata: version `0.0.16`, tag `v0.0.16`, publication workflow, and monorepo repository URL are present.
 - [x] (2026-07-16) Confirm the public VS Code Marketplace item responds successfully and exposes version `0.0.16` with current monorepo links; older versions remain historical entries.
 - [x] (2026-07-16) Validate local Maven and Gradle publication metadata: Maven package `com.totalcross:totalcross-maven-plugin:2.0.3` succeeds with tests skipped; Gradle tests and `publishToMavenLocal` succeed for the plugin markers and `com.totalcross:totalcross-gradle-plugin:0.1.0-SNAPSHOT`.
-- [ ] Validate any external Maven/Gradle registry metadata, remaining automation references, and archival prerequisites independently; these checks are separate from the confirmed local publications and VS Code Marketplace publication.
-- [ ] Archive the original repositories only after the new repository and move notices are published and independently verified.
+- [x] (2026-07-16) Validate repository links, open-work redirects, target release metadata, VS Code Marketplace 0.0.16 metadata, and the absence of configured external Maven/Gradle registry publication in the checked-in build descriptors.
+- [x] (2026-07-16) Archive `TotalCross/totalcross-maven-plugin`, `TotalCross/totalcross-vscode-plugin`, and `TotalCross/totalcross-gradle-plugin` after verifying backups, move notices, target publication, and redirected open work.
 - [x] (2026-07-16) Reconcile this plan with the observed `main` state and record the remaining validation gaps.
 
 ## Surprises & Discoveries
@@ -142,6 +142,9 @@ Record repository-specific findings here as implementation proceeds. Do not sile
 
 - Observation: open work in the source repositories was redirected without being closed.
   Evidence: comments point to the monorepo on Maven PRs #26 and #25, Maven issues #22 and #19, and VS Code issue #11. Keeping them open preserves their historical discussion and avoids misrepresenting unresolved work as completed.
+
+- Observation: The original repositories are now archived rather than deleted.
+  Evidence: GitHub reports `isArchived: true` for all three source repositories after the target publication, move-notice, backup, and open-work checks completed.
 
 Add discoveries such as:
 
@@ -201,6 +204,10 @@ For every discovery, record concise evidence: repository-relative paths, origina
 - Decision: Preserve the current `main` history and document exact-preservation failures instead of rewriting it.
   Rationale: Repairing committer metadata and project-boundary parents would require prohibited history rewriting and force-pushing. The audit result is more trustworthy when the observed history remains unchanged.
   Date/Author: 2026-07-16 / OpenAI
+
+- Decision: Archive the three source repositories after publishing the target and verifying redirects, backups, and open-work comments.
+  Rationale: The repositories retain their Git history, releases, issues, and pull requests while new development is directed to the validated monorepo. Archiving is reversible and does not delete historical resources.
+  Date/Author: 2026-07-16 / Fabio Sobral requirement
 
 - Decision: Use Apache License 2.0 as the root license for current monorepo work.
   Rationale: This is the explicitly requested global license. Historical grants and original project licenses remain documented and preserved where applicable.
@@ -1122,7 +1129,7 @@ The implementation is complete only when all of the following are observable.
 - Each original README begins with a correct move notice and final subdirectory link.
 - Existing history, releases, issues, PRs, stars, and forks remain available.
 - Current package/Marketplace repository links point to the monorepo where supported.
-- Repositories are archived only after all prerequisites are verified.
+- The three original repositories are archived only after all prerequisites are verified; GitHub reports them as archived and their historical resources remain available.
 
 ## Idempotence and Recovery
 
@@ -1228,13 +1235,13 @@ absent.
 
 ## Outcomes & Retrospective
 
-The reviewed `main` branch contains the three project directories, root Apache-2.0 governance, path-aware workflows, and the provenance files. Its first-parent history is a linear reconstruction rather than the governance-first merge sequence described by the original draft, and the plan now records that fact.
+The reviewed `main` branch contains the three project directories, root Apache-2.0 governance, path-aware workflows, and the provenance files. Its first-parent history is a linear reconstruction rather than the governance-first merge sequence described by the original draft, and the plan now records that fact. The execution commits were pushed to `origin/main`.
 
 The current tree contains 11 Maven, 13 VS Code, and 1 Gradle namespaced tags. The current-tree audit located all 157 source commits, but exact history preservation fails for the VS Code and Gradle committer tuples and three project-boundary parent relationships. The supported filtered-history auditor remains conditional on explicit external mapping inputs.
 
 `migration/license-provenance.json` records 16 Maven paths (all applicable), 74 VS Code paths (56 applicable and 18 excluded), and 38 Gradle paths (32 applicable and 6 excluded). The VS Code audit expects 17 applicable 2019 starts and 7 2020 starts; 12 source generic `2020-2021` headers were corrected to 2019, while 7 are retained where file history supports 2020. Twelve VS Code records are mixed-period. Maven's absent historical license is recorded in its NOTICE, VS Code preserves MIT historical provenance, and Gradle retains Apache-2.0 provenance.
 
-The root validator passes and the current regression suite has 17 passing tests. The independent clean clone passed root and VS Code governance, Maven package with tests skipped, Gradle's 18 tests and local publication, and VS Code `npm ci`, audit, compile, and 20 integration tests. Maven's three-test suite still has one reproducible `JavaJDKManagerTest` failure after downloading the remote JDK. The repository-side VS Code 0.0.16 publication is present; the Marketplace item page returned HTTP 200 and displayed 0.0.16 with current monorepo links on 2026-07-16. Archival and independent external registry verification remain pending.
+The root validator passes and the current regression suite has 17 passing tests. The independent clean clone passed root and VS Code governance, Maven package with tests skipped, Gradle's 18 tests and local publication, and VS Code `npm ci`, audit, compile, and 20 integration tests. Maven's three-test suite still has one reproducible `JavaJDKManagerTest` failure after downloading the remote JDK. The repository-side VS Code 0.0.16 publication is present; the Marketplace item page returned HTTP 200 and displayed 0.0.16 with current monorepo links on 2026-07-16. The three source repositories are archived, and no external Maven/Gradle registry publication configuration was found in the checked-in build descriptors.
 
 ## Editorial Report
 
@@ -1244,7 +1251,7 @@ The current `main` tree contains three independently buildable TotalCross toolin
 
 ### Original Plan versus Actual Outcome
 
-The requested directory layout, independent project builds, governance policy, provenance manifest, VS Code year report, and local validation are present. The original plan's candidate-branch commit sequence was removed from the current record because it is not part of `main`; the current lineage audit documents the resulting metadata/topology limitations. The repository-side VS Code 0.0.16 publication is complete; external archival and registry verification remain pending.
+The requested directory layout, independent project builds, governance policy, provenance manifest, VS Code year report, and local validation are present. The original plan's candidate-branch commit sequence was removed from the current record because it is not part of `main`; the current lineage audit documents the resulting metadata/topology limitations. The repository-side VS Code 0.0.16 publication is complete and all three source repositories are archived after their move notices and open-work redirects were verified.
 
 ### What Changed
 
@@ -1268,7 +1275,7 @@ Use `migration/history-audit-report.md`, `migration/vscode-year-report.md`, the 
 
 ### Limitations, Remaining Work, and Open Questions
 
-This monorepo does not migrate issues, pull requests, releases, stars, forks, discussions, or secrets. It does not unify releases or build systems. The Maven JDK test needs a separately scoped portability fix. Exact source committer/topology preservation cannot be claimed without rewriting `main`, which remains prohibited. External registry verification and archival remain pending; older Marketplace versions remain in version history even though 0.0.16 has current monorepo links.
+This monorepo does not migrate issues, pull requests, releases, stars, forks, discussions, or secrets. It does not unify releases or build systems. The Maven JDK test needs a separately scoped portability fix. Exact source committer/topology preservation cannot be claimed without rewriting `main`, which remains prohibited. Maven and Gradle local publication is validated, but no external registry publication is configured in the checked-in descriptors. Older Marketplace versions remain in version history even though 0.0.16 has current monorepo links.
 
 ### Possible Article Angles
 
@@ -1286,4 +1293,4 @@ The Maven prospective Apache assignment, copyright-holder descriptions, creator 
 
 Initial version created on 2026-07-16. It proposed consolidating the Maven, VS Code, and Gradle plugin repositories into `TotalCross/totalcross-tooling`, establishing Apache-2.0 governance, preserving original commit contributors through path rewrites, normalizing attribution and contacts, validating exact per-file copyright years, correcting the VS Code project's unsafe generic 2020 start-year rule, and redirecting the original repositories for archival.
 
-Execution revision on 2026-07-16: clarified and committed the current-main history audit, made the history checker accept explicit inputs, delegated VS Code governance validation to the root provenance policy, completed working-tree and independent clean-clone validation, recorded the Maven portability failure, and confirmed VS Code 0.0.16 Marketplace metadata. Exact history repair, external registry checks, and archival remain subject to their documented constraints.
+Execution revision on 2026-07-16: clarified and committed the current-main history audit, made the history checker accept explicit inputs, delegated VS Code governance validation to the root provenance policy, completed working-tree and independent clean-clone validation, recorded the Maven portability failure, confirmed VS Code 0.0.16 Marketplace metadata, pushed the execution commits to `origin/main`, and archived the three source repositories after verifying their redirects and backups. Exact history repair remains prohibited; no external Maven/Gradle registry publication is configured.
