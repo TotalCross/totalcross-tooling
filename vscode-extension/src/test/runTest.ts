@@ -35,7 +35,7 @@ async function main() {
 		console.error('Failed to run tests');
 		process.exit(1);
 	} finally {
-		fs.rmdirSync(userDataDir, { recursive: true });
+		(fs as any).rmSync(userDataDir, { recursive: true, force: true });
 	}
 }
 
