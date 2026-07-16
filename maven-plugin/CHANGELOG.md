@@ -1,3 +1,8 @@
+<!--
+Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Changelog
 All notable changes to this project will be documented in this file.
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;

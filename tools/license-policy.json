@@ -4,7 +4,7 @@
   "codeowner": "* @flsobral",
   "obsolete_emails": [],
   "projects": {
-    "maven-plugin": {"active": false},
+    "maven-plugin": {"active": true},
     "vscode-extension": {"active": false},
     "gradle-plugin": {"active": false}
   },

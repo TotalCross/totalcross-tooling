@@ -73,7 +73,8 @@ def validate(root: Path, project: str | None = None) -> list[str]:
     if provenance_path.exists():
         records = json.loads(provenance_path.read_text(encoding="utf-8"))["files"]
     for record in records:
-        if project is None or record["project"] == project:
+        active = policy.get("projects", {}).get(record["project"], {}).get("active", False)
+        if active and (project is None or record["project"] == project):
             errors.extend(validate_record(root, record))
     tracked = read_paths(root)
     for email in policy.get("obsolete_emails", []):
