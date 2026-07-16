@@ -2,7 +2,13 @@
 # Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Validate tracked governance metadata and first-party license headers."""
+"""Validate extension governance through the monorepo policy.
+
+The helper functions below retain the historical fixture-level checks used by
+the extension's unit tests. When invoked as a repository command inside the
+monorepo, the root provenance validator is authoritative because it knows each
+file's actual introduction year.
+"""
 
 from __future__ import annotations
 
@@ -198,8 +204,20 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
+    root = args.root.resolve()
+    monorepo = root
+    if root.name == "vscode-extension" and (root.parent / "tools" / "check-license-headers.py").exists():
+        monorepo = root.parent
+    root_validator = monorepo / "tools" / "check-license-headers.py"
+    if root_validator.exists() and (monorepo / "migration" / "license-provenance.json").exists():
+        result = subprocess.run(
+            [sys.executable, str(root_validator), "--root", str(monorepo),
+             "--project", "vscode-extension"],
+            check=False,
+        )
+        return result.returncode
     try:
-        errors = validate(args.root.resolve())
+        errors = validate(root)
     except subprocess.CalledProcessError as error:
         sys.stderr.write(error.stderr.decode("utf-8", errors="replace"))
         return 2
