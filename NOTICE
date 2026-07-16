@@ -3,5 +3,19 @@ TotalCross Tooling
 Copyright 2026 Amalgam Solucoes em TI Ltda.
 
 This repository is licensed under the Apache License, Version 2.0. Imported
-projects retain their documented historical notices and licenses. The migration
-provenance manifest records project-specific terms and exclusions.
+projects retain their documented historical notices and licenses.
+
+License migration matrix:
+
+- Maven plugin: no authoritative LICENSE or COPYING text existed on the source
+  default branch. Apache-2.0 was assigned at the 2026-07-16 migration baseline;
+  this does not assert an earlier Apache publication.
+- VS Code extension: historical TotalCross work retains its MIT period. Files
+  with attributable later work use Apache-2.0 as recorded per file.
+- Gradle plugin: created in 2026 with Apache-2.0 governance.
+
+Historical TotalCross copyright ends in 2021 where applicable. Amalgam
+copyright begins at each file's first attributable post-2021 substantive change
+and runs through 2026. Original creators, historical contributors, current
+maintainers, and copyright holders are separate roles. Third-party, generated,
+and separately licensed material retains authoritative notices.

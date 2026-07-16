@@ -15,3 +15,7 @@ Run focused project checks first, then run repository governance checks:
 
 Preserve historical authorship, third-party notices, and separately licensed
 material. Do not add obsolete contact email addresses to current content.
+
+When changing migration metadata, also run:
+
+    python3 tools/check-imported-history.py --source-root ../tooling-migration/source

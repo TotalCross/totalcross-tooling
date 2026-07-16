@@ -12,6 +12,14 @@ maintainer and default code owner.
 
 ## Project creators and historical contributors
 
-Project-specific creator and contributor attribution is added when each source
-history is imported. Git history remains the authoritative, complete record of
-commit identities and contributors.
+## Original creators and historical contributors
+
+- Maven plugin: original creator Italo Yeltsin; historical contributors include
+  Allan C, Patrick Martins de Lima, Ricardo Braga, Sacha Leemann, and Fabio Sobral.
+- VS Code extension: original creator Italo Yeltsin; historical contributors
+  include Allan C, lucasgalvanini, nmarquesin, and Ricardo Braga.
+- Gradle plugin: original creator Fabio Sobral; additional contributors are
+  recorded in Git history.
+
+Git history remains the authoritative, complete record of commit identities and
+contributors.
