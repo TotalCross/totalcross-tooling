@@ -46,7 +46,13 @@ def validate_record(root: Path, record: dict[str, object]) -> list[str]:
     for line in expected_lines:
         if line not in top:
             errors.append(f"{path}: missing or incorrect copyright line: {line}")
-    actual_lines = [line.strip(" /*#").strip() for line in top.splitlines()
+    header_lines = top.splitlines()
+    try:
+        header_end = next(index for index, line in enumerate(header_lines)
+                          if "SPDX-License-Identifier:" in line) + 1
+    except StopIteration:
+        header_end = 0
+    actual_lines = [line.strip(" /*#").strip() for line in header_lines[:header_end]
                     if "Copyright (C)" in line]
     if actual_lines != expected_lines:
         errors.append(f"{path}: copyright lines do not exactly match provenance")

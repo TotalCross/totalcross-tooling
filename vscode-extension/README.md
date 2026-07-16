@@ -1,3 +1,9 @@
+<!--
+Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.
+Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # TotalCross VS Code Extension
 
 This extension adds commands to Visual Studio Code for creating, packaging,
@@ -71,12 +77,12 @@ was published locally.
 
 ## Development
 
-From the repository root, run:
+From `vscode-extension/`, run:
 
     npm ci
     npm run audit
     npm run compile
-    python3 tools/check-repository-governance.py
+    python3 ../tools/check-license-headers.py --project vscode-extension
     python3 -m unittest tests.test_repository_governance
 
 `npm test` runs the extension integration tests after compilation. It may
@@ -89,6 +95,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and validation rules.
 The original creator is [Italo Yeltsin](https://github.com/ItaloYeltsin).
 [Fabio Sobral](https://github.com/flsobral) is the sole current maintainer.
 Historical contributors are listed in [AUTHORS.md](AUTHORS.md).
+
+This project is maintained in `totalcross-tooling/vscode-extension`; its
+Marketplace identity, extension ID, and release versioning remain unchanged.
 
 ## License and transition
 

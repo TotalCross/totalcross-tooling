@@ -1,3 +1,6 @@
+# Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.
+# SPDX-License-Identifier: MIT
+
 out
 node_modules
 __pycache__/

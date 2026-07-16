@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.
- * SPDX-License-Identifier: MIT
+ * Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.
+ * Copyright (C) 2021-2026 Amalgam Solucoes em TI Ltda.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import * as vscode from 'vscode';

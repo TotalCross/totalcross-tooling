@@ -18,7 +18,7 @@ def comment(path: Path, lines: list[str], spdx: str) -> str:
         return "<!--\n" + "\n".join(f"{line}" for line in content) + "\n-->\n\n"
     if suffix == ".xml":
         return "<!--\n" + "\n".join(f"  {line}" for line in content) + "\n-->\n"
-    if suffix in {".java", ".ts", ".gradle"} or suffix == ".template" and "java" in path.name:
+    if suffix in {".java", ".ts", ".gradle"} or suffix == ".template" and ("java" in path.name or "gradle" in path.name):
         return "/*\n" + "\n".join(f" * {line}" for line in content) + "\n */\n\n"
     if suffix == ".bat":
         return "\r\n".join(f"REM {line}" for line in content) + "\r\n\r\n"

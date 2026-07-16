@@ -72,7 +72,8 @@ def expected(year: int, later: int | None, original_license: str) -> tuple[list[
     old = str(year) if year == 2021 else f"{year}-2021"
     lines = [f"Copyright (C) {old} TotalCross Global Mobile Platform Ltda."]
     if later:
-        lines.append(f"Copyright (C) {later}-2026 Amalgam Solucoes em TI Ltda.")
+        current = str(later) if later == 2026 else f"{later}-2026"
+        lines.append(f"Copyright (C) {current} Amalgam Solucoes em TI Ltda.")
         return lines, "Apache-2.0"
     return lines, original_license
 
@@ -84,6 +85,7 @@ def main() -> int:
     parser.add_argument("--original-license", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--append", action="store_true")
+    parser.add_argument("--report", type=Path, help="write the required VS Code year-audit report")
     args = parser.parse_args()
     files = []
     for path in sorted(git(args.source, "ls-files").splitlines()):
@@ -102,6 +104,17 @@ def main() -> int:
     existing["files"] = sorted(existing["files"] + files, key=lambda row: row["final_path"])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(existing, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.report:
+        report_rows = [row for row in files if not row["excluded"]]
+        lines = ["# VS Code file-year audit", "", "Generated from the unmodified source history before path rewriting.", "",
+                 "| path | introduction commit | introduction year | first post-2021 substantive year | expected header | status |",
+                 "| --- | --- | ---: | ---: | --- | --- |"]
+        for row in report_rows:
+            lines.append("| {source_path} | {introduction_commit} | {introduction_year} | {later} | {header} | reviewed |".format(
+                **row, later=row["first_post_2021_substantive_year"] or "—",
+                header="<br>".join(row["expected_copyright_lines"])))
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        args.report.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {len(files)} records for {args.project}")
     return 0
 

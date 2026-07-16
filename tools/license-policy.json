@@ -5,7 +5,7 @@
   "obsolete_emails": [],
   "projects": {
     "maven-plugin": {"active": true},
-    "vscode-extension": {"active": false},
+    "vscode-extension": {"active": true},
     "gradle-plugin": {"active": false}
   },
   "exclusions": [

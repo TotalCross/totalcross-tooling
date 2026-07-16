@@ -1,3 +1,8 @@
+<!--
+Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Add Maven-to-Gradle migration reminders and assisted conversion
 
 This ExecPlan is a living document. The sections `Progress`, `Surprises & Discoveries`, `Decision Log`, `Outcomes & Retrospective`, and `Editorial Report` must be kept up to date as work proceeds.

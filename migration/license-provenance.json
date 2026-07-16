@@ -1109,7 +1109,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/.vscodeignore",
@@ -1161,7 +1161,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/CHANGELOG.md",
@@ -1230,7 +1230,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/README.md",
@@ -1452,7 +1452,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/resources/gradle/src/main/java/Artifact.java.template",
@@ -1521,7 +1521,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/config-checker.ts",
@@ -1557,7 +1557,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/deployer.ts",
@@ -1575,7 +1575,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/extension.ts",
@@ -1729,7 +1729,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/packager.ts",
@@ -1781,7 +1781,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/test/runTest.ts",
@@ -1867,7 +1867,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/test/suite/index.ts",
@@ -1987,7 +1987,7 @@
       "excluded": false,
       "expected_copyright_lines": [
         "Copyright (C) 2020-2021 TotalCross Global Mobile Platform Ltda.",
-        "Copyright (C) 2026-2026 Amalgam Solucoes em TI Ltda."
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
       ],
       "expected_license": "Apache-2.0",
       "final_path": "vscode-extension/src/util.ts",

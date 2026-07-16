@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) 2022-2026 Amalgam Solucoes em TI Ltda.
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 # SPDX-License-Identifier: Apache-2.0
 
 """Validate tracked governance metadata and first-party license headers."""
@@ -198,6 +198,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
+    monorepo_root = Path(__file__).resolve().parents[2]
+    root_validator = monorepo_root / "tools/check-license-headers.py"
+    if root_validator.exists():
+        return subprocess.run(
+            [sys.executable, str(root_validator), "--root", str(monorepo_root),
+             "--project", "vscode-extension"],
+            check=False,
+        ).returncode
     try:
         errors = validate(args.root.resolve())
     except subprocess.CalledProcessError as error:
