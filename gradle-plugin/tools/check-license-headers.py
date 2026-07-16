@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 # SPDX-License-Identifier: Apache-2.0
 
 """Validate SPDX metadata in applicable first-party files without rewriting them."""
@@ -91,6 +91,14 @@ def diagnostics_for(path: str) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    monorepo_root = Path(__file__).resolve().parents[2]
+    root_validator = monorepo_root / "tools/check-license-headers.py"
+    if root_validator.exists() and Path.cwd().resolve() == monorepo_root / "gradle-plugin":
+        return subprocess.run(
+            [sys.executable, str(root_validator), "--root", str(monorepo_root),
+             "--project", "gradle-plugin"],
+            check=False,
+        ).returncode
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--staged", action="store_true", help="validate staged files, including bootstrap files")
     arguments = parser.parse_args(argv)

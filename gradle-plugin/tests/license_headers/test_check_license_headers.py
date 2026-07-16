@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+# Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 # SPDX-License-Identifier: Apache-2.0
 
 """Regression tests for the dependency-free SPDX header validator."""

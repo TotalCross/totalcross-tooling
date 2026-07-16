@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
 SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -17,7 +17,7 @@ converts the application to Java 7 before deployment.
 
 ## Local development and the example
 
-Run the bundled example from the repository root:
+Run the bundled example from `gradle-plugin/`:
 
     ./gradlew -p examples/basic-app clean totalcrossPackage --info
 
@@ -174,6 +174,9 @@ and contribution guidance.
 ## Maintainer
 
 Created and maintained by [Fabio Sobral](https://github.com/flsobral).
+
+This project is maintained in `totalcross-tooling/gradle-plugin`. Its plugin
+IDs, Maven coordinates, and independent release versioning are unchanged.
 
 Copyright © 2026 Amalgam Solucoes em TI Ltda.
 

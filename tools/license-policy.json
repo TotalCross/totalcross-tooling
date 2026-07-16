@@ -6,7 +6,7 @@
   "projects": {
     "maven-plugin": {"active": true},
     "vscode-extension": {"active": true},
-    "gradle-plugin": {"active": false}
+    "gradle-plugin": {"active": true}
   },
   "exclusions": [
     "LICENSE",
