@@ -1,0 +1,71 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+group = 'com.totalcross'
+version = '0.1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation gradleTestKit()
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+gradlePlugin {
+    plugins {
+        application {
+            id = 'com.totalcross.application'
+            implementationClass = 'com.totalcross.gradle.TotalCrossPlugin'
+            displayName = 'TotalCross Gradle ApplicationPlugin'
+            description = 'Builds TotalCross applications with the TotalCross SDK.'
+        }
+        library {
+            id = 'com.totalcross.library'
+            implementationClass = 'com.totalcross.gradle.TotalCrossLibraryPlugin'
+            displayName = 'TotalCross Gradle Library Plugin'
+            description = 'Builds TotalCross libraries with the TotalCross SDK.'
+        }
+    }
+}
+
+afterEvaluate {
+    publishing.publications.named('pluginMaven', org.gradle.api.publish.maven.MavenPublication) {
+        artifactId = 'totalcross-gradle-plugin'
+    }
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform {
+        excludeTags 'network'
+    }
+}
+
+tasks.register('sdkSourceNetworkTest', Test) {
+    group = 'verification'
+    description = 'Checks the GitHub SDK release lookup and S3 fallback without downloading archives.'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'network'
+    }
+}
+
+tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
