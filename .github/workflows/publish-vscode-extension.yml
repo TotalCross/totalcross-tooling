@@ -47,7 +47,7 @@ jobs:
       - name: Validate release version
         working-directory: vscode-extension
         run: |
-          version="$(node -p \"require('./package.json').version\")"
+          version="$(node -p "require('./package.json').version")"
           test "$RELEASE_TAG" = "v$version"
 
       - name: Install and package extension

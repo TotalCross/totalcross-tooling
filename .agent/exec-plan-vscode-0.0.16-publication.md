@@ -40,6 +40,10 @@ repository.
   Evidence: the command reports historical MIT headers missing in imported
   TypeScript files, while the root `tools/check-license-headers.py` policy is
   the policy normalized by the final migration commit.
+- Observation: the first remote bootstrap run stopped at release-version
+  validation because the Node expression contained literal escaped quotes.
+  Evidence: Actions run `29540788570` failed in `Validate release version`
+  with exit code 2 before the package or publish steps.
 
 ## Decision Log
 
@@ -172,3 +176,5 @@ on GitHub-hosted Ubuntu runners.
 Revision note (2026-07-16): created to document the historical 0.0.16
 publication workflow and its tag-preserving bootstrap. Updated after local
 workflow validation to record the legacy header-validator mismatch.
+Updated after the first remote bootstrap attempt to record and correct the
+escaped-quote failure in the version check.
