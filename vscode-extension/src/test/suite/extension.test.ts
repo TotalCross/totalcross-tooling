@@ -24,6 +24,7 @@ suite('Extension Test Suite', () => {
 		]) {
 			assert.ok(commands.includes(command), `Expected registered command ${command}`);
 		}
+		await new Promise((resolve) => setTimeout(resolve, 0));
 		disposable.dispose();
 		deactivateLivePreview();
 	});
