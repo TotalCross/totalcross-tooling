@@ -6,7 +6,8 @@
   "projects": {
     "maven-plugin": {"active": true},
     "vscode-extension": {"active": true},
-    "gradle-plugin": {"active": true}
+    "gradle-plugin": {"active": true},
+    "live-preview-server": {"active": false, "license": "LGPL-2.1-only"}
   },
   "exclusions": [
     "LICENSE",

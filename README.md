@@ -17,6 +17,15 @@ Fabio Sobral ([@flsobral](https://github.com/flsobral)) is the sole current
 maintainer. Releases remain independent and imported tags are namespaced as
 `maven-plugin-*`, `vscode-extension-*`, and `gradle-plugin-*`.
 
+## License policy
+
+The root [LICENSE](LICENSE) is the Apache-2.0 default for this multi-project
+repository. A project may declare a different license in its own `LICENSE` and
+`NOTICE`; that project-level declaration takes precedence for its files and
+distributions. The planned `live-preview-server/` project is LGPL-2.1-only;
+the other active tooling projects retain the licenses recorded in their own
+directories and in the root [NOTICE](NOTICE).
+
 ## Build and validation
 
 Run root provenance validation:
