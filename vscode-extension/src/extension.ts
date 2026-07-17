@@ -13,12 +13,14 @@ import {packageProject} from './packager';
 import {ConfigChecker} from './config-checker';
 import {showMigrationReminderIfNeeded} from './migration/migration-reminder';
 import {convertMavenProjectToGradle} from './migration/convert-project';
+import {activateLivePreview, deactivateLivePreview} from './live-preview';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	new ConfigChecker().checkConfigFile();
 	showMigrationReminderIfNeeded(context).catch((error) => console.error('Unable to show TotalCross migration reminder:', error));
+	activateLivePreview(context);
 	/**
 	 * Create new Project
 	 */
@@ -59,4 +61,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	deactivateLivePreview();
+}

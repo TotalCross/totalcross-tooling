@@ -5,17 +5,26 @@
  */
 
 import * as assert from 'assert';
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from 'vscode';
-// import * as myExtension from '../extension';
+import {activateLivePreview, deactivateLivePreview} from '../../live-preview';
 
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
 
-	test('Sample test', () => {
-		assert.equal(-1, [1, 2, 3].indexOf(5));
-		assert.equal(-1, [1, 2, 3].indexOf(0));
+	test('registers Live Preview commands on activation', async () => {
+		const context = {subscriptions: [] as vscode.Disposable[]} as vscode.ExtensionContext;
+		const disposable = activateLivePreview(context);
+		const commands = await vscode.commands.getCommands(true);
+		for (const command of [
+			'totalcross.startPreview',
+			'totalcross.openLivePreview',
+			'totalcross.stopPreview',
+			'totalcross.reloadPreview',
+			'totalcross.openPreviewConfig'
+		]) {
+			assert.ok(commands.includes(command), `Expected registered command ${command}`);
+		}
+		disposable.dispose();
+		deactivateLivePreview();
 	});
 });
