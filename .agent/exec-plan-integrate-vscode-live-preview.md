@@ -18,12 +18,12 @@ O resultado será uma extensão Marketplace unificada, não duas extensões conc
 - [x] (2026-07-16 23:58Z) Inspecionados o manifesto, entrada, testes e regras de governança de vscode-extension, o candidato externo e sua API Java.
 - [x] (2026-07-16 23:58Z) Confirmado que npm run compile passa em vscode-extension e no candidato totalcross-live-preview; isto não prova a execução do serviço Java.
 - [x] (2026-07-17 00:00Z) Mantenedor confirmou que todo o código-fonte relativo a VS Code no candidato é inédito, não publicado e deve ser tratado como sem licença previamente distribuída.
-- [ ] Tornar o PreviewServer uma pré-condição de SDK distribuível, compilável e verificável.
-- [ ] Atualizar contrato de plataforma, dependências e manifesto da extensão.
-- [ ] Importar e adaptar a sessão de preview, sem shell, e conectá-la ao ciclo de vida existente.
-- [ ] Adicionar testes unitários, de ativação e uma prova manual de ponta a ponta.
-- [ ] Atualizar documentação, aviso de licença, versão e fluxo de publicação.
-- [ ] Finalizar Outcomes & Retrospective e Editorial Report a partir de evidência real.
+- [x] (2026-07-17 00:25Z) Tornado PreviewServer distribuível e verificável no commit SDK 0db656ad9; o jar contém o servidor e a prova HTTP passou.
+- [x] (2026-07-17 00:31Z) Atualizados contrato de plataforma, dependências, manifesto e lockfile para VS Code 1.85 e TypeScript 5.3.3.
+- [x] (2026-07-17 00:31Z) Integrada a sessão de preview sem shell ao ciclo de vida existente no commit 0f447a5.
+- [x] (2026-07-17 00:45Z) Adicionados testes unitários e de ativação; `npm test` passou com 23 testes. A aceitação manual abriu e atualizou imagem no host de desenvolvimento, exercitou Reload e Open Preview Config, e Stop fechou a sessão.
+- [x] (2026-07-17 00:39Z) Atualizados README e versão 0.1.0; o VSIX foi gerado e inspecionado, sem publicação Marketplace.
+- [x] (2026-07-17 00:39Z) Finalizados Outcomes & Retrospective e Editorial Report a partir da evidência real.
 
 ## Surprises & Discoveries
 
@@ -38,6 +38,15 @@ O resultado será uma extensão Marketplace unificada, não duas extensões conc
 
 - Observation: totalcross.preview.PreviewServer está em arquivos modificados ou não versionados no checkout do SDK, e TotalCrossSDK/build.gradle exclui totalcross/preview/** e totalcross/LauncherRuntime.java de sourceSets.main.
   Evidence: sourceSets.main em /Users/flsobral/repos/totalcross-github/TotalCrossSDK/build.gradle e o status Git da árvore do SDK.
+
+- Observation: HttpServer não manteve o processo Java vivo depois de imprimir a URL, e threads AWT sobreviveram ao primeiro shutdown.
+  Evidence: a primeira prova recebeu connection refused; PreviewServerTest inicialmente recebeu shutdown HTTP 200, mas o processo não saiu em dez segundos. O commit SDK 0db656ad9 usa CountDownLatch e System.exit(0) após /shutdown; a prova final observou health 200, frame 200 de 487 bytes e término do processo.
+
+- Observation: ativar a extensão completa no host de teste dependeria de vscjava.vscode-java-pack, que não é instalada pelo host isolado de @vscode/test-electron.
+  Evidence: a primeira execução de `npm test` falhou ao ativar a extensão por dependência desconhecida. O teste final registra diretamente o módulo Live Preview e confirma seus cinco comandos, enquanto a aceitação manual usou o host de desenvolvimento da extensão completa.
+
+- Observation: o VSIX de produção inclui 535 arquivos de node_modules, que são dependências de runtime existentes; ele não inclui src, .agent nem o checkout do SDK.
+  Evidence: `npx --yes @vscode/vsce@latest package --out /tmp/vscode-totalcross-0.1.0.vsix` gerou 580 arquivos, 1,59 MB, e `unzip -l` confirmou package.json, out/extension.js e out/live-preview.js.
 
 ## Decision Log
 
@@ -57,57 +66,67 @@ O resultado será uma extensão Marketplace unificada, não duas extensões conc
   Rationale: argumentos estruturados preservam caminhos com espaços e impedem que configuração seja interpretada como shell. O Webview e a API são locais; preview remoto não é requisito.
   Date/Author: 2026-07-16 / Codex.
 
+- Decision: consumir o contrato do SDK no commit 0db656ad9 durante o desenvolvimento da extensão.
+  Rationale: esse commit torna PreviewServer, PreviewRunner e LauncherRuntime parte de totalcross-sdk e prova os endpoints essenciais. Uma release Maven/versionada deve substituir a referência de desenvolvimento antes da publicação Marketplace.
+  Date/Author: 2026-07-17 / Codex.
+
+- Decision: concluir a integração e empacotar o VSIX, mas não criar tag nem publicar no Marketplace nesta etapa.
+  Rationale: a autorização solicitada cobre execução e commits; o PreviewServer ainda está representado pelo commit SDK 0db656ad9, não por um artefato SDK releaseado e documentado para consumidores. A publicação exige essa versão e autorização de release.
+  Date/Author: 2026-07-17 / Codex.
+
 ## Outcomes & Retrospective
 
-O resultado atual é somente o plano e a pesquisa de integração. Nenhum arquivo de produto foi copiado ou alterado. A origem do cliente VS Code foi esclarecida como código inédito sem licença publicada, portanto será incorporada sob Apache-2.0. As duas compilações TypeScript passaram, mas não demonstram que um SDK distribuído contém PreviewServer; portanto não há Live Preview entregue ainda.
+A extensão publicada agora contém o cliente de Live Preview no commit 0f447a5. O novo módulo cria uma única sessão descartável, registra os cinco comandos, usa Webview somente de leitura e chama PreviewServer apenas em `127.0.0.1`. O lançamento Java usa `spawn(javaCommand, args, { shell: false })`; os testes preservam caminhos com espaços como argumentos únicos e a busca por `shell: true`, `spawn(command)` e `quote` não encontrou ocorrências.
+
+O contrato Java foi tornado distribuível e exercitado no commit SDK 0db656ad9: compilação, cinco testes `totalcross.preview.*`, jar contendo PreviewServer e uma prova HTTP com health 200, frame PNG de 487 bytes e shutdown do processo. A aceitação na extensão usou esse SDK local somente como prova de desenvolvimento: os comandos apareceram no host de desenvolvimento, Start abriu a aba TotalCross Live Preview com `Live preview updated` e imagem, Reload preservou a imagem, Open Preview Config abriu `totalcross.preview.json` e Stop fechou a aba. A primeira execução sem `extraClasspath` falhou como esperado; depois da configuração do jar e de `dist/libs`, a sessão pôde ser iniciada e encerrada.
+
+As validações finais foram: `npm run compile`; `npm test` com 23 testes; `python3 tools/check-repository-governance.py`; `python3 -m unittest tests.test_repository_governance` com 17 testes; `npm run audit` sem vulnerabilidades; `git diff --check`; e geração de `/tmp/vscode-totalcross-0.1.0.vsix` (1,59 MB). A extensão não foi publicada nem etiquetada, pois ainda falta uma release SDK que consumidores possam referenciar e a respectiva autorização de release.
 
 ## Editorial Report
 
-Esta seção será reconciliada no marco final. As afirmações abaixo descrevem apenas o planejamento, não uma implementação concluída.
-
 ### Editorial Summary
 
-A integração pretende permitir a visualização de interfaces Java TotalCross na extensão VS Code já publicada. A pesquisa encontrou um cliente TypeScript local não versionado que depende de um serviço Java ainda não demonstrado no artefato do SDK. O mantenedor confirmou que o código VS Code candidato é inédito e sem licença publicada, permitindo sua entrada sob Apache-2.0. A entrega só será declarada depois de o serviço Java distribuível e a prévia real serem observados.
+A extensão TotalCross passou a reunir a prévia visual local no mesmo pacote Marketplace. Ela inicia um PreviewServer Java em loopback, busca frames PNG em Webview e encerra recursos ao fechar o painel ou executar Stop. O cliente candidato era código VS Code inédito e sem licença previamente distribuída; por isso, a implementação entrou como novo trabalho Apache-2.0.
 
 ### Original Plan versus Actual Outcome
 
-O objetivo é importar o cliente e expor comandos na extensão existente. Até aqui não houve importação, mudança de dependência ou publicação. A origem inicialmente parecia uma ambiguidade por causa dos cabeçalhos LGPL, mas o mantenedor a resolveu como código inédito sem licença publicada. A execução agora começa pelo SDK distribuível para que uma compilação TypeScript isolada não seja confundida com integração funcional.
+O plano previa uma extensão unificada, argumentos Java sem shell, testes e um VSIX verificável. Todos esses resultados foram entregues. O serviço Java exigiu uma correção coordenada no SDK, concluída no commit 0db656ad9. A única parte intencionalmente adiada é publicação/tag: não há ainda artefato SDK releaseado para ser indicado ao usuário final.
 
 ### What Changed
 
-Foi criado .agent/exec-plan-integrate-vscode-live-preview.md. Nenhum componente de produto, manifesto, dependência ou artefato mudou nesta etapa.
+`vscode-extension` agora exige VS Code 1.85+, TypeScript 5.3.3 e Node typings 20. O manifesto oferece os comandos Start, Open, Stop, Reload e Open Preview Config, mais as configurações de Java, classpath, porta, dimensões e polling. `src/live-preview.ts` implementa processo, configuração, descoberta de MainWindow, Webview, controle HTTP e observação de classes. README, testes e lockfile acompanham a mudança.
 
 ### Decisions and Trade-offs
 
-O plano prefere extensão unificada e uma linha mínima moderna de VS Code, ao custo de não mais declarar suporte a clientes anteriores a 1.85. Como o cliente VS Code é inédito, a integração adotará os cabeçalhos Apache-2.0 do destino em vez de transportar uma marcação LGPL provisória.
+O suporte mínimo foi elevado para VS Code 1.85 para conservar uma base TypeScript atual e compatível com o cliente. O host é fixado em loopback e não há configuração pública para classe do servidor, evitando exposição remota e variações de contrato. O VSIX ainda leva dependências Node de runtime já existentes; não houve refatoração de empacotamento fora deste plugin.
 
 ### Unexpected Problems and Discoveries
 
-O diretório fonte não tem histórico Git a importar, o PreviewServer não faz parte do conjunto principal compilado do SDK atual, e o lançamento Java usa shell. A confirmação de que os arquivos VS Code são inéditos resolveu a proveniência; a mudança continua coordenada entre distribuição, segurança e TypeScript.
+O PreviewServer originalmente não permanecia vivo e deixava threads AWT após shutdown; o SDK passou a aguardar shutdown e a encerrar o processo. O host de teste isolado não fornece a extensão Java declarada como dependência, então o teste registra o módulo de preview diretamente e a aceitação manual cobre a extensão completa. Um descarte imediato gerava avisos de DisposableStore; aguardar um turno do event loop no teste removeu os avisos.
 
 ### Validation and Measurable Results
 
-Em 2026-07-16 foram observados status zero para npm run compile em vscode-extension e em /Users/flsobral/repos/totalcross-github/vscode/totalcross-live-preview. Não foi executado teste de integração, não foi iniciado PreviewServer e não houve medição de desempenho ou tamanho de VSIX.
+Em 2026-07-17, `npm test` passou com 23 testes e sem avisos de descarte; a governança passou e seus 17 testes passaram; a auditoria informou zero vulnerabilidades. O VSIX contém `extension/package.json`, `extension/out/extension.js` e `extension/out/live-preview.js`, tem 580 arquivos e 1,59 MB. A prova SDK produziu frame PNG de 487 bytes. A aceitação de VS Code confirmou imagem atualizada em Start, Reload, abertura do arquivo de configuração e fechamento da aba por Stop.
 
 ### Useful Evidence and Examples
 
-PreviewSession.startProcess, o manifesto do candidato e TotalCrossSDK/build.gradle são as evidências iniciais dos contratos e limitações. A saída concisa das duas compilações deve permanecer no histórico deste plano quando a execução começar.
+Os commits são `0db656ad9 feat(sdk): expose live preview server`, `0f447a5 feat(vscode): add local live preview` e `dbbf571 test(vscode): await preview activation cleanup`. O VSIX temporário está em `/tmp/vscode-totalcross-0.1.0.vsix`; não deve ser versionado. A configuração de desenvolvimento usada na aceitação incluiu o jar do SDK e seu diretório `dist/libs` em `totalcross.livePreview.extraClasspath`.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Faltam SDK publicado que contenha PreviewServer, implementação integrada, testes e publicação. O impacto da retirada de suporte a VS Code anterior a 1.85 deve constar das notas de versão.
+Antes de Marketplace, produzir e documentar uma versão SDK distribuída que inclua PreviewServer, substituir a referência de desenvolvimento por essa versão no guia de release e obter autorização para tag/publicação. Avaliar depois a redução do conteúdo de node_modules no VSIX, como tarefa separada para não refatorar plugins durante esta migração.
 
 ### Possible Article Angles
 
-Para autores de extensões VS Code: como integrar uma prévia baseada em processo local sem injeção de shell. Para mantenedores de SDKs: por que o cliente de IDE e seu serviço Java precisam de contratos de distribuição testáveis, e não apenas de checkouts vizinhos que compilam.
+Como integrar uma prévia Java local segura a uma extensão VS Code: loopback, argumentos estruturados e ciclo de vida do processo. Outro ângulo é transformar um serviço interno de SDK em contrato distribuível e testável antes de conectá-lo a uma IDE.
 
 ### Suggested Narrative
 
-Apresentar a necessidade de visualizar interfaces compiladas, a separação entre Webview e servidor Java local, os riscos de artefato SDK incompleto e shell, a migração para argumentos estruturados, a prova ponta a ponta e os limites da prévia somente de leitura.
+Apresentar a prévia como ponte entre classes Java compiladas e uma Webview somente de leitura; explicar por que a entrega exigiu tanto um SDK que permanece vivo quanto um cliente que não passa configurações pelo shell; concluir com o encerramento coordenado e os limites de release.
 
 ### Claims Requiring Human Review
 
-A versão do SDK que expõe PreviewServer e a decisão comercial de retirar suporte anterior a VS Code 1.85 exigem revisão humana antes de anúncio ou publicação. A origem do código VS Code candidato foi confirmada pelo mantenedor como inédita e sem licença publicada, mas permanece sujeita à revisão editorial e técnica normal.
+A versão pública do SDK que conterá PreviewServer e a comunicação da retirada de suporte anterior ao VS Code 1.85 precisam de revisão humana antes do anúncio. Não há dúvida pendente de licença do cliente VS Code: o mantenedor confirmou que ele era inédito e sem licença distribuída.
 
 ## Context and Orientation
 
@@ -166,7 +185,7 @@ Atualizar README.md com comandos, VS Code 1.85+, JDK 17, SDK PreviewServer compa
 
 2. Confirmar no Decision Log que a declaração do mantenedor de 2026-07-17 continua aplicável ao conjunto de arquivos importado. Criar os novos arquivos do destino com cabeçalhos Apache-2.0; não copiar package.json, README, .vscodeignore, .gitignore, .vscode nem comentários de licença do candidato sem revisão específica.
 
-3. Na árvore totalcross-github, executar o ExecPlan próprio de SDK e provar artefato publicado, usando diretório temporário explícito:
+3. Na árvore totalcross-github, o ExecPlan próprio foi concluído no commit 0db656ad9. Antes da publicação Marketplace, provar o artefato versionado que sucederá esse commit usando diretório temporário explícito:
 
        java -cp "/caminho/para/totalcross-sdk-preview.jar:/caminho/para/classes-do-app" totalcross.preview.PreviewServer --config /tmp/totalcross-preview-e2e/totalcross.preview.json --host 127.0.0.1 --port 0
        curl -fsS http://127.0.0.1:<porta>/health
@@ -206,7 +225,7 @@ Atualizar README.md com comandos, VS Code 1.85+, JDK 17, SDK PreviewServer compa
        unzip -l /tmp/vscode-totalcross-0.1.0.vsix | rg 'extension/out/(extension|live-preview)\\.js|extension/package\\.json'
        git status --short
 
-   Esperado: o VSIX contém ambos JavaScript compilados e manifesto; não contém src, node_modules, .agent ou checkout do SDK. Só então criar commit, tag v0.1.0 e seguir o workflow de publicação autorizado.
+   Esperado: o VSIX contém ambos JavaScript compilados e manifesto; dependências Node de runtime podem continuar presentes até uma tarefa separada de empacotamento, mas ele não contém src, .agent ou checkout do SDK. Só então criar commits e, quando houver artefato SDK releaseado e autorização, criar tag v0.1.0 e seguir o workflow de publicação.
 
 ## Validation and Acceptance
 
@@ -234,4 +253,8 @@ O módulo usa apenas APIs Node child_process, fs, http, net e path e APIs VS Cod
 
 Revision note (2026-07-16): criado após inspecionar vscode-extension, o candidato local totalcross-live-preview e o SDK vizinho. Inicialmente registrou a licença do candidato como pré-condição por causa de seus cabeçalhos LGPL.
 
-Revision note (2026-07-17): revisado após declaração do mantenedor de que todo o código-fonte relativo a VS Code no candidato é inédito, não publicado e deve ser tratado como sem licença previamente distribuída. O plano passa a importá-lo como novo trabalho Apache-2.0 e mantém como única pré-condição externa o SDK com PreviewServer distribuível.
+Revision note (2026-07-17): revisado após declaração do mantenedor de que todo o código-fonte relativo a VS Code no candidato é inédito, não publicado e deve ser tratado como sem licença previamente distribuída. O plano passa a importá-lo como novo trabalho Apache-2.0.
+
+Revision note (2026-07-17): atualizado após o commit SDK 0db656ad9 compilar, testar e provar PreviewServer. A integração TypeScript pode usar o contrato desse commit, mas a publicação Marketplace continuará condicionada a uma versão de SDK distribuível.
+
+Revision note (2026-07-17): implementação concluída nos commits 0f447a5 e dbbf571; compilação, 23 testes de extensão, governança, auditoria, VSIX e aceitação manual de Start, Reload, Open Preview Config e Stop passaram. A inspeção do VSIX corrigiu a expectativa inicial: node_modules de runtime continua no pacote atual, sem fontes, plano ou checkout SDK. Publicação e tag permanecem deliberadamente fora do escopo até existir release SDK e autorização.
