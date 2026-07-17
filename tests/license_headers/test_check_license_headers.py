@@ -21,21 +21,27 @@ def amalgam(start: int) -> str:
     return f"Copyright (C) {year} Amalgam Solucoes em TI Ltda."
 
 
-def record(path="src/example.ts", year=2019, excluded=False):
-    lines, license_name = CHECK.expected_header(year)
+def record(path="src/example.ts", year=2019, excluded=False, license_name="Apache-2.0"):
+    lines, license_name = CHECK.expected_header(year, license_name=license_name)
     return {"final_path": path, "introduction_year": year,
             "expected_copyright_lines": lines, "expected_license": license_name,
             "excluded": excluded}
 
 
 class HeaderValidationTests(unittest.TestCase):
+    def test_project_license_defaults_to_root_and_honors_exception(self):
+        policy = {"root_license": "Apache-2.0", "projects": {"preview": {"license": "LGPL-2.1-only"}}}
+        self.assertEqual("Apache-2.0", CHECK.project_license(policy, "other"))
+        self.assertEqual("LGPL-2.1-only", CHECK.project_license(policy, "preview"))
+
     def validate(self, text, **kwargs):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             path = root / kwargs.pop("path", "src/example.ts")
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8")
-            return CHECK.validate_record(root, record(path=str(path.relative_to(root)), **kwargs))
+            item = record(path=str(path.relative_to(root)), **kwargs)
+            return CHECK.validate_record(root, item, item["expected_license"])
 
     def test_valid_current_apache_c_style_header(self): self.assertEqual([], self.validate(f"/*\n * {amalgam(2022)}\n * SPDX-License-Identifier: Apache-2.0\n */", year=2022))
     def test_valid_historical_header(self): self.assertEqual([], self.validate(f"/*\n * Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n * {amalgam(2022)}\n * SPDX-License-Identifier: Apache-2.0\n */"))
@@ -47,6 +53,7 @@ class HeaderValidationTests(unittest.TestCase):
     def test_missing_amalgam(self): self.assertTrue(self.validate("Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\nSPDX-License-Identifier: Apache-2.0"))
     def test_wrong_amalgam_start_year(self): self.assertTrue(self.validate(f"Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n{amalgam(2023)}\nSPDX-License-Identifier: Apache-2.0"))
     def test_wrong_spdx(self): self.assertTrue(self.validate(f"Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n{amalgam(2022)}\nSPDX-License-Identifier: MIT"))
+    def test_valid_current_lgpl_header(self): self.assertEqual([], self.validate(f"/*\n * {amalgam(2026)}\n * SPDX-License-Identifier: LGPL-2.1-only\n */", year=2026, license_name="LGPL-2.1-only"))
     def test_missing_spdx(self): self.assertTrue(self.validate(f"Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n{amalgam(2022)}"))
     def test_excluded_path(self): self.assertEqual([], self.validate("binary", excluded=True))
     def test_generated_exclusion(self): self.assertEqual([], self.validate("generated", path="generated/a.js", excluded=True))

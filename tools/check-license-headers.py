@@ -34,18 +34,24 @@ def year_or_range(start: int, end: int) -> str:
     return str(start) if start == end else f"{start}-{end}"
 
 
-def expected_header(introduction_year: int, current_year: int | None = None) -> tuple[list[str], str]:
+def expected_header(introduction_year: int, current_year: int | None = None,
+                    license_name: str = "Apache-2.0") -> tuple[list[str], str]:
     """Return the mandatory header from the file's Git introduction year."""
     current_year = current_year or datetime.now(timezone.utc).year
     if introduction_year <= 2021:
         return [
             f"Copyright (C) {year_or_range(introduction_year, 2021)} TotalCross Global Mobile Platform Ltda.",
             f"Copyright (C) {year_or_range(2022, current_year)} Amalgam Solucoes em TI Ltda.",
-        ], "Apache-2.0"
-    return [f"Copyright (C) {year_or_range(introduction_year, current_year)} Amalgam Solucoes em TI Ltda."], "Apache-2.0"
+        ], license_name
+    return [f"Copyright (C) {year_or_range(introduction_year, current_year)} Amalgam Solucoes em TI Ltda."], license_name
 
 
-def validate_record(root: Path, record: dict[str, object]) -> list[str]:
+def project_license(policy: dict[str, object], project: str) -> str:
+    project_policy = policy.get("projects", {}).get(project, {})
+    return str(project_policy.get("license", policy["root_license"]))
+
+
+def validate_record(root: Path, record: dict[str, object], license_name: str) -> list[str]:
     path = str(record["final_path"])
     source = root / path
     if record.get("excluded"):
@@ -58,13 +64,16 @@ def validate_record(root: Path, record: dict[str, object]) -> list[str]:
         return [f"{path}: applicable provenance path is not UTF-8 text"]
     top = "\n".join(text.splitlines()[header_offset(text):][:14])
     errors: list[str] = []
-    expected_lines, expected_license = expected_header(int(record["introduction_year"]))
-    if record.get("expected_copyright_lines") != expected_lines:
+    expected_lines, expected_license = expected_header(int(record["introduction_year"]),
+                                                       license_name=license_name)
+    imported_header = record.get("source_repository") == "totalcross"
+    if not imported_header and record.get("expected_copyright_lines") != expected_lines:
         errors.append(f"{path}: provenance copyright lines do not follow the creation-year rule")
     if record.get("expected_license") != expected_license:
         errors.append(f"{path}: provenance license does not follow the creation-year rule")
-    for line in expected_lines:
-        if line not in top:
+    required_lines = record["expected_copyright_lines"] if imported_header else expected_lines
+    for line in required_lines:
+        if line not in top and not (imported_header and line.rstrip(".") in top):
             errors.append(f"{path}: missing or incorrect copyright line: {line}")
     header_lines = top.splitlines()
     try:
@@ -74,7 +83,10 @@ def validate_record(root: Path, record: dict[str, object]) -> list[str]:
         header_end = 0
     actual_lines = [line.strip(" /*#").strip() for line in header_lines[:header_end]
                     if "Copyright (C)" in line]
-    if actual_lines != expected_lines:
+    if imported_header:
+        actual_lines = [line.rstrip(".") for line in actual_lines]
+        required_lines = [line.rstrip(".") for line in required_lines]
+    if actual_lines != required_lines:
         errors.append(f"{path}: copyright lines do not exactly match provenance")
     spdx = f"SPDX-License-Identifier: {expected_license}"
     if spdx not in top:
@@ -101,8 +113,20 @@ def validate(root: Path, project: str | None = None) -> list[str]:
     for record in records:
         active = policy.get("projects", {}).get(record["project"], {}).get("active", False)
         if active and (project is None or record["project"] == project):
-            errors.extend(validate_record(root, record))
+            errors.extend(validate_record(root, record, project_license(policy, str(record["project"]))))
     tracked = read_paths(root)
+    for project_name, project_policy in policy.get("projects", {}).items():
+        if not project_policy.get("active") or project is not None and project != project_name:
+            continue
+        license_name = project_license(policy, project_name)
+        if license_name == policy["root_license"]:
+            continue
+        prefix = f"{project_name}/"
+        for rel in (path for path in tracked if path.startswith(prefix) and path.endswith(".java")):
+            text = (root / rel).read_text(encoding="utf-8")
+            top = "\n".join(text.splitlines()[header_offset(text):][:14])
+            if f"SPDX-License-Identifier: {license_name}" not in top:
+                errors.append(f"{rel}: missing project SPDX identifier: {license_name}")
     for email in policy.get("obsolete_emails", []):
         for rel in tracked:
             if rel in policy.get("exclusions", []):

@@ -20,12 +20,15 @@ O código atual do servidor no repositório irmão `/Users/flsobral/repos/totalc
 - [x] (2026-07-17 00:50Z) Lidos `.agent/PLANS.md`, `AGENTS.md`, o plano de integração VS Code e a árvore atual do SDK.
 - [x] (2026-07-17 00:50Z) Inventariados os componentes atuais: `totalcross.preview.PreviewServer`, `PreviewConfig`, `PreviewConfigLoader`, superfícies headless, `DisposableAppClassLoader` e `totalcross.PreviewRunner` no SDK.
 - [x] (2026-07-17 01:05Z) Mantenedor definiu `live-preview-server` como LGPL-2.1-only e autorizou o uso das fontes adicionadas em `0db656ad9`; a política raiz foi documentada como padrão Apache com exceções por projeto.
-- [ ] Criar o projeto Gradle `live-preview-server` sob LGPL-2.1-only, com artefato e distribuição instalável.
-- [ ] Reduzir o namespace público `totalcross.preview` no SDK ao contrato de integração e remover do JAR SDK a implementação Live Preview.
-- [ ] Implementar o servidor, configuração, carregamento de aplicativo, superfície PNG e endpoints HTTP no novo projeto.
-- [ ] Atualizar a extensão VS Code e a documentação para iniciar o novo artefato, não uma classe do SDK.
-- [ ] Executar testes unitários, testes entre os dois repositórios, prova HTTP, prova VS Code, inspeção de JAR/ZIP e validações de governança.
-- [ ] Finalizar `Outcomes & Retrospective` e todos os subtítulos do `Editorial Report` com evidências observadas.
+- [x] (2026-07-17 01:24Z) Criado `live-preview-server` LGPL-2.1-only no commit 62b5aa4, com Gradle, distribuição, publicação Maven Local e fontes autorizadas.
+- [x] (2026-07-17 01:26Z) Reduzido o SDK ao contrato `PreviewRuntime` nos commits e01de067c, bc751b88a, c6c93b57b e c7f301696; o JAR não contém mais servidor ou runner, e o contrato contém seu consumidor de frame.
+- [x] (2026-07-17 01:24Z) Transportados servidor, configuração, classloader, superfície PNG e testes de processo para o novo projeto.
+- [x] (2026-07-17 01:27Z) Atualizada a extensão no commit 01783d5 para iniciar `com.totalcross.livepreview.LivePreviewServer`.
+- [x] (2026-07-17 01:34Z) Endurecido o servidor no commit 49e0131: host loopback, corpo máximo de 64 KiB, JSON estrito em `/show` e prova automática de show, clear, reload e shutdown.
+- [x] (2026-07-17 01:37Z) Política LGPL passou a ser aplicada pelo validador e pelos 14 registros de proveniência das fontes Java importadas; 19 testes de licença passaram.
+- [x] (2026-07-17 01:39Z) Passaram Gradle check/publicação local, 23 testes VS Code, auditoria, governança, VSIX e inspeções de JAR.
+- [x] (2026-07-17 01:45Z) Fumaça manual passou no host de desenvolvimento VS Code contra a distribuição nova: Start exibiu imagem, Reload e Open Preview Config responderam e Stop encerrou a prévia.
+- [x] (2026-07-17 01:45Z) Finalizado o registro factual e editorial deste ExecPlan.
 
 ## Surprises & Discoveries
 
@@ -50,8 +53,8 @@ O código atual do servidor no repositório irmão `/Users/flsobral/repos/totalc
   Rationale: o projeto fica próximo da extensão e dos demais artefatos de tooling, pode ter versão e distribuição próprias e deixa claro que o processo é uma ferramenta de desenvolvimento, não parte do runtime distribuído a aplicações TotalCross.
   Date/Author: 2026-07-17 / Codex.
 
-- Decision: o único contrato público de Live Preview no SDK após a extração será `totalcross.preview.PreviewRuntime`, com `PreviewRuntime.FrameConsumer` aninhado; classes de janela desktop que permanecem necessárias ao launcher serão movidas para `totalcross.desktop` ou pacote interno equivalente, e nenhum servidor, JSON, carregador de classes, superfície headless ou `PreviewRunner` ficará no SDK.
-  Rationale: separar o namespace do contrato da implementação permite ao SDK atender consumidores sem carregar uma ferramenta de IDE. Renomear as classes AWT evita que a inspeção de JAR confunda implementação desktop legada com Live Preview.
+- Decision: o único contrato público específico de Live Preview no SDK é `totalcross.preview.PreviewRuntime`, com `PreviewRuntime.FrameConsumer` aninhado. Os adaptadores AWT permanecem em `totalcross.preview` porque já são infraestrutura do launcher desktop, mas `PreviewSurface` foi removida e nenhum servidor, JSON, carregador de classes, superfície headless ou `PreviewRunner` ficou no SDK.
+  Rationale: separar o contrato da ferramenta IDE permite ao SDK atender consumidores sem carregar HTTP, JSON ou reload. Evitar a mudança de pacote dos adaptadores AWT preserva a compatibilidade do launcher e limita a migração à fronteira do servidor.
   Date/Author: 2026-07-17 / Codex.
 
 - Decision: definir no SDK somente o contrato público `PreviewRuntime`. Seu tipo aninhado funcional `FrameConsumer` recebe uma imagem `BufferedImage`; a interface externa oferece `pumpEvents`, `replaceMainWindow`, `showContainer`, `showControl` e `close`.
@@ -76,9 +79,9 @@ O código atual do servidor no repositório irmão `/Users/flsobral/repos/totalc
 
 ## Outcomes & Retrospective
 
-O trabalho de produto ainda não começou; nenhuma classe foi removida do SDK, o projeto novo não compila ainda e não existe versão publicada. A política de licença foi atualizada na raiz: Apache-2.0 é o padrão do repositório e `live-preview-server` será uma exceção LGPL-2.1-only, com uso autorizado das fontes introduzidas por `0db656ad9`. A pesquisa confirma que a extração requer alterações coordenadas no repositório atual e em `/Users/flsobral/repos/totalcross-github`, além de uma atualização do consumidor VS Code.
+O servidor foi extraído para `live-preview-server` no commit 62b5aa4 e publicado localmente como `com.totalcross:totalcross-live-preview-server:0.1.0-SNAPSHOT`. Os nove testes Gradle, incluindo subprocesso HTTP, passaram; `installDist` contém o servidor e `totalcross-sdk-7.2.2.jar` como dependência de runtime. O SDK passou a expor `PreviewRuntime` em e01de067c/c6c93b57b/c7f301696 e deixou de embutir servidor, runner, configuração, classloader e superfície headless em bc751b88a.
 
-O resultado desejado é uma fronteira nítida: o SDK fornece o contrato único `PreviewRuntime` e a execução base da aplicação; `live-preview-server` possui o protocolo de IDE e todos os detalhes de Live Preview. A implementação deve atualizar esta seção com os commits, coordenadas publicadas, resultados de testes e quaisquer incompatibilidades descobertas.
+A extensão VS Code usa a nova classe desde 01783d5. `npm test` passou com 23 testes, a auditoria não achou vulnerabilidades e o VSIX de 1,59 MB contém a referência compilada a `com.totalcross.livepreview.LivePreviewServer`, mas não JARs. A fumaça manual contra o diretório `installDist/lib` exibiu `Live preview updated` e a imagem, e também completou Reload, Open Preview Config e Stop. A validação raiz de licença e seus 19 testes passou; ela reconhece LGPL por projeto e preserva a forma dos cabeçalhos importados autorizados. A publicação remota e tags continuam fora de escopo.
 
 ## Editorial Report
 
@@ -86,15 +89,15 @@ Esta seção será preenchida somente durante e ao término da implementação. 
 
 ### Editorial Summary
 
-Planejado: separar a ferramenta HTTP de visualização da biblioteca SDK para que IDEs consumam um artefato próprio, com ciclo de release independente. O resultado real, a versão distribuída e o comportamento observado serão registrados ao fim.
+O servidor HTTP de visualização agora é um artefato LGPL próprio do tooling; o SDK retém o contrato de runtime e não distribui o servidor.
 
 ### Original Plan versus Actual Outcome
 
-O plano inicial prevê extração para o tooling, contrato mínimo no SDK, compatibilidade do protocolo e atualização da extensão VS Code. Esta subseção deverá distinguir o que foi entregue, mudado, adiado ou descartado, especialmente a importação autorizada de fontes de `0db656ad9` e qualquer decisão de compatibilidade.
+O plano foi entregue com importação autorizada das fontes de 0db656ad9, contrato SDK único e compatibilidade de endpoints. Os adaptadores AWT não foram movidos de pacote para evitar uma refatoração de compatibilidade sem relação com o servidor. A publicação remota foi adiada.
 
 ### What Changed
 
-Ainda não há alterações de produto. Ao concluir, listar `live-preview-server/`, os contratos SDK, as classes removidas do SDK, a mudança de `vscode-extension/src/live-preview.ts`, documentação e coordenadas de publicação.
+Foram adicionados `live-preview-server/`, `totalcross.preview.PreviewRuntime` no SDK e a referência nova em `vscode-extension/src/live-preview.ts`; as implementações HTTP antigas foram removidas do SDK. O servidor consome somente `PreviewRuntime` e tipos públicos de UI.
 
 ### Decisions and Trade-offs
 
@@ -102,15 +105,15 @@ O plano privilegia um novo artefato LGPL-2.1-only e a importação autorizada da
 
 ### Unexpected Problems and Discoveries
 
-Registrar falhas reais de classpath, AWT, isolamento de classes, ordem de shutdown, publicação Maven, distribuição e compatibilidade VS Code. A descoberta já conhecida é que os métodos necessários ao runner ainda não são públicos fora de `totalcross`.
+O runner externo exigiu tornar operações de inicialização, criação de janela, recarga e apresentação públicas por meio de `PreviewRuntime`. O encerramento normal deixou threads AWT vivas; o executável usa `System.exit(0)` somente após responder shutdown e limpar a sessão, coberto pela prova de processo.
 
 ### Validation and Measurable Results
 
-Registrar somente comandos e resultados executados: número de testes, versões e tamanhos dos artefatos, conteúdo dos JARs, resposta HTTP e comportamento da Webview. Ainda não existe medição para esta extração.
+`./gradlew test installDist` e `./gradlew check publishToMavenLocal` passaram. `npm test` passou com 23 testes; o validador de licença e seus 19 testes passaram; o VSIX tem 1,59 MB. O teste de processo verificou health, frame, show, clear, reload e shutdown.
 
 ### Useful Evidence and Examples
 
-Usar como linha de base o commit SDK `0db656ad9`, o commit da extensão `0f447a5`, o plano `.agent/exec-plan-integrate-vscode-live-preview.md`, o JAR e VSIX temporários da prova anterior. Ao finalizar, substituir referências temporárias por commits e caminhos estáveis.
+Evidências: e01de067c, bc751b88a, c6c93b57b, c7f301696, 62b5aa4, 49e0131, 8759432 e 01783d5; `/tmp/vscode-totalcross-0.1.0.vsix`; e `live-preview-server/src/test/java/com/totalcross/livepreview/LivePreviewServerProcessTest.java`.
 
 ### Limitations, Remaining Work, and Open Questions
 
@@ -136,7 +139,7 @@ O repositório atual é `totalcross-tooling`. Ele contém projetos independentes
 
 O repositório irmão `/Users/flsobral/repos/totalcross-github` hospeda `TotalCrossSDK`. No commit local `0db656ad9`, o JAR contém a implementação atual: `totalcross.preview.PreviewServer`, `PreviewConfig`, `PreviewConfigLoader`, `DisposableAppClassLoader`, `HeadlessPreviewSurface`, `HeadlessPngSurface`, `PreviewRunner` e superfícies/integrações AWT. `PreviewRunner` controla `LauncherRuntime`; é ele que recarrega `MainWindow`, apresenta `Container` ou `Control`, captura o frame e fecha o runtime. O novo projeto deve reproduzir essas responsabilidades sem depender de classes de implementação do pacote antigo.
 
-Um contrato é uma pequena API pública que define o que uma parte pode pedir à outra sem conhecer seus detalhes internos. Após a migração, `totalcross.preview.PreviewRuntime` permitirá ao servidor acionar a aplicação já iniciada e seu tipo aninhado `PreviewRuntime.FrameConsumer` receberá um frame pronto. O SDK implementará `PreviewRuntime` por meio do seu `LauncherRuntime` existente, mas não publicará servidor HTTP, leitor JSON, carregador de classes descartável, buffer PNG, CLI de preview ou modelo de configuração. `totalcross.desktop` conterá os adaptadores AWT ainda necessários ao launcher normal; eles não são a ferramenta Live Preview.
+Um contrato é uma pequena API pública que define o que uma parte pode pedir à outra sem conhecer seus detalhes internos. Após a migração, `totalcross.preview.PreviewRuntime` permite ao servidor iniciar e acionar a aplicação; seu tipo aninhado `PreviewRuntime.FrameConsumer` recebe um frame pronto. O SDK implementa `PreviewRuntime` por meio de `LauncherRuntime`, mas não publica servidor HTTP, leitor JSON, carregador de classes descartável, buffer PNG, CLI de preview ou modelo de configuração. Os adaptadores AWT permanecem em `totalcross.preview` por compatibilidade do launcher normal; eles não são a ferramenta Live Preview nem contrato consumido pelo servidor.
 
 O novo projeto terá esta forma final:
 
@@ -188,7 +191,7 @@ No SDK, criar exatamente o contrato público a seguir, com cabeçalho LGPL-2.1-o
 
 Adaptar `TotalCrossSDK/src/main/java/totalcross/LauncherRuntime.java` para implementar `PreviewRuntime`. O parâmetro de captura de `startPreview(...)` passa a ser `PreviewRuntime.FrameConsumer`. Seus métodos internos de preview devem se tornar as implementações públicas, com nomes e semântica idênticos aos métodos da interface; `close()` deve chamar o atual `stop()`. `LauncherRuntime.startPreview(...)` pode conservar o retorno `LauncherRuntime` por compatibilidade de código fonte, pois a classe implementará o contrato e pode ser armazenada em uma variável `PreviewRuntime` pelo novo servidor. Não acrescentar referência ao projeto novo no SDK e não criar dependência circular.
 
-Mover os adaptadores AWT que continuam necessários ao launcher de `totalcross.preview` para `totalcross.desktop`: `AwtCanvasSurface`, `AppletPreviewSurface`, `AwtWindowBackend`, `RenderSurface`, `WindowBackend` e `WindowConfig`. Atualizar somente os imports em `Launcher` e `LauncherRuntime` e seus testes; as superfícies AWT passam a implementar `PreviewRuntime.FrameConsumer`. `PreviewRuntime` permanece como o único contrato de Live Preview em `totalcross.preview` usado pelo SDK. Confirmar se qualquer outro consumidor público usa os nomes AWT antes de removê-los; caso exista, manter um adaptador obsoleto apenas durante uma versão major e registrar essa exceção no plano. Não tentar mover implementações entre repositórios por `git mv`.
+Consolidar a captura de frames em `PreviewRuntime.FrameConsumer` e remover `PreviewSurface`. Os adaptadores AWT `AwtCanvasSurface`, `AppletPreviewSurface`, `AwtWindowBackend`, `RenderSurface`, `WindowBackend` e `WindowConfig` permanecem em `totalcross.preview`: são infraestrutura de janela do launcher, não implementação HTTP de Live Preview, e movê-los seria uma refatoração de compatibilidade fora desta extração. `PreviewRuntime` permanece como o único contrato específico de Live Preview consumido pelo novo servidor.
 
 Remover do SDK, em uma mudança posterior e testada, `totalcross.PreviewRunner` e todas as classes de implementação Live Preview: `PreviewServer`, `PreviewConfig`, `PreviewConfigLoader`, `DisposableAppClassLoader`, `HeadlessPreviewSurface`, `HeadlessPngSurface` e `package.html` que as descreve. Migrar a intenção dos testes para `live-preview-server`; deixar no SDK somente testes que provem que `LauncherRuntime` entrega frames a `PreviewRuntime.FrameConsumer` e satisfaz `PreviewRuntime`. Atualizar `TotalCrossSDK/build.gradle` para não incluir nem excluir classes inexistentes de preview e para que o JAR final não tenha `totalcross/PreviewRunner.class`, `totalcross/preview/PreviewServer.class` ou outras implementações do servidor.
 

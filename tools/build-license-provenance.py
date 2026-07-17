@@ -71,14 +71,14 @@ def year_or_range(start: int, end: int) -> str:
     return str(start) if start == end else f"{start}-{end}"
 
 
-def expected(year: int, current_year: int | None = None) -> tuple[list[str], str]:
+def expected(year: int, current_year: int | None = None, license_name: str = "Apache-2.0") -> tuple[list[str], str]:
     current_year = current_year or datetime.now(timezone.utc).year
     if year <= 2021:
         return [
             f"Copyright (C) {year_or_range(year, 2021)} TotalCross Global Mobile Platform Ltda.",
             f"Copyright (C) {year_or_range(2022, current_year)} Amalgam Solucoes em TI Ltda.",
-        ], "Apache-2.0"
-    return [f"Copyright (C) {year_or_range(year, current_year)} Amalgam Solucoes em TI Ltda."], "Apache-2.0"
+        ], license_name
+    return [f"Copyright (C) {year_or_range(year, current_year)} Amalgam Solucoes em TI Ltda."], license_name
 
 
 def main() -> int:
@@ -86,6 +86,7 @@ def main() -> int:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--project", required=True)
     parser.add_argument("--original-license", required=True)
+    parser.add_argument("--license", default="Apache-2.0", help="SPDX license required by the destination project")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--append", action="store_true")
     parser.add_argument("--report", type=Path, help="write the required VS Code year-audit report")
@@ -95,7 +96,7 @@ def main() -> int:
         introduced, year = introduction(args.source, path)
         excluded, reason = is_excluded(path, args.source)
         later = None if excluded else first_substantive_after_2021(args.source, path)
-        lines, license_name = expected(year)
+        lines, license_name = expected(year, license_name=args.license)
         files.append({"project": args.project, "source_repository": args.source.name,
                       "source_path": path, "final_path": f"{args.project}/{path}",
                       "introduction_commit": introduced, "introduction_year": year,
