@@ -40,7 +40,7 @@ type ControlResponse = {
 const VIEW_TYPE = 'totalcrossLivePreview';
 const CONFIG_FILE = 'totalcross.preview.json';
 const PREVIEW_HOST = '127.0.0.1';
-const PREVIEW_SERVER_CLASS = 'totalcross.preview.PreviewServer';
+const PREVIEW_SERVER_CLASS = 'com.totalcross.livepreview.LivePreviewServer';
 const DEFAULT_CONFIG: PreviewConfig = {
   mainWindow: '',
   launcherArgs: ['width', '500', 'height', '600'],

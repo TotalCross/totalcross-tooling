@@ -21,7 +21,8 @@ currently intended for Linux ARM targets reached over SSH.
 
 - Java JDK 17
 - Visual Studio Code 1.85 or newer
-- A TotalCross SDK version that includes `totalcross.preview.PreviewServer`
+- A TotalCross SDK version that exposes the Live Preview runtime contract
+- A TotalCross Live Preview Server distribution
 - Node.js and npm compatible with this extension's dependencies when building from source
 
 ## Use
@@ -74,14 +75,15 @@ The generated configuration starts with these project-relative paths:
       "headlessOutput": "build/totalcross-preview/preview.png"
     }
 
-Set `totalcross.livePreview.extraClasspath` in workspace settings to the
-published or locally installed SDK jar that contains `PreviewServer`; do not
-depend on an uncommitted SDK checkout. For example, replace the placeholder
-with the path used by the installed SDK on the developer machine:
+Set `totalcross.livePreview.extraClasspath` in workspace settings to the `lib`
+directory of the published or locally installed TotalCross Live Preview Server
+distribution. That directory contains the server jar and its SDK dependency;
+do not depend on an uncommitted SDK checkout. For example, replace the
+placeholder with the installed distribution path:
 
     {
       "totalcross.livePreview.extraClasspath": [
-        "/opt/totalcross-sdk/lib/totalcross-sdk.jar"
+        "/opt/totalcross-live-preview-server/lib"
       ]
     }
 
