@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -17,6 +18,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 /**
@@ -24,6 +27,9 @@ import javax.imageio.ImageIO;
  */
 public class LivePreviewServer {
   private static final String DEFAULT_HOST = "127.0.0.1";
+  private static final int MAX_REQUEST_BODY_BYTES = 64 * 1024;
+  private static final Pattern SHOW_REQUEST = Pattern.compile(
+      "\\{\\s*\\\"className\\\"\\s*:\\s*\\\"((?:\\\\.|[^\\\"\\\\])*)\\\"\\s*\\}");
 
   public static void main(String[] args) throws Exception {
     Config cli = Config.parse(args);
@@ -49,7 +55,7 @@ public class LivePreviewServer {
 
     final PreviewRunner runner = PreviewRunner.run(previewConfig, workspaceRoot);
     final Path reloadConfigPath = configPath;
-    final HttpServer server = HttpServer.create(new InetSocketAddress(cli.host, cli.port), 0);
+    final HttpServer server = HttpServer.create(new InetSocketAddress(cli.address, cli.port), 0);
     final CountDownLatch stopped = new CountDownLatch(1);
     server.createContext("/health", exchange -> writeJson(exchange, runner));
     server.createContext("/frame", exchange -> writeFrame(exchange, runner));
@@ -65,9 +71,13 @@ public class LivePreviewServer {
     server.start();
 
     InetSocketAddress address = server.getAddress();
-    System.out.println("TOTALCROSS_PREVIEW_URL=http://" + cli.host + ":" + address.getPort());
+    System.out.println("TOTALCROSS_PREVIEW_URL=http://" + cli.address.getHostAddress() + ":" + address.getPort());
     System.out.flush();
     stopped.await();
+    runner.stop();
+    // The desktop launcher leaves AWT worker threads alive after its runtime is closed.
+    // This executable owns that process, so terminate only after the shutdown response
+    // has been written and all preview resources have been released.
     System.exit(0);
   }
 
@@ -120,7 +130,7 @@ public class LivePreviewServer {
       return;
     }
     String request = readRequestBody(exchange);
-    String className = jsonStringValue(request, "className");
+    String className = showRequestClassName(request);
     boolean shown = runner.showClass(className);
     String json = "{\"ok\":" + shown + ",\"className\":\"" + escapeJson(className)
         + "\",\"frameNumber\":" + runner.getFrameNumber() + ",\"error\":\""
@@ -171,55 +181,38 @@ public class LivePreviewServer {
     byte[] buffer = new byte[4096];
     int read;
     while ((read = input.read(buffer)) >= 0) {
+      if (output.size() + read > MAX_REQUEST_BODY_BYTES) {
+        throw new IOException("Request body exceeds 64 KiB");
+      }
       output.write(buffer, 0, read);
     }
     return new String(output.toByteArray(), StandardCharsets.UTF_8);
   }
 
-  private static String jsonStringValue(String json, String key) {
-    String marker = "\"" + key + "\"";
-    int keyIndex = json.indexOf(marker);
-    if (keyIndex < 0) {
+  private static String showRequestClassName(String json) {
+    Matcher match = SHOW_REQUEST.matcher(json);
+    if (!match.matches()) {
       return "";
     }
-    int colon = json.indexOf(':', keyIndex + marker.length());
-    int quote = colon < 0 ? -1 : json.indexOf('"', colon + 1);
-    if (quote < 0) {
-      return "";
-    }
-    StringBuilder value = new StringBuilder();
-    boolean escape = false;
-    for (int i = quote + 1; i < json.length(); i++) {
-      char c = json.charAt(i);
-      if (escape) {
-        value.append(c);
-        escape = false;
-      } else if (c == '\\') {
-        escape = true;
-      } else if (c == '"') {
-        return value.toString();
-      } else {
-        value.append(c);
-      }
-    }
-    return "";
+    return match.group(1).replace("\\\"", "\"").replace("\\\\", "\\");
   }
 
   private static void printUsage() {
     System.err.println(
-        "Usage: java totalcross.preview.PreviewServer --config totalcross.preview.json [--host 127.0.0.1] [--port 0]");
+        "Usage: java com.totalcross.livepreview.LivePreviewServer --config totalcross.preview.json [--host 127.0.0.1] [--port 0]");
     System.err.println(
-        "   or: java totalcross.preview.PreviewServer --class <MainWindowClass> [--host 127.0.0.1] [--port 0] [-- <launcher args>]");
+        "   or: java com.totalcross.livepreview.LivePreviewServer --class <MainWindowClass> [--host 127.0.0.1] [--port 0] [-- <launcher args>]");
   }
 
   private static class Config {
     private String host = DEFAULT_HOST;
+    private InetAddress address;
     private int port;
     private String className;
     private String configPath;
     private List<String> launcherArgs = new ArrayList<>();
 
-    private static Config parse(String[] args) {
+    private static Config parse(String[] args) throws IOException {
       Config config = new Config();
       for (int i = 0; i < args.length; i++) {
         String arg = args[i];
@@ -245,6 +238,13 @@ public class LivePreviewServer {
         } else {
           config.launcherArgs.add(arg);
         }
+      }
+      if (config.port < 0 || config.port > 65535) {
+        throw new IllegalArgumentException("port must be between 0 and 65535");
+      }
+      config.address = InetAddress.getByName(config.host);
+      if (!config.address.isLoopbackAddress()) {
+        throw new IllegalArgumentException("host must resolve to a loopback address");
       }
       return config;
     }

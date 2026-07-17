@@ -23,7 +23,7 @@ class LivePreviewServerProcessTest {
   Path tempDir;
 
   @Test
-  void servesHealthFrameAndShutdownFromTheBuiltRuntime() throws Exception {
+  void servesPreviewEndpointsAndShutdownFromTheBuiltRuntime() throws Exception {
     int port = freePort();
     Path configPath = tempDir.resolve(PreviewConfigLoader.DEFAULT_FILE_NAME);
     Path testClasses = Path.of(System.getProperty("user.dir"), "build", "classes", "java", "test");
@@ -46,6 +46,9 @@ class LivePreviewServerProcessTest {
       assertTrue(waitForHealth(baseUrl, process), () -> "LivePreviewServer did not start:\n" + readOutput(output));
       assertTrue(get(baseUrl + "/health").contains("\"ok\":true"));
       assertEquals(200, status(baseUrl + "/frame"));
+      assertEquals(200, status(baseUrl + "/show", "POST", "{\"className\":\"previewfixture.PreviewMainWindow\"}"));
+      assertEquals(200, status(baseUrl + "/clear", "POST"));
+      assertEquals(200, status(baseUrl + "/reload", "POST"));
       assertEquals(200, status(baseUrl + "/shutdown", "POST"));
       assertTrue(process.waitFor(10, TimeUnit.SECONDS), () -> "LivePreviewServer did not stop:\n" + readOutput(output));
     } finally {
@@ -95,10 +98,19 @@ class LivePreviewServerProcessTest {
   }
 
   private static int status(String url, String method) throws IOException {
+    return status(url, method, null);
+  }
+
+  private static int status(String url, String method, String body) throws IOException {
     HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod(method);
     connection.setConnectTimeout(1000);
     connection.setReadTimeout(1000);
+    if (body != null) {
+      connection.setDoOutput(true);
+      connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+      connection.getOutputStream().write(body.getBytes(StandardCharsets.UTF_8));
+    }
     return connection.getResponseCode();
   }
 

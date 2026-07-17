@@ -7,12 +7,12 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import totalcross.preview.PreviewSurface;
+import totalcross.preview.PreviewRuntime;
 
 /**
  * Preview surface that retains the latest rendered frame without showing UI.
  */
-public class HeadlessPreviewSurface implements PreviewSurface {
+public class HeadlessPreviewSurface implements PreviewRuntime.FrameConsumer {
   private BufferedImage latestFrame;
   private long frameNumber;
 
