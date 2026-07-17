@@ -11,8 +11,7 @@ import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import totalcross.Launcher;
-import totalcross.LauncherRuntime;
+import totalcross.preview.PreviewRuntime;
 import totalcross.ui.Container;
 import totalcross.ui.Control;
 import totalcross.ui.MainWindow;
@@ -26,7 +25,7 @@ import totalcross.ui.MainWindow;
  * ClassLoader between reloads.
  */
 public class PreviewRunner {
-  private LauncherRuntime runtime;
+  private PreviewRuntime runtime;
   private final HeadlessPngSurface surface;
   private PreviewConfig config;
   private final Path workspaceRoot;
@@ -36,7 +35,7 @@ public class PreviewRunner {
   private String lastShowError = "";
   private boolean blank;
 
-  private PreviewRunner(LauncherRuntime runtime, HeadlessPngSurface surface, PreviewConfig config, Path workspaceRoot,
+  private PreviewRunner(PreviewRuntime runtime, HeadlessPngSurface surface, PreviewConfig config, Path workspaceRoot,
       DisposableAppClassLoader appClassLoader) {
     this.runtime = runtime;
     this.surface = surface;
@@ -82,7 +81,7 @@ public class PreviewRunner {
     DisposableAppClassLoader loader = useDisposableClassLoader
         ? DisposableAppClassLoader.fromConfig(workspaceRoot, config)
         : null;
-    LauncherRuntime runtime = startRuntime(config, surface, loader);
+    PreviewRuntime runtime = startRuntime(config, surface, loader);
     return new PreviewRunner(runtime, surface, config, workspaceRoot, loader);
   }
 
@@ -104,7 +103,7 @@ public class PreviewRunner {
       closeClassLoader(displayedClassLoader);
       displayedClassLoader = null;
       runtime.preparePreviewMainWindowReload();
-      MainWindow mainWindow = runtime.createMainWindow(this.config.mainWindow, newClassLoader, Launcher.terminateIfMainClass);
+      MainWindow mainWindow = runtime.createMainWindow(this.config.mainWindow, newClassLoader, false);
       if (mainWindow == null) {
         throw new IllegalStateException("Preview mainWindow did not create a MainWindow instance");
       }
@@ -255,19 +254,14 @@ public class PreviewRunner {
     runner.stop();
   }
 
-  private static LauncherRuntime startRuntime(PreviewConfig config, HeadlessPreviewSurface surface,
+  private static PreviewRuntime startRuntime(PreviewConfig config, HeadlessPreviewSurface surface,
       ClassLoader appClassLoader) {
-    LauncherRuntime runtime = new LauncherRuntime();
-    runtime.parseArguments(config.mainWindow, config.toLauncherArgs());
-    runtime.setPreviewSurface(surface);
-    runtime.setAppClassLoader(appClassLoader);
-    runtime.startPreview();
-    return runtime;
+    return PreviewRuntime.startPreview(config.mainWindow, surface, appClassLoader, config.toLauncherArgs());
   }
 
   private void stopRuntime() {
     if (runtime != null) {
-      runtime.stop();
+      runtime.close();
       runtime = null;
     }
     closeClassLoader(appClassLoader);
