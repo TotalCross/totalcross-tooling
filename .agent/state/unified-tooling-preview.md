@@ -9,11 +9,11 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 06, Gradle and Maven integration.
-Active slice: Plan 05 completed; read Plan 06 and inspect only build-plugin
-resolution and integration paths.
+Active plan: Plan 07, VS Code workflows.
+Active slice: Plan 06 completed; read Plan 07 and inspect only VS Code extension,
+workflow, command, and focused integration paths.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,240p' .agent/plans/unified-tooling-preview/06-gradle-and-maven-integration.md`
+sed -n '1,240p' .agent/plans/unified-tooling-preview/07-vscode-workflows.md`
 
 ## Repositories
 
@@ -50,8 +50,8 @@ boundary commit `0716e10af`; Plan 04 launcher/preview changes are uncommitted
 at this checkpoint.
 Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
 commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
-Plan 04 docs commit `60d3726`; Plan 05 changes are uncommitted at this
-checkpoint.
+Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 changes are
+uncommitted at this checkpoint.
 
 ## Active paths
 
@@ -84,6 +84,10 @@ is `totalcross/TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
 Plan 05 validation: tooling Java tests passed across all modules, including
 protocol and host↔worker integration. Logs are `/tmp/tooling-plan05-test.log`
 and `/tmp/tooling-plan05-package.log`.
+Plan 06 validation: tooling-core and Gradle plugin tests passed, Maven package
+passed, and the focused Maven manager test passed. Logs are
+`/tmp/tooling-plan06-core-test.log`, `/tmp/gradle-plugin-plan06-test.log`, and
+`/tmp/maven-plugin-plan06-package.log`.
 
 ## Deferrals and exclusions
 

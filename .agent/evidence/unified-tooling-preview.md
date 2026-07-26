@@ -43,3 +43,8 @@ program. Full command output belongs in `/tmp` or build artifacts.
   and existing tooling-core modules. The fat CLI JAR and install distribution
   also built; full outputs are `/tmp/tooling-plan05-test.log` and
   `/tmp/tooling-plan05-package.log`.
+- 2026-07-26: Plan 06 shared model tests and Gradle plugin functional tests
+  passed; Maven plugin packaging and the focused SDK manager test passed. The
+  legacy Maven JDK download test remains cache/layout dependent. Logs are
+  `/tmp/tooling-plan06-core-test.log`, `/tmp/gradle-plugin-plan06-test.log`,
+  and `/tmp/maven-plugin-plan06-package.log`.

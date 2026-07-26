@@ -60,7 +60,7 @@ explicit user instruction.
 - [x] Execute Plan 03 and establish artifact and deploy boundaries without moving converter sources.
 - [x] Execute Plan 04 and decompose the desktop launcher before extending the preview contract.
 - [x] Execute Plan 05 and deliver the standalone preview host, worker, protocol, and CLI.
-- [ ] Execute Plan 06 and integrate Gradle and Maven build flows.
+- [x] Execute Plan 06 and integrate Gradle and Maven build flows.
 - [ ] Execute Plan 07 and preserve and extend the VS Code workflows.
 - [ ] Execute Plan 08 and complete hot reload plus reusable external-tool storage.
 - [ ] Execute Plan 09 only after the IR merge gate is satisfied.

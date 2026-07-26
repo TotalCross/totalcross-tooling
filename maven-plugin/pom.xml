@@ -38,6 +38,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.totalcross.tooling</groupId>
+            <artifactId>tooling-core</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.jupiter.version}</version>
@@ -106,7 +112,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.11.0</version>
                 <executions>
                     <execution>
                         <id>default-descriptor</id>

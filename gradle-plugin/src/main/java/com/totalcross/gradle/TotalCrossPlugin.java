@@ -64,6 +64,10 @@ public class TotalCrossPlugin implements Plugin<Project> {
             task.getLogLevel().convention(extension.getLogLevel());
             task.getToolchain().from(runtimeClasspath);
         });
+        var modelTask = project.getTasks().register("totalcrossProjectModel", ProjectModelTask.class);
+        project.getTasks().register("totalcrossRun", TotalCrossRunTask.class, task -> task.dependsOn(modelTask));
+        project.getTasks().register("totalcrossPreview", TotalCrossPreviewTask.class, task -> task.dependsOn(modelTask, "classes"));
+        project.getTasks().register("totalcrossPreviewStop", TotalCrossPreviewStopTask.class);
     }
 
     protected boolean isLibraryPlugin() {

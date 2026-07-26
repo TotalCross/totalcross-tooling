@@ -100,6 +100,20 @@ class TotalCrossPluginFunctionalTest {
         assertEquals("patched", Files.readString(projectDirectory.resolve("build/totalcross/deploy.source")));
     }
 
+    @Test
+    void writesEquivalentProjectAndPreviewSessionDescriptors() throws Exception {
+        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'preview-app'\n");
+        Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n");
+
+        var result = GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
+                .withArguments("totalcrossProjectModel", "totalcrossPreview", "--stacktrace").build();
+
+        assertTrue(result.getOutput().contains("TotalCross preview session ready"));
+        assertTrue(Files.isRegularFile(projectDirectory.resolve("build/totalcross/project-model.json")));
+        assertTrue(Files.isRegularFile(projectDirectory.resolve("build/totalcross/preview-session.json")));
+        assertTrue(Files.readString(projectDirectory.resolve("build/totalcross/preview-session.json")).contains("GRADLE"));
+    }
+
     private String buildScript(Path repository, Path sdkHome, String pluginId) {
         return buildScript(repository, sdkHome, pluginId, null);
     }

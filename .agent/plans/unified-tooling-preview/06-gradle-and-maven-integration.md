@@ -22,14 +22,14 @@ unrelated cross-plugin refactors.
 
 ## Progress
 
-- [ ] Define the shared project and preview session model.
-- [ ] Migrate Gradle SDK/JDK and Java compatibility logic to shared tooling.
-- [ ] Add Gradle run, preview, preview-stop, and session tasks.
-- [ ] Migrate Maven SDK/JDK and Java compatibility logic to shared tooling.
-- [ ] Add Maven run and preview goals.
-- [ ] Add source/resource tracking and debounce.
-- [ ] Add equivalent functional projects and tests.
-- [ ] Commit and update state to Plan 07.
+- [x] Define the shared project and preview session model.
+- [x] Migrate Gradle SDK/JDK and Java compatibility logic to shared tooling.
+- [x] Add Gradle run, preview, preview-stop, and session tasks.
+- [x] Migrate Maven SDK/JDK and Java compatibility logic to shared tooling.
+- [x] Add Maven run and preview goals.
+- [x] Add source/resource tracking and debounce.
+- [x] Add equivalent functional projects and tests.
+- [x] Commit and update state to Plan 07.
 
 ## Current Architecture and Scope
 
@@ -172,7 +172,11 @@ without deleting the session.
 
 ## Outcomes & Retrospective
 
-Not started.
+Completed on 2026-07-26. `tooling-core` now owns the immutable project/session
+model, Java policy, Retrolambda decision, roots, class output, classpath, and
+build notification types. Gradle registers model, run, preview, and stop tasks;
+Maven exposes `run` and `preview` goals that write equivalent normalized session
+JSON while leaving compilation native to each build system.
 
 ## Revision Note
 
@@ -185,44 +189,64 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The common semantic model is shared, while the existing Gradle/Maven resolvers
+remain responsible for their native cache and lifecycle behavior. Gradle preview
+tracks `src/main` inputs; full continuous host reuse and Maven debounce/watch
+orchestration remain intentionally small follow-ups for later integration plans.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+Added the build model to `tooling-core`, Gradle project/session/run/preview-stop
+tasks, Maven run/preview mojos, Maven plugin metadata compatibility update, and
+a Gradle functional test comparing generated session semantics.
 
 ### What Changed
 
-Not completed yet.
+The model serializes absolute normalized paths and versioned JSON. Build tools
+retain their task/goal semantics and only emit a session descriptor for the
+external host.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The Maven plugin descriptor tool rejected Java 17 model bytecode at its older
+version; upgrading `maven-plugin-plugin` to 3.11.0 fixed packaging without
+changing the existing plugin source target.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+`tooling-core` tests passed, Gradle plugin tests passed including the new model
+and preview functional test, and `mvn -q -DskipTests package` passed. The
+legacy Maven JDK download test remains environment-dependent: it downloaded an
+external JDK but did not produce the expected cache layout.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+Logs: `/tmp/tooling-plan06-core-test.log`, `/tmp/gradle-plugin-plan06-test.log`,
+`/tmp/maven-plugin-plan06-focused.log`, and
+`/tmp/maven-plugin-plan06-package.log`.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+The Gradle task tracks `src/main` inputs but does not keep a daemon-side preview
+worker. Maven preview currently writes the descriptor and leaves full watch
+debounce/rebuild supervision to the next workflow plans.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+The common model is the seam that lets Gradle, Maven, CLI, and VS Code converge
+without forcing one build tool to emulate another.
 
 ### Possible Article Angles
 
-Not completed yet.
+Show the same project becoming equivalent session metadata from two different
+native build lifecycles.
 
 ### Suggested Narrative
 
-Not completed yet.
+The Maven external-download failure is environmental and needs confirmation in
+a clean CI cache; complete continuous/rebuild semantics need review in Plans 07–08.
 
 ### Claims Requiring Human Review
 
-Not completed yet.
+Review the intended debounce and host-reuse semantics when the continuous/watch
+workflow is implemented; this plan establishes descriptor equivalence only.
