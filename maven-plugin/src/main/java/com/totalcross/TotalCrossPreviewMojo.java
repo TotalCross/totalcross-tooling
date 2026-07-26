@@ -10,7 +10,7 @@ import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.jar.JarFile;
 
 @Mojo(name = "preview", requiresDependencyResolution = ResolutionScope.RUNTIME)
@@ -19,7 +19,7 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
     private String projectDirectory = ".";
     @Parameter(defaultValue = "${project.build.directory}")
     private String buildDirectory = "target";
-    @Parameter(property = "totalcross.mainClass", defaultValue = "${project.artifactId}")
+    @Parameter(property = "totalcross.mainClass")
     private String mainClass;
     @Parameter(property = "totalcross.preview.noLaunch", defaultValue = "false")
     private boolean noLaunch;
@@ -32,14 +32,46 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
             Path descriptor = Paths.get(buildDirectory == null ? "target" : buildDirectory,
                 "totalcross", "preview-session.json").toAbsolutePath().normalize();
             Files.createDirectories(descriptor.getParent());
-            String applicationClass = mainClass == null || mainClass.trim().isEmpty()
-                ? project.getFileName().toString() : mainClass;
+            String applicationClass = resolveApplicationClass(project);
             Files.write(descriptor, new PreviewSessionDescriptor(1, BuildTool.MAVEN, project, descriptor,
                 applicationClass, null).toJson().getBytes("UTF-8"));
             getLog().info("TotalCross preview session ready: " + descriptor);
             if (!noLaunch) launchDesktopPreview(applicationClass, project);
         } catch (Exception e) {
             throw new MojoExecutionException("Unable to create TotalCross preview session", e);
+        }
+    }
+
+    private String resolveApplicationClass(Path project) throws Exception {
+        if (mainClass != null && !mainClass.trim().isEmpty()) return mainClass.trim();
+        String fallback = mavenProject == null || mavenProject.getArtifactId() == null
+            ? project.getFileName().toString() : mavenProject.getArtifactId();
+        Path output = project.resolve("target/classes");
+        if (mavenProject != null && mavenProject.getBuild() != null && mavenProject.getBuild().getOutputDirectory() != null) {
+            output = Paths.get(mavenProject.getBuild().getOutputDirectory());
+        }
+        String discovered = discoverMainClass(output, fallback);
+        if (discovered != null) {
+            getLog().info("TotalCross main class discovered: " + discovered);
+            return discovered;
+        }
+        return fallback;
+    }
+
+    static String discoverMainClass(Path output, String simpleName) throws Exception {
+        if (output == null || simpleName == null || !Files.isDirectory(output)) return null;
+        String classFile = simpleName + ".class";
+        try (Stream<Path> paths = Files.walk(output)) {
+            List<String> candidates = paths.filter(Files::isRegularFile)
+                .filter(path -> classFile.equals(path.getFileName().toString()))
+                .map(output::relativize)
+                .map(path -> path.toString().replace(File.separatorChar, '.'))
+                .map(path -> path.substring(0, path.length() - ".class".length()))
+                .collect(java.util.stream.Collectors.toList());
+            if (candidates.size() > 1) {
+                throw new IllegalStateException("More than one compiled main class named " + simpleName + " was found: " + candidates);
+            }
+            return candidates.isEmpty() ? null : candidates.get(0);
         }
     }
 
