@@ -9,11 +9,11 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 02, shared store and vendor-neutral JDK policy.
-Active slice: Plan 01 bootstrap completed; inspect the state and Plan 02 before
-inventorying the existing Gradle and Maven resolvers.
+Active plan: Plan 03, artifact and deploy boundaries.
+Active slice: Plan 02 completed; inspect the state and Plan 03 before
+inventorying SDK artifact ownership and deploy invocations.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,220p' .agent/plans/unified-tooling-preview/02-shared-store-and-jdk.md`
+sed -n '1,220p' .agent/plans/unified-tooling-preview/03-artifact-and-deploy-boundaries.md`
 
 ## Repositories
 
@@ -46,14 +46,15 @@ conflicts and `git diff --check` passed. The remote branch was not pushed.
 ## Logical commits
 
 TotalCross: no commits created by this program.
-Tooling: bootstrap commit `3487465`; workspace commit `c27a313`.
+Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
+commit `1b7cc3e`; shared core commit `e8488ef`.
 
 ## Active paths
 
 `.agent/plans/unified-tooling-preview/`, `.agent/state/`, `.agent/evidence/`,
 `.agent/archive/`, `.agent/reports/`, `scripts/check-file-size-policy.py`,
-`tests/file_size_policy/test_check_file_size_policy.py`, and
-`totalcross-unified.code-workspace`.
+`tests/file_size_policy/test_check_file_size_policy.py`,
+`totalcross-unified.code-workspace`, and `tooling-java/`.
 
 ## Validation and evidence
 
@@ -61,6 +62,10 @@ Baseline command log: `/tmp/totalcross-bootstrap-baseline.log`.
 Plan 01 validation: `python3 -m unittest discover -s tests/file_size_policy -v`
 passed 5 tests; `git diff --cached --check` and the staged size-policy checker
 passed before both commits.
+Plan 02 validation: `./tooling-java/gradlew -p tooling-java
+:tooling-core:test --console=plain` passed 8 tests, and
+`:tooling-core:publishToMavenLocal` passed. Full logs are in
+`/tmp/tooling-core-test.log` and `/tmp/tooling-core-publish.log`.
 
 ## Deferrals and exclusions
 

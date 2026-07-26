@@ -29,3 +29,6 @@ program. Full command output belongs in `/tmp` or build artifacts.
   and no push was performed.
 - 2026-07-26: Plan 02 inventory identified duplicated Gradle/Maven SDK and JDK
   resolution in the paths recorded in the plan's `Surprises & Discoveries`.
+- 2026-07-26: `./tooling-java/gradlew -p tooling-java :tooling-core:test
+  --console=plain` passed 8 tests; publication to Maven Local also passed.
+  Implementation checkpoint: `e8488ef`.

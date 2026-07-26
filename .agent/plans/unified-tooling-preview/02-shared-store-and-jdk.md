@@ -36,7 +36,7 @@ as migration inputs.
 - [x] Implement subprocess capability probes.
 - [x] Add focused tests for all supported host platforms.
 - [x] Publish the core artifact to Maven Local for later plans.
-- [ ] Commit and update state to Plan 03.
+- [x] Commit and update state to Plan 03.
 
 ## Current Architecture and Scope
 
