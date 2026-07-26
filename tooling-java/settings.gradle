@@ -10,3 +10,7 @@ pluginManagement {
 
 rootProject.name = 'tooling-java'
 include 'tooling-core'
+include 'tooling-protocol'
+include 'preview-worker'
+include 'preview-host'
+include 'tooling-cli'

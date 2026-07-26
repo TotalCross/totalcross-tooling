@@ -1,0 +1,27 @@
+// Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+// SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    id 'application'
+    id 'java'
+}
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+
+dependencies {
+    implementation project(':preview-host')
+    implementation project(':preview-worker')
+}
+
+application { mainClass = 'com.totalcross.tooling.cli.ToolingCli' }
+
+tasks.register('fatJar', Jar) {
+    archiveClassifier = 'all'
+    manifest { attributes 'Main-Class': application.mainClass.get() }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+tasks.withType(Test).configureEach { useJUnitPlatform() }

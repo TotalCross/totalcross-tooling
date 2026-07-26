@@ -20,14 +20,14 @@ from Plan 04. Do not edit Gradle, Maven, or VS Code plugins in this plan.
 
 ## Progress
 
-- [ ] Add `tooling-protocol`, `preview-worker`, `preview-host`, and `tooling-cli` modules.
-- [ ] Implement authenticated loopback transport and message framing.
-- [ ] Implement worker lifecycle and runtime reflection adapter.
-- [ ] Implement AWT preview host and input forwarding.
-- [ ] Implement `preview` and `run` CLI commands.
-- [ ] Add protocol, process, and end-to-end tests.
-- [ ] Publish local artifacts and record commands.
-- [ ] Commit and update state to Plan 06.
+- [x] Add `tooling-protocol`, `preview-worker`, `preview-host`, and `tooling-cli` modules.
+- [x] Implement authenticated loopback transport and message framing.
+- [x] Implement worker lifecycle and runtime reflection adapter.
+- [x] Implement AWT preview host and input forwarding.
+- [x] Implement `preview` and `run` CLI commands.
+- [x] Add protocol, process, and end-to-end tests.
+- [x] Publish local artifacts and record commands.
+- [x] Commit and update state to Plan 06.
 
 ## Current Architecture and Scope
 
@@ -157,7 +157,12 @@ not corrupt installed SDK/JDK/tool state.
 
 ## Outcomes & Retrospective
 
-Not started.
+Completed on 2026-07-26. The Java tooling now contains protocol, worker, host,
+and CLI modules. Loopback sessions use a random token, protocol version, and
+bounded length-prefixed messages. The worker emits copied ARGB frame payloads
+and accepts lifecycle/input commands through a reflection-only SDK bridge. The
+host keeps socket/process coordination separate from its AWT window, and the
+CLI exposes `preview` and `run` entry points.
 
 ## Revision Note
 
@@ -170,43 +175,65 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The standalone boundary is functional and tested in-process with the same
+socket/authentication path used by a child worker. The production worker entry
+point and fat CLI JAR are packaged; build-tool project discovery remains in
+Plan 06.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+Added four Gradle modules, bounded binary framing, session authentication,
+frame encoding, worker command dispatch, reflective runtime binding, AWT
+window/input forwarding, and a fat-JAR CLI.
 
 ### What Changed
 
-Not completed yet.
+Raw copied ARGB was selected for the first protocol version. The neutral SDK
+adapter is reached through reflection so the tooling modules do not link their
+public API to SDK or AWT types.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The first end-to-end test exposed response ordering and frame payload sizing
+bugs; sending START acknowledgement before the initial frame and correcting
+the fixed header size resolved both while keeping the protocol bounded.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+`./tooling-java/gradlew -p tooling-java test --console=plain` passed all
+available module tests, including the existing 8 tooling-core tests, protocol
+round-trip/authentication tests, and host↔worker frame/input integration. The
+fat JAR and install distribution built successfully; CLI `--help` and `run`
+smoke commands passed.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+Full test output is in `/tmp/tooling-plan05-test.log`; packaging output is in
+`/tmp/tooling-plan05-package.log`. The executable artifact is
+`tooling-java/tooling-cli/build/libs/tooling-cli-0.1.0-SNAPSHOT-all.jar`.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+The CLI currently validates an explicit project path and opens a host session;
+automatic SDK/JDK/build discovery and a fully connected worker command line are
+intentionally deferred to Plan 06. Headless environments use the session test
+instead of requiring a visible AWT window.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+The useful narrative is an authenticated, disposable JVM boundary that can
+carry frames and inputs without contaminating build-tool processes.
 
 ### Possible Article Angles
 
-Not completed yet.
+Begin with the failure modes of in-process reload, then show bounded framing,
+token authentication, frame ownership, and the host/worker split.
 
 ### Suggested Narrative
 
-Not completed yet.
+Claims about application classloader isolation in a real external SDK process,
+automatic project discovery, and visible-window behavior on every platform need
+follow-up validation in Plans 06–08.
 
 ### Claims Requiring Human Review
 

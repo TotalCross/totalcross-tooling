@@ -9,11 +9,11 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 05, preview host, worker, protocol, and CLI.
-Active slice: Plan 04 completed; read Plan 05 and inspect only its host,
-worker, protocol, CLI, and focused integration paths.
+Active plan: Plan 06, Gradle and Maven integration.
+Active slice: Plan 05 completed; read Plan 06 and inspect only build-plugin
+resolution and integration paths.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,240p' .agent/plans/unified-tooling-preview/05-preview-host-worker-cli.md`
+sed -n '1,240p' .agent/plans/unified-tooling-preview/06-gradle-and-maven-integration.md`
 
 ## Repositories
 
@@ -49,7 +49,9 @@ TotalCross: rebase result `d20214f87d8f936d851f3d77b37603625b838b99`; artifact
 boundary commit `0716e10af`; Plan 04 launcher/preview changes are uncommitted
 at this checkpoint.
 Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
-commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`.
+commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
+Plan 04 docs commit `60d3726`; Plan 05 changes are uncommitted at this
+checkpoint.
 
 ## Active paths
 
@@ -79,6 +81,9 @@ Plan 03 validation: SDK `artifactContentTest`, tooling core tests, and
 Plan 04 validation: focused launcher/parser/runtime/preview tests passed 5
 tests. Log is `/tmp/totalcross-plan04-preview-test.log`; the full SDK agent log
 is `totalcross/TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
+Plan 05 validation: tooling Java tests passed across all modules, including
+protocol and host↔worker integration. Logs are `/tmp/tooling-plan05-test.log`
+and `/tmp/tooling-plan05-package.log`.
 
 ## Deferrals and exclusions
 

@@ -39,3 +39,7 @@ program. Full command output belongs in `/tmp` or build artifacts.
   5 tests, including copied-frame ownership and neutral command lifecycle
   forwarding. Full output is in `/tmp/totalcross-plan04-preview-test.log` and
   `totalcross/TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
+- 2026-07-26: Plan 05 tooling Java tests passed across protocol, host/worker,
+  and existing tooling-core modules. The fat CLI JAR and install distribution
+  also built; full outputs are `/tmp/tooling-plan05-test.log` and
+  `/tmp/tooling-plan05-package.log`.
