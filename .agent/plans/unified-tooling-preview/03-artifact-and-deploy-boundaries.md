@@ -22,13 +22,13 @@ plugin deploy invocation. Do not read native TCIR implementation in this plan.
 
 ## Progress
 
-- [ ] Inventory package ownership and runtime dependencies.
-- [ ] Add filtered artifact tasks without moving Java source.
-- [ ] Add artifact-content contract tests.
-- [ ] Create typed deploy request, result, and service interfaces.
-- [ ] Implement the legacy `tc.Deploy` adapter through an isolated classpath.
-- [ ] Migrate one focused tooling path to the typed service.
-- [ ] Preserve the aggregate SDK artifact and compatibility entry points.
+- [x] Inventory package ownership and runtime dependencies.
+- [x] Add filtered artifact tasks without moving Java source.
+- [x] Add artifact-content contract tests.
+- [x] Create typed deploy request, result, and service interfaces.
+- [x] Implement the legacy `tc.Deploy` adapter through an isolated classpath.
+- [x] Migrate one focused tooling path to the typed service.
+- [x] Preserve the aggregate SDK artifact and compatibility entry points.
 - [ ] Commit both repository checkpoints and update state to Plan 04.
 
 ## Current Architecture and Scope
@@ -127,8 +127,21 @@ Do not split converter files in protected paths.
 
 ## Surprises & Discoveries
 
-- Observation: none recorded yet.
-  Evidence: update only with findings that affect later migration.
+- Observation: the SDK already had internal `tc.base.*` and `tcui` JAR tasks,
+  but no consumer-facing boundaries for API, runtime, converter, deployer, and
+  preview. The aggregate `totalcross-sdk` task remains unchanged.
+  Evidence: `TotalCrossSDK/build.gradle` and the generated artifact-content
+  test output in `/tmp/totalcross-artifact-boundaries.log`.
+
+- Observation: `tc.Deploy` is 26,414 bytes and 553 lines, so the typed proof
+  uses a new Gradle task and isolated adapter without modifying that facade.
+  Evidence: `wc -c -l TotalCrossSDK/src/main/java/tc/Deploy.java`; the file is
+  not protected by path but is too large to edit under the program policy.
+
+- Observation: invoking the legacy adapter requires the runtime, converter, and
+  deployer artifacts on one disposable classpath; static deploy state therefore
+  remains serialized by `LegacyDeployService`.
+  Evidence: `tooling-java/tooling-core/src/main/java/com/totalcross/tooling/deploy/LegacyDeployService.java`.
 
 ## Decision Log
 
@@ -166,12 +179,23 @@ adapter commit while leaving additive TotalCross artifact tasks intact.
 
 ## Outcomes & Retrospective
 
-Not started.
+Plan 03 created versioned narrow JAR tasks in `TotalCrossSDK/gradle/artifact-boundaries.gradle`
+without moving source. The aggregate `totalcross-sdk` remains the existing
+compatibility artifact. Content tests prove API excludes converter/deployer/
+preview, converter and deployer are separate, and preview contains its surface.
+
+`tooling-core` now exposes immutable deploy contracts and an isolated legacy
+adapter. The Gradle plugin registers `totalcrossTypedPackage` as a focused proof
+path while leaving the existing `totalcrossPackage`/Maven implementation for
+later migration. The paired commits remain to be created.
 
 ## Revision Note
 
 2026-07-26: made artifact separation the mandatory pre-move checkpoint and
 defined a typed deploy boundary with a legacy adapter.
+
+2026-07-26: added five versioned boundary JAR tasks, content tests, typed deploy
+contracts, the isolated legacy adapter, and the Gradle typed proof task.
 
 ## Editorial Report
 
@@ -179,7 +203,83 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The SDK's aggregate JAR bundled public API, runtime, converter, deployer, and
+preview classes, which made future tooling extraction risky. Plan 03 adds
+consumer-visible boundaries while preserving the aggregate artifact and legacy
+`tc.Deploy` entry point.
+
+### Original Plan versus Actual Outcome
+
+The planned additive artifact tasks, package contract tests, typed deploy
+contracts, isolated adapter, and one Gradle proof path were delivered. The
+existing Gradle task and Maven path were deliberately not removed; broad plugin
+migration remains later work.
+
+### What Changed
+
+`TotalCrossSDK/gradle/artifact-boundaries.gradle` creates
+`totalcross-api`, `totalcross-runtime-java`, `totalcross-converter`,
+`totalcross-deployer`, and `totalcross-preview-runtime` JARs. The SDK test
+`tc.tools.ArtifactBoundariesTest` inspects their contents. Tooling adds
+`com.totalcross.tooling.deploy` contracts and `LegacyDeployService`; the Gradle
+plugin adds `TypedDeployTask` and registers `totalcrossTypedPackage`.
+
+### Decisions and Trade-offs
+
+Packaging boundaries precede source relocation so IR and converter history stay
+untouched. The adapter uses a disposable classloader and a global invocation
+lock, which prevents static-state races at the cost of serial deploy calls. The
+old path remains for compatibility and comparison.
+
+### Unexpected Problems and Discoveries
+
+The first artifact test assumed unversioned file names, but Gradle correctly
+emitted `*-7.2.2.jar`; the test was changed to locate versioned prefixes. The
+tooling plugin initially used a stale Maven Local snapshot and passed after the
+core was republished with deploy types.
+
+### Validation and Measurable Results
+
+`./gradlew-agent artifactContentTest --console=plain` passed after the filename
+fix. `./tooling-java/gradlew -p tooling-java :tooling-core:test --console=plain`
+passed, and `gradle-plugin/./gradlew test --console=plain` passed. Logs are in
+`/tmp/totalcross-artifact-boundaries.log`,
+`/tmp/tooling-core-plan03-test.log`, and
+`/tmp/gradle-plugin-plan03-test.log`.
+
+### Useful Evidence and Examples
+
+The artifact task script and JUnit package assertions are small, reproducible
+examples of the boundary contract. `TypedDeployTask` shows the Gradle-to-typed
+mapping without changing the legacy task.
+
+### Limitations, Remaining Work, and Open Questions
+
+The typed adapter still invokes the legacy Java entry point and requires a
+complete narrow runtime classpath. Maven migration, artifact publication to a
+remote repository, and removal of duplicate resolver/deploy logic are deferred.
+Physical source ownership remains unchanged pending the IR gate.
+
+### Possible Article Angles
+
+For SDK maintainers: “Why artifact boundaries should precede source moves”
+shows how content contracts reduce merge risk. For build-tool authors: “Putting
+a typed API in front of a static legacy deployer” explains classloader isolation
+and serialized calls.
+
+### Suggested Narrative
+
+Introduce the aggregate-JAR coupling, inventory the existing package groups,
+add deterministic versioned artifacts and content tests, then add the typed
+request/result boundary and isolated adapter. Show the filename-test correction,
+the passing SDK/tooling/plugin validations, and the remaining Maven/IR work.
+
+### Claims Requiring Human Review
+
+The exact package maps are a first boundary proposal and should be reviewed by
+SDK consumers before publication. The adapter's classpath requirements and
+static-state serialization should be verified against real deploy outputs on
+each supported platform.
 
 ### Original Plan versus Actual Outcome
 

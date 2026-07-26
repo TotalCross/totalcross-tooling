@@ -4,6 +4,7 @@
 package com.totalcross.tooling;
 
 import com.totalcross.tooling.jdk.*;
+import com.totalcross.tooling.deploy.*;
 import com.totalcross.tooling.platform.HostPlatform;
 import com.totalcross.tooling.platform.StoreLayout;
 import com.totalcross.tooling.process.ProcessRequest;
@@ -134,6 +135,18 @@ class ToolingCoreTest {
         HostPlatform platform = HostPlatform.detect();
         assertFalse(new CorrettoProvider().candidate("17.0.12", "build1", platform, Path.of("/jdk")).source().toString().contains("latest"));
         assertThrows(IllegalArgumentException.class, () -> new ZuluProvider().candidate("17", "crac-build", platform, Path.of("/jdk")));
+    }
+
+    @Test
+    void typedDeployContractReportsIsolatedLegacyFailure() throws Exception {
+        Path root = Files.createTempDirectory("deploy-test");
+        DeployRequest request = new DeployRequest(root.resolve("app.jar"), root.resolve("out"), root.resolve("sdk"),
+                Path.of(System.getProperty("java.home")), List.of(DeployPlatform.LINUX), false,
+                DeployLogLevel.NORMAL, List.of());
+        DeployResult result = new LegacyDeployService(new DeployToolchain(List.of(root.resolve("missing.jar")))).deploy(request);
+        assertFalse(result.succeeded());
+        assertFalse(result.diagnostics().isEmpty());
+        assertEquals("-linux", DeployPlatform.LINUX.argument());
     }
 
     private static void zip(Path path, String entry, String content) throws IOException {
