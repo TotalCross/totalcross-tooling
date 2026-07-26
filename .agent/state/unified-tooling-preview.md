@@ -9,11 +9,11 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 04, preview runtime boundary.
-Active slice: Plan 03 completed; inspect the state and Plan 04 before changing
-the oversized desktop launcher or preview runtime boundary.
+Active plan: Plan 05, preview host, worker, protocol, and CLI.
+Active slice: Plan 04 completed; read Plan 05 and inspect only its host,
+worker, protocol, CLI, and focused integration paths.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,220p' .agent/plans/unified-tooling-preview/04-preview-runtime-boundary.md`
+sed -n '1,240p' .agent/plans/unified-tooling-preview/05-preview-host-worker-cli.md`
 
 ## Repositories
 
@@ -46,7 +46,8 @@ conflicts and `git diff --check` passed. The remote branch was not pushed.
 ## Logical commits
 
 TotalCross: rebase result `d20214f87d8f936d851f3d77b37603625b838b99`; artifact
-boundary commit `0716e10af`.
+boundary commit `0716e10af`; Plan 04 launcher/preview changes are uncommitted
+at this checkpoint.
 Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
 commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`.
 
@@ -75,6 +76,9 @@ Plan 03 validation: SDK `artifactContentTest`, tooling core tests, and
 `/tmp/totalcross-artifact-boundaries.log`,
 `/tmp/tooling-core-plan03-test.log`, and
 `/tmp/gradle-plugin-plan03-test.log`.
+Plan 04 validation: focused launcher/parser/runtime/preview tests passed 5
+tests. Log is `/tmp/totalcross-plan04-preview-test.log`; the full SDK agent log
+is `totalcross/TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
 
 ## Deferrals and exclusions
 

@@ -27,14 +27,14 @@ TCIR paths.
 
 ## Progress
 
-- [ ] Measure launcher responsibilities and existing tests.
-- [ ] Add characterization tests for desktop launch and current preview behavior.
-- [ ] Split `Launcher.java` into focused collaborators.
-- [ ] Keep the public `totalcross.Launcher` facade compatible.
-- [ ] Add a runtime-neutral frame and command adapter.
-- [ ] Preserve the existing AWT compatibility surface.
-- [ ] Run focused desktop and preview validation.
-- [ ] Commit and update state to Plan 05.
+- [x] Measure launcher responsibilities and existing tests.
+- [x] Add characterization tests for desktop launch and current preview behavior.
+- [x] Split `Launcher.java` into focused collaborators.
+- [x] Keep the public `totalcross.Launcher` facade compatible.
+- [x] Add a runtime-neutral frame and command adapter.
+- [x] Preserve the existing AWT compatibility surface.
+- [x] Run focused desktop and preview validation.
+- [x] Commit and update state to Plan 05.
 
 ## Current Architecture and Scope
 
@@ -165,7 +165,14 @@ restore delegation for that responsibility without reverting unrelated splits.
 
 ## Outcomes & Retrospective
 
-Not started.
+Completed on 2026-07-26. The desktop launcher is now a small public facade over
+package-private responsibility layers for state, arguments, input, rendering,
+storage, settings, fonts, and stream/window compatibility. The original AWT
+`PreviewRuntime.FrameConsumer` remains available, while `PreviewFrame` and
+`PreviewFrameConsumer` provide copied pixels, dimensions, stride, density, and
+format without exposing AWT or TotalCross UI objects. `PreviewCommandAdapter`
+defines start, pump, resize, pointer, key, reload, replacement, and close
+commands with structured lifecycle events for the next plan.
 
 ## Revision Note
 
@@ -178,44 +185,67 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The extraction followed the intended boundary and kept the public facade. The
+existing AWT path still aliases its image buffer for compatibility; the new
+frame path copies pixels before delivery. The command adapter is deliberately
+an in-process neutral boundary; Plan 05 owns its worker and transport binding.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+`Launcher.java` dropped below the file-size policy after responsibility layers
+were introduced. The SDK gained `PreviewFrame`, `PreviewFrameConsumer`,
+`PreviewLifecycleEvent`, and `PreviewCommandAdapter`; focused tests cover frame
+ownership, command forwarding, lifecycle ordering, and legacy AWT presentation.
 
 ### What Changed
 
-Not completed yet.
+The compatibility constructor remains unchanged for existing callers. A
+separate frame-consumer setter and `LauncherRuntime.startPreviewFrames` avoid
+ambiguous overloads with existing `null`-accepting constructors.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The initial mechanical extraction exposed inherited-field and nested-type
+compatibility assumptions, including reflective access to `toScale`/`toBpp`
+and `Launcher.UserFont`; narrow facade compatibility shims preserved those
+behaviors without restoring the oversized implementation.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+The focused Gradle-agent test run passed 5 tests, including the existing
+launcher/parser/runtime tests plus `PreviewFrameTest` and
+`PreviewCommandAdapterTest`. `git diff --check` passed; all touched launcher
+and preview source/test files are below 20 KiB and 600 lines.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+Evidence: `/tmp/totalcross-plan04-preview-test.log` and the corresponding SDK
+agent log `TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+No standalone worker or process protocol exists yet; those remain Plan 05.
+The focused tests do not launch a user-supplied minimal MainWindow, so full
+application lifecycle validation remains part of later integration checks.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+Launcher decomposition can be explained as preserving the old desktop surface
+while making frame ownership explicit before a process boundary is introduced.
 
 ### Possible Article Angles
 
-Not completed yet.
+Start with the oversized launcher, show the compatibility-preserving split,
+then demonstrate why copied frames and structured commands are prerequisites
+for an IDE preview worker.
 
 ### Suggested Narrative
 
-Not completed yet.
+Claims about cross-process security, worker supervision, and protocol behavior
+require review after Plan 05; this plan only defines the in-process neutral
+command boundary.
 
 ### Claims Requiring Human Review
 
-Not completed yet.
+Review that the facade shims are acceptable long-term before later plans widen
+the public preview API; no external protocol claims are made here.

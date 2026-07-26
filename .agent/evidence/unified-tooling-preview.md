@@ -35,3 +35,7 @@ program. Full command output belongs in `/tmp` or build artifacts.
 - 2026-07-26: TotalCross `artifactContentTest` passed after confirming the
   versioned narrow JAR names; tooling core and Gradle plugin tests passed.
   Paired commits: TotalCross `0716e10af`, tooling `d2b646f`.
+- 2026-07-26: Plan 04 focused launcher/parser/runtime/preview validation passed
+  5 tests, including copied-frame ownership and neutral command lifecycle
+  forwarding. Full output is in `/tmp/totalcross-plan04-preview-test.log` and
+  `totalcross/TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
