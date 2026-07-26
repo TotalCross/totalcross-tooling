@@ -28,6 +28,10 @@
 		"onCommand:extension.deploy",
 		"onCommand:extension.deployAndRun",
 		"onCommand:extension.convertMavenProjectToGradle"
+		,"onCommand:extension.preview"
+		,"onCommand:extension.run"
+		,"onCommand:extension.previewStop"
+		,"onCommand:extension.previewDiagnostics"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -51,6 +55,22 @@
 			{
 				"command": "extension.convertMavenProjectToGradle",
 				"title": "TotalCross: Convert Maven Project to Gradle"
+			},
+			{
+				"command": "extension.preview",
+				"title": "TotalCross: Preview"
+			},
+			{
+				"command": "extension.run",
+				"title": "TotalCross: Run"
+			},
+			{
+				"command": "extension.previewStop",
+				"title": "TotalCross: Stop Preview"
+			},
+			{
+				"command": "extension.previewDiagnostics",
+				"title": "TotalCross: Show Preview Diagnostics"
 			}
 		],
 		"configuration": {

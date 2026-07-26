@@ -22,14 +22,14 @@ and preview UI paths. Do not move user interaction into Java tooling.
 
 ## Progress
 
-- [ ] Characterize current wizard and conversion behavior.
-- [ ] Keep generation and migration tests passing before integration.
-- [ ] Add a small CLI/session client layer.
-- [ ] Add preview, run, stop, and reload commands.
-- [ ] Preserve device, SDK version, and platform selection.
-- [ ] Surface structured diagnostics and session status.
-- [ ] Add extension integration tests.
-- [ ] Commit and update state to Plan 08.
+- [x] Characterize current wizard and conversion behavior.
+- [x] Keep generation and migration tests passing before integration.
+- [x] Add a small CLI/session client layer.
+- [x] Add preview, run, stop, and reload commands.
+- [x] Preserve device, SDK version, and platform selection.
+- [x] Surface structured diagnostics and session status.
+- [x] Add extension integration tests.
+- [x] Commit and update state to Plan 08.
 
 ## Current Architecture and Scope
 
@@ -157,7 +157,12 @@ by another client.
 
 ## Outcomes & Retrospective
 
-Not started.
+Completed on 2026-07-26. The existing wizard and Maven conversion flow remain
+unchanged, while the extension gains a shell-free TypeScript preview client,
+session diagnostics, debounced source reload, and stable preview/run/stop/
+diagnostics commands. Gradle and Maven command selection is based on the
+existing project layout and the generated session model remains external to UI
+code.
 
 ## Revision Note
 
@@ -170,44 +175,63 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The extension owns interaction and workspace detection; Java tooling remains
+the process/session implementation. The client starts build commands without a
+shell and maps JSON lines or plain diagnostics to an output channel.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+Added `preview-client.ts`, `preview-commands.ts`, command registration and
+activation metadata, source watcher debounce, and a pure command-selection test.
+The test runner also uses a short macOS user-data path to avoid Electron socket
+path limits.
 
 ### What Changed
 
-Not completed yet.
+The client uses the existing Gradle wrapper or Maven executable and preserves
+the existing project layout's platform/build-tool decisions. Device/profile
+selection remains owned by the existing generator and later preview UI work.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The first integration test run failed on macOS because Electron's Unix socket
+path exceeded the platform limit under the long repository path; a short
+`/tmp` test data directory fixed it without changing production behavior.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+`npm run compile` passed and the VS Code integration suite passed 21 tests,
+including the new preview command test and all existing generator/conversion
+tests. Full output is in `/tmp/vscode-plan07-test.log`.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+The extension integration suite was executed against VS Code 1.130.0. The
+workspace has four new stable commands: `extension.preview`, `extension.run`,
+`extension.previewStop`, and `extension.previewDiagnostics`.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+The current client starts the native build command and watches source/resource
+changes; it does not yet render protocol frames in a custom Webview or persist
+session ownership. Plan 08 handles stale sessions and stronger hot reload.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+Keep the user-facing wizard/conversion story intact while adding preview as a
+small command/session layer rather than turning the extension into a build tool.
 
 ### Possible Article Angles
 
-Not completed yet.
+Show the existing migration safeguards, then the four commands and a reload
+event flowing through the same project layout decisions as packaging.
 
 ### Suggested Narrative
 
-Not completed yet.
+Review command naming and whether a future Webview should replace the AWT host;
+this plan intentionally keeps the host outside the extension UI.
 
 ### Claims Requiring Human Review
 
-Not completed yet.
+Review command naming and whether a future Webview should replace the AWT host;
+this plan intentionally keeps the host outside the extension UI.

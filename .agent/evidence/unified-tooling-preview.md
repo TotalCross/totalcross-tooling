@@ -48,3 +48,6 @@ program. Full command output belongs in `/tmp` or build artifacts.
   legacy Maven JDK download test remains cache/layout dependent. Logs are
   `/tmp/tooling-plan06-core-test.log`, `/tmp/gradle-plugin-plan06-test.log`,
   and `/tmp/maven-plugin-plan06-package.log`.
+- 2026-07-26: Plan 07 VS Code compilation and integration tests passed 21 tests,
+  including the preview command selection test and all existing wizard and
+  migration coverage. Full output is `/tmp/vscode-plan07-test.log`.

@@ -23,7 +23,13 @@ async function main() {
 		const extensionTestsPath = path.resolve(__dirname, './suite/index');
 
 		// Download VS Code, unzip it and run the integration test
-		await runTests({ extensionDevelopmentPath, extensionTestsPath });
+		await runTests({
+			extensionDevelopmentPath,
+			extensionTestsPath,
+			// macOS limits the Unix-domain socket path used by Electron; keep test
+			// state outside the repository's long workspace path.
+			launchArgs: ['--user-data-dir=/tmp/tc-vscode-test-user-data']
+		});
 	} catch (err) {
 		console.error('Failed to run tests');
 		process.exit(1);
