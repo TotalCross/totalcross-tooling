@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.jar.JarFile;
 
-@Mojo(name = "preview")
+@Mojo(name = "preview", requiresDependencyResolution = ResolutionScope.RUNTIME)
 public final class TotalCrossPreviewMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.basedir}")
     private String projectDirectory = ".";

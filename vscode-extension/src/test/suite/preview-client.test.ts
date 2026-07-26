@@ -13,4 +13,10 @@ suite('Preview client', () => {
         assert.strictEqual(command.executable, './gradlew');
         assert.deepStrictEqual(command.args, ['totalcrossPreview', '--console=plain']);
     });
+
+    test('compiles Maven projects before opening preview', () => {
+        const command = previewCommand({...layout, buildTool: 'maven'}, 'darwin');
+        assert.strictEqual(command.executable, 'mvn');
+        assert.deepStrictEqual(command.args, ['compile', 'totalcross:preview']);
+    });
 });

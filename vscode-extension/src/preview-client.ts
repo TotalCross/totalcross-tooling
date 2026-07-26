@@ -11,7 +11,7 @@ export interface PreviewCommand { executable: string; args: string[]; }
 
 export function previewCommand(layout: ProjectLayout, platform: NodeJS.Platform, launchWindow = true): PreviewCommand {
     if (layout.buildTool === 'maven') {
-        return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview'].concat(launchWindow ? [] : ['-Dtotalcross.preview.noLaunch=true'])};
+        return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['compile', 'totalcross:preview'].concat(launchWindow ? [] : ['-Dtotalcross.preview.noLaunch=true'])};
     }
     return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreview', '--console=plain'].concat(launchWindow ? [] : ['-Ptotalcross.preview.noLaunch=true'])};
 }
