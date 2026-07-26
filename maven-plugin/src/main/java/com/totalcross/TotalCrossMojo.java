@@ -34,7 +34,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -86,9 +85,6 @@ public class TotalCrossMojo extends AbstractMojo {
 
     @Component
     private BuildPluginManager pluginManager;
-
-    @Component
-    private PluginDescriptor descriptor;
 
     private ArrayList<Element> args;
 
