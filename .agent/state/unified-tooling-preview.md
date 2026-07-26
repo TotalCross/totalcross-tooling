@@ -9,11 +9,11 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 03, artifact and deploy boundaries.
-Active slice: Plan 02 completed; inspect the state and Plan 03 before
-inventorying SDK artifact ownership and deploy invocations.
+Active plan: Plan 04, preview runtime boundary.
+Active slice: Plan 03 completed; inspect the state and Plan 04 before changing
+the oversized desktop launcher or preview runtime boundary.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,220p' .agent/plans/unified-tooling-preview/03-artifact-and-deploy-boundaries.md`
+sed -n '1,220p' .agent/plans/unified-tooling-preview/04-preview-runtime-boundary.md`
 
 ## Repositories
 
@@ -22,7 +22,7 @@ Workspace root: `/Users/flsobral/repos/totalcross-unified`
 TotalCross repository: `totalcross`
 Branch: `feature/392-feature-request-live-ui-preview-for-ides`
 Remote branch baseline: `21a3d17e8cde3d3d2c45afc527448ffbee22e792`
-Current rebased local commit: `d20214f87d8f936d851f3d77b37603625b838b99`
+Current rebased local commit: `0716e10af` (artifact boundary checkpoint)
 Origin: `https://github.com/TotalCross/totalcross.git`
 
 Tooling repository: `totalcross-tooling`
@@ -45,9 +45,10 @@ conflicts and `git diff --check` passed. The remote branch was not pushed.
 
 ## Logical commits
 
-TotalCross: no commits created by this program.
+TotalCross: rebase result `d20214f87d8f936d851f3d77b37603625b838b99`; artifact
+boundary commit `0716e10af`.
 Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
-commit `1b7cc3e`; shared core commit `e8488ef`.
+commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`.
 
 ## Active paths
 
@@ -55,6 +56,9 @@ commit `1b7cc3e`; shared core commit `e8488ef`.
 `.agent/archive/`, `.agent/reports/`, `scripts/check-file-size-policy.py`,
 `tests/file_size_policy/test_check_file_size_policy.py`,
 `totalcross-unified.code-workspace`, and `tooling-java/`.
+Plan 03 also changed `TotalCrossSDK/build.gradle`, added
+`TotalCrossSDK/gradle/artifact-boundaries.gradle`, its artifact contract test,
+and the typed deploy proof paths in `gradle-plugin/`.
 
 ## Validation and evidence
 
@@ -66,6 +70,11 @@ Plan 02 validation: `./tooling-java/gradlew -p tooling-java
 :tooling-core:test --console=plain` passed 8 tests, and
 `:tooling-core:publishToMavenLocal` passed. Full logs are in
 `/tmp/tooling-core-test.log` and `/tmp/tooling-core-publish.log`.
+Plan 03 validation: SDK `artifactContentTest`, tooling core tests, and
+`gradle-plugin/./gradlew test` passed. Logs are in
+`/tmp/totalcross-artifact-boundaries.log`,
+`/tmp/tooling-core-plan03-test.log`, and
+`/tmp/gradle-plugin-plan03-test.log`.
 
 ## Deferrals and exclusions
 

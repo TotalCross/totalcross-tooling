@@ -57,7 +57,7 @@ explicit user instruction.
 
 - [x] Execute Plan 01 and create the canonical workspace and plan set.
 - [x] Execute Plan 02 and deliver the shared store and vendor-neutral JDK policy.
-- [ ] Execute Plan 03 and establish artifact and deploy boundaries without moving converter sources.
+- [x] Execute Plan 03 and establish artifact and deploy boundaries without moving converter sources.
 - [ ] Execute Plan 04 and decompose the desktop launcher before extending the preview contract.
 - [ ] Execute Plan 05 and deliver the standalone preview host, worker, protocol, and CLI.
 - [ ] Execute Plan 06 and integrate Gradle and Maven build flows.

@@ -29,7 +29,7 @@ plugin deploy invocation. Do not read native TCIR implementation in this plan.
 - [x] Implement the legacy `tc.Deploy` adapter through an isolated classpath.
 - [x] Migrate one focused tooling path to the typed service.
 - [x] Preserve the aggregate SDK artifact and compatibility entry points.
-- [ ] Commit both repository checkpoints and update state to Plan 04.
+- [x] Commit both repository checkpoints and update state to Plan 04.
 
 ## Current Architecture and Scope
 
