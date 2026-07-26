@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import com.totalcross.DownloadManager;
 import com.totalcross.JavaJDKManager;
 
 import org.codehaus.plexus.util.FileUtils;
@@ -31,6 +32,13 @@ public class JavaJDKManagerTest {
             FileUtils.deleteDirectory(javaJDKManager.getLocalRepositoryDir());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    void usesTheArchiveHomeLayoutOnMac() {
+        if (DownloadManager.isMac) {
+            assertEquals(Paths.get(repoTestDir, "zulu_jdk_11", "Contents", "Home").toFile(), javaJDKManager.getPath());
         }
     }
 

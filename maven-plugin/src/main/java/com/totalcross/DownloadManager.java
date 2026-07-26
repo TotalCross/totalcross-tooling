@@ -79,14 +79,23 @@ public abstract class DownloadManager {
       ZipFile zipFile = new ZipFile(new File(localRepositoryDir, baseFolderName + ".zip"));
       if (!zipFile.getFile().exists())
          return;
-      zipFile.extractAll(localRepositoryDir);
       List<FileHeader> filesOnZip = zipFile.getFileHeaders();
+      if (filesOnZip.isEmpty())
+         return;
       String firstFileOnZip = filesOnZip.get(0).getFileName();
       if (filesOnZip.get(0).isDirectory()) {
          firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
       }
+      File extractedRoot = new File(localRepositoryDir, firstFileOnZip);
+      if (extractedRoot.exists()) {
+         FileUtils.deleteDirectory(extractedRoot);
+      }
+      File destination = new File(localRepositoryDir, baseFolderName);
+      if (destination.exists()) {
+         FileUtils.deleteDirectory(destination);
+      }
+      zipFile.extractAll(localRepositoryDir);
       rename(firstFileOnZip, baseFolderName);
-      FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
       FileUtils.deleteDirectory(new File(localRepositoryDir, baseFolderName + ".zip"));
    }
 

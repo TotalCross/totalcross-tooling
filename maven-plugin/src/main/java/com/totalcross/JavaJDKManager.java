@@ -6,6 +6,7 @@
 
 package com.totalcross;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -24,7 +25,10 @@ public class JavaJDKManager extends DownloadManager {
 
     public void init() throws IOException {
         if (!verify()) {
-            download();
+            File archive = new File(getLocalRepositoryDir(), baseFolderName + ".zip");
+            if (!archive.exists()) {
+                download();
+            }
             unzip();
         }
     }
@@ -42,12 +46,7 @@ public class JavaJDKManager extends DownloadManager {
     @Override
     protected void setPath(String path) {
         if (isMac) {
-            /* 
-                java unzip doesn't support symbolic links, 
-                but it's easy enough for us to just append 
-                the Contents/Home whatever 
-            */
-            path += "/zulu-11.jdk/Contents/Home";
+            path += "/Contents/Home";
         }
         super.setPath(path);
     }
