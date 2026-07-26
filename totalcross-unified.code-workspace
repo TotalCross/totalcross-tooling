@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "TotalCross",
+      "path": "../totalcross"
+    },
+    {
+      "name": "TotalCross Tooling",
+      "path": "."
+    }
+  ]
+}
