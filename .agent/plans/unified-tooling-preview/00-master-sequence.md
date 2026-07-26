@@ -189,9 +189,16 @@ the final file-size policy.
   Evidence: `origin/HEAD` points to `origin/master` at
   `b7c25d7762aa326bf0c3a9bd384c173efad006da`; `origin/main` does not exist.
 
-- Observation: the IR branch is not yet an ancestor of the integration base.
+- Observation: the live-preview integration base is the existing branch-392
+  branch, not the default branch.
+  Evidence: `origin/feature/392-feature-request-live-ui-preview-for-ides` is at
+  `21a3d17e8cde3d3d2c45afc527448ffbee22e792` and contains the live-preview work.
+
+- Observation: the IR branch is not yet an ancestor of the branch-392
+  integration base.
   Evidence: `git merge-base --is-ancestor origin/feature/422-create-ir-for-jniaot
-  origin/master` returned exit status 1.
+  origin/feature/392-feature-request-live-ui-preview-for-ides` returned exit
+  status 1.
 
 ## Decision Log
 
@@ -252,8 +259,12 @@ unrelated work.
 
 ## Outcomes & Retrospective
 
-No implementation has been executed yet. Update this section only at completed
-plan boundaries and point to compact evidence rather than repeating logs.
+Plan 01 completed the reproducible workspace bootstrap. The tooling repository
+now owns the eleven canonical plans, checkpoint/evidence files, the staged
+file-size checker, and a relative two-root VS Code workspace. The IR branch was
+not merged: ancestry against the reviewed branch-392 integration base returned
+exit status 1. Plan 02 is the next active slice; later outcomes remain pending.
+Evidence is summarized in `.agent/evidence/unified-tooling-preview.md`.
 
 ## Revision Note
 
@@ -262,7 +273,8 @@ protection, VS Code workflow preservation, token-efficient execution, and the
 20 KiB/600-line file policy.
 
 2026-07-26: bootstrap confirmed `origin/master` as the TotalCross integration
-base and recorded that the IR merge gate remains unsatisfied.
+default branch, while the reviewed live-preview integration base is branch 392;
+the IR merge gate against branch 392 remains unsatisfied.
 
 ## Editorial Report
 

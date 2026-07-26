@@ -21,7 +21,7 @@ a failure requires a prior command.
 
 ## Progress
 
-- [ ] Fetch `main`, branch 392, and branch 422.
+- [ ] Fetch the reviewed branch-392 integration base and branch 422.
 - [ ] Verify branch 422 is merged into the chosen integration base.
 - [ ] Stop safely if the merge gate is not satisfied.
 - [ ] Merge the integration base into branch 392 without rewriting history.
@@ -36,13 +36,16 @@ a failure requires a prior command.
 
 ## Current Architecture and Scope
 
-The merge gate is satisfied only when:
+The reviewed integration base for this program is the existing branch-392
+remote branch, which already contains the live-preview implementation. The
+merge gate is satisfied only when:
 
-    git merge-base --is-ancestor       origin/feature/422-create-ir-for-jniaot origin/main
+    git merge-base --is-ancestor       origin/feature/422-create-ir-for-jniaot \
+      origin/feature/392-feature-request-live-ui-preview-for-ides
 
-returns success, or the user explicitly names another reviewed integration base
-that contains the branch. If it fails, update state with the observed refs and
-stop this plan. Do not approximate the merge by cherry-picking selected files.
+returns success. If it fails, update state with the observed refs and stop this
+plan. Do not substitute `origin/master` or approximate the merge by
+cherry-picking selected files.
 
 Protected IR-related files may exceed the size limits and must not be split for
 this program. If `TotalCrossVM/CMakeLists.txt` must be modified and is oversized,
@@ -86,11 +89,13 @@ Fetch refs and record exact SHAs. Verify both repositories have no unexplained
 changes. Create local backup branches containing the pre-merge heads; do not push
 them automatically.
 
-Merge `origin/main` into branch 392 with a normal merge commit. Do not rebase the
-long-running branch. Resolve conflicts by preserving both the branch-392 preview
-work and the merged IR behavior. For protected paths, prefer the merged IR branch
-content unless branch 392 contains an independently required fix; document every
-manual combination.
+After the gate is satisfied, continue from the local branch-392 checkout, which
+is the integration branch for this program. Do not rebase or replace it with
+`origin/master`. If a separate reviewed base is introduced later, merge that
+base into branch 392 with a normal merge commit and document the chosen ref.
+Resolve conflicts by preserving the branch-392 preview work and the merged IR
+behavior. For protected paths, prefer the merged IR branch content unless branch
+392 contains an independently required fix; document every manual combination.
 
 Run the focused converter fixture generator and native TCIR differential tests
 named by the merged IR plan. Verify default-off runtime behavior. Escalate to
@@ -126,9 +131,14 @@ the original diagram.
 
 ## Surprises & Discoveries
 
-- Observation: none recorded yet.
-  Evidence: this section must capture merge conflicts or fixture ownership that
-  changes the physical move.
+- Observation: the live-preview branch is the reviewed integration base for this
+  program; the default `origin/master` branch is not a substitute.
+  Evidence: branch 392 is checked out at
+  `21a3d17e8cde3d3d2c45afc527448ffbee22e792` and the user confirmed it already
+  contains the live-preview changes.
+
+- Observation: branch 422 is not yet an ancestor of the branch-392 base.
+  Evidence: the branch-392 ancestry check returned exit status 1.
 
 ## Decision Log
 

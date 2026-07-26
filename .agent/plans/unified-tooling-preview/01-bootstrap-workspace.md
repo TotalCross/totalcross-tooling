@@ -39,11 +39,11 @@ and record only the result, commit, and log path in evidence.
 - [x] Read repository `AGENTS.md` and `.agent/PLANS.md`.
 - [x] Record initial commits and the IR-branch relationship.
 - [x] Copy the plan set into the tooling repository.
-- [ ] Create state, evidence, archive, report, and size-policy checker.
-- [ ] Commit the canonical plans and support files.
-- [ ] Create and commit the multi-root workspace.
-- [ ] Remove only the now-redundant external plan copies.
-- [ ] Update state to Plan 02.
+- [x] Create state, evidence, archive, report, and size-policy checker.
+- [x] Commit the canonical plans and support files.
+- [x] Create and commit the multi-root workspace.
+- [x] Remove only the now-redundant external plan copies.
+- [x] Update state to Plan 02.
 
 ## Current Architecture and Scope
 
@@ -136,8 +136,10 @@ Record these values in the canonical master and state file:
     git -C "$TC_REPO" branch --show-current
     git -C "$TC_TOOLING_REPO" branch --show-current
 
-Fetch the IR branch and record whether it is already an ancestor of `origin/main`.
-Do not merge it in this plan.
+Fetch the IR branch and record whether it is already an ancestor of the reviewed
+live-preview integration base `origin/feature/392-feature-request-live-ui-preview-for-ides`.
+Do not merge it in this plan. `origin/master` is only the TotalCross remote
+default branch and is not the base for this integration.
 
     git -C "$TC_REPO" fetch origin       feature/422-create-ir-for-jniaot main
 
@@ -183,13 +185,16 @@ workspace root or either clone.
 ## Surprises & Discoveries
 
 - Observation: the TotalCross remote has no `origin/main` ref and its default
-  branch is `origin/master`.
+  branch is `origin/master`; the reviewed integration base is branch 392.
   Evidence: `git remote show origin` and `git ls-remote --heads origin` during
-  bootstrap; the IR branch was compared with `origin/master` instead.
+  bootstrap; the IR branch was compared with
+  `origin/feature/392-feature-request-live-ui-preview-for-ides`.
 
 - Observation: the IR branch is not an ancestor of `origin/master`.
-  Evidence: `git merge-base --is-ancestor origin/feature/422-create-ir-for-jniaot
-  origin/master` returned exit status 1.
+  Evidence: the authoritative gate comparison against branch 392,
+  `git merge-base --is-ancestor origin/feature/422-create-ir-for-jniaot
+  origin/feature/392-feature-request-live-ui-preview-for-ides`, returned exit
+  status 1.
 
 ## Decision Log
 
@@ -236,7 +241,16 @@ file already matches, do not rewrite it.
 
 ## Outcomes & Retrospective
 
-Not started.
+Plan 01 completed on 2026-07-26. The two sibling repositories were cloned,
+the expected branches were selected, and the tooling repository now owns all
+eleven plans plus resumable state, append-only evidence, an archive, an
+editorial report, and the staged file-size checker. The relative workspace is
+committed separately. The only material deviation was the branch reference:
+TotalCross uses `origin/master` as its remote default, while branch 392 is the
+reviewed live-preview integration base and is the reference for the IR gate.
+
+The checker tests passed 5/5, both staged validation runs passed, and no changes
+were made to the TotalCross working tree. Plan 02 is the next executable slice.
 
 ## Revision Note
 
@@ -246,13 +260,88 @@ workspace creation, baseline capture, and size-policy enforcement explicit.
 2026-07-26: recorded the actual TotalCross base as `origin/master` after the
 remote rejected the planned `origin/main` ref.
 
+2026-07-26: corrected the integration base to the existing branch-392 remote
+branch, which already contains the live-preview changes; the IR gate is now
+defined against that branch.
+
 ## Editorial Report
 
 This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The program needed a reproducible two-repository workspace before shared
+tooling and live-preview changes could be implemented safely. Plan 01 created
+that workspace from the downloaded plan set and left a machine-independent VS
+Code workspace plus a state file that identifies the next plan.
+
+### Original Plan versus Actual Outcome
+
+The planned bootstrap completed. The only correction was to distinguish the
+TotalCross remote default branch (`origin/master`) from the reviewed branch-392
+integration base, which already contains live-preview changes. The IR branch was
+not merged because its ancestry gate against branch 392 is unsatisfied.
+
+### What Changed
+
+The tooling repository now contains the canonical plans under
+`.agent/plans/unified-tooling-preview/`, checkpoint files under `.agent/`,
+`scripts/check-file-size-policy.py`, its five-test unittest module, and
+`totalcross-unified.code-workspace`. Two commits record these changes:
+`3487465` for plans/support and `c27a313` for the workspace.
+
+### Decisions and Trade-offs
+
+Plans are canonical in tooling so the active TotalCross branch remains focused
+on runtime work. The workspace uses sibling-relative paths for portability. The
+size checker exempts protected IR paths but fails oversized ordinary staged text
+files. The integration base is branch 392 rather than the remote default.
+
+### Unexpected Problems and Discoveries
+
+The planned `origin/main` ref does not exist in TotalCross. The remote default
+is `origin/master`; subsequent integration checks use branch 392 because it is
+the reviewed live-preview base.
+
+### Validation and Measurable Results
+
+`python3 -m unittest discover -s tests/file_size_policy -v` passed 5 tests.
+`git diff --cached --check` and
+`python3 scripts/check-file-size-policy.py --repo . --staged` passed before
+both bootstrap commits.
+
+### Useful Evidence and Examples
+
+The baseline log is `/tmp/totalcross-bootstrap-baseline.log`. The resumable
+checkpoint is `.agent/state/unified-tooling-preview.md`, and the relative
+workspace is `totalcross-unified.code-workspace`.
+
+### Limitations, Remaining Work, and Open Questions
+
+No implementation plan beyond Plan 01 has started. The IR merge gate remains
+open until branch 422 is an ancestor of branch 392. No pushes, pull requests,
+tags, or releases were performed.
+
+### Possible Article Angles
+
+For maintainers, “Bootstrapping a resumable multi-repository implementation
+plan” can explain why canonical state and evidence matter. For tooling authors,
+“Separating an integration base from a repository’s default branch” can show how
+branch provenance prevents an unsafe merge.
+
+### Suggested Narrative
+
+Start with the need to coordinate SDK/runtime and tooling repositories, describe
+the branch and history constraints, show the canonical plan/state layout and
+relative workspace, explain the missing `origin/main` discovery and correction
+to branch 392, then close with the passing checker tests and the open IR gate.
+
+### Claims Requiring Human Review
+
+The statement that branch 392 contains the live-preview changes is based on the
+user-provided integration direction and branch selection; review it against the
+remote history before external publication. Commit hashes and test results are
+locally verified.
 
 ### Original Plan versus Actual Outcome
 

@@ -15,7 +15,11 @@ program. Full command output belongs in `/tmp` or build artifacts.
   on `feature/392-feature-request-live-ui-preview-for-ides`; tooling cloned at
   `caaa01b0b1d26c1112491d298f5b29a81be8d313` and branched as
   `feature/unify-tooling-and-preview`.
+- 2026-07-26: TotalCross `origin/master` is the remote default at
+  `b7c25d7762aa326bf0c3a9bd384c173efad006da`, but the reviewed integration base
+  is branch 392 at `21a3d17e8cde3d3d2c45afc527448ffbee22e792`.
 - 2026-07-26: IR branch `ff81ab91a3ca08045198855ddb26874bd20e7b9a` is not an
-  ancestor of TotalCross `origin/master` `b7c25d7762aa326bf0c3a9bd384c173efad006da`.
-  `origin/main` does not exist; full output is in
+  ancestor of the branch-392 integration base. Full baseline output is in
   `/tmp/totalcross-bootstrap-baseline.log`.
+- 2026-07-26: file-size-policy unit tests passed 5/5; staged `git diff --check`
+  and checker validation passed before commits `3487465` and `c27a313`.

@@ -9,11 +9,11 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 01, bootstrap workspace.
-Active slice: repositories cloned and baseline discovery completed; canonical
-plan/support files are being installed.
-Next command: finish the Plan 01 support files, run focused validation, commit
-the plan set, then create the relative multi-root workspace commit.
+Active plan: Plan 02, shared store and vendor-neutral JDK policy.
+Active slice: Plan 01 bootstrap completed; inspect the state and Plan 02 before
+inventorying the existing Gradle and Maven resolvers.
+Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
+sed -n '1,220p' .agent/plans/unified-tooling-preview/02-shared-store-and-jdk.md`
 
 ## Repositories
 
@@ -34,13 +34,15 @@ Origin: `https://github.com/TotalCross/totalcross-tooling.git`
 Fetched IR branch commit: `ff81ab91a3ca08045198855ddb26874bd20e7b9a`.
 The TotalCross remote default branch is `master` (`origin/HEAD` points to it),
 not `main`; its commit is `b7c25d7762aa326bf0c3a9bd384c173efad006da`.
-The IR branch is not an ancestor of `origin/master`. The planned `origin/main`
-comparison could not run because that ref does not exist. No merge was attempted.
+The reviewed live-preview integration base is
+`origin/feature/392-feature-request-live-ui-preview-for-ides` at
+`21a3d17e8cde3d3d2c45afc527448ffbee22e792`. The IR branch is not an ancestor
+of that base. No merge was attempted.
 
 ## Logical commits
 
 TotalCross: no commits created by this program.
-Tooling: Plan 01 bootstrap commit is pending; baseline is recorded above.
+Tooling: bootstrap commit `3487465`; workspace commit `c27a313`.
 
 ## Active paths
 
@@ -52,8 +54,9 @@ Tooling: Plan 01 bootstrap commit is pending; baseline is recorded above.
 ## Validation and evidence
 
 Baseline command log: `/tmp/totalcross-bootstrap-baseline.log`.
-Focused validation to run before commit: the file-size-policy unittest,
-`git diff --check`, and the staged size-policy checker.
+Plan 01 validation: `python3 -m unittest discover -s tests/file_size_policy -v`
+passed 5 tests; `git diff --cached --check` and the staged size-policy checker
+passed before both commits.
 
 ## Deferrals and exclusions
 
@@ -65,5 +68,5 @@ remain excluded.
 ## Blockers
 
 The IR merge gate is intentionally unsatisfied and is a Plan 09 prerequisite.
-The missing `origin/main` ref is recorded as a discovery; use the actual
-`origin/master` default branch when Plan 09 evaluates ancestry.
+Use branch 392 as the reviewed integration base when Plan 09 evaluates ancestry;
+`origin/master` is only the remote default branch.
