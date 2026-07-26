@@ -51,3 +51,7 @@ program. Full command output belongs in `/tmp` or build artifacts.
 - 2026-07-26: Plan 07 VS Code compilation and integration tests passed 21 tests,
   including the preview command selection test and all existing wizard and
   migration coverage. Full output is `/tmp/vscode-plan07-test.log`.
+- 2026-07-26: Plan 08 reload/session checkpoint passed all tooling Java tests,
+  including twenty successful candidate reloads and one failed candidate that
+  did not replace the active preview. Android local-download migration remains
+  open pending typed deploy integration.

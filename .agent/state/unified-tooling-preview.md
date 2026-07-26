@@ -10,8 +10,8 @@ This file is the resumable checkpoint for the sequential plans in
 ## Checkpoint
 
 Active plan: Plan 08, hot reload and tool cache.
-Active slice: Plan 07 completed; read Plan 08 and inspect only reload/session
-ownership, stale cleanup, and cache paths.
+Active slice: Plan 08 implementation checkpoint; shared reload/session state and
+catalog exist, but Android deploy migration remains before Plan 09.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
 sed -n '1,240p' .agent/plans/unified-tooling-preview/08-hot-reload-and-tool-cache.md`
 
@@ -50,7 +50,8 @@ boundary commit `0716e10af`; Plan 04 launcher/preview commit `e1d080e48`.
 Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
 commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
 Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 commit
-`ce22dc9`; Plan 07 changes are uncommitted at this checkpoint.
+`ce22dc9`; Plan 07 commit `a776258`; Plan 08 implementation is uncommitted
+at this checkpoint.
 
 ## Active paths
 
@@ -89,6 +90,8 @@ passed, and the focused Maven manager test passed. Logs are
 `/tmp/maven-plugin-plan06-package.log`.
 Plan 07 validation: VS Code compile and the integration suite passed 21 tests;
 full output is `/tmp/vscode-plan07-test.log`.
+Plan 08 validation: tooling Java tests passed, including the twenty-reload
+candidate promotion test. Full output is `/tmp/tooling-plan08-test.log`.
 
 ## Deferrals and exclusions
 

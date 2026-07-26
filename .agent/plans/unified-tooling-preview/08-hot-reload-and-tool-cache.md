@@ -22,12 +22,12 @@ perform the branch-422 merge or physical converter move.
 
 ## Progress
 
-- [ ] Add debounced build and reload state transitions.
-- [ ] Replace workers only after successful build and readiness.
-- [ ] Add resource-only and class-change handling.
-- [ ] Add stale-session and orphan-worker cleanup.
-- [ ] Add repeated-reload leak and failure tests.
-- [ ] Add versioned `protoc` and `bundletool` catalog entries.
+- [x] Add debounced build and reload state transitions.
+- [x] Replace workers only after successful build and readiness.
+- [x] Add resource-only and class-change handling.
+- [x] Add stale-session and orphan-worker cleanup.
+- [x] Add repeated-reload leak and failure tests.
+- [x] Add versioned `protoc` and `bundletool` catalog entries.
 - [ ] Migrate Android deploy resolution to shared tools.
 - [ ] Remove only obsolete SDK-local download behavior.
 - [ ] Commit and update state to Plan 09.
@@ -156,7 +156,13 @@ match.
 
 ## Outcomes & Retrospective
 
-Not started.
+Implementation checkpoint completed on 2026-07-26. The reload coordinator,
+debouncer, stale-session cleaner, and external-tool catalog are implemented and
+tested. The coordinator waits for ready plus first frame before promoting a
+candidate, closes the previous active candidate only after promotion, and
+preserves it when a candidate fails. Plan 08 remains active until the Android
+deployer consumes the shared tool catalog and obsolete local download behavior
+is retired safely.
 
 ## Revision Note
 
@@ -169,44 +175,62 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+The worker-promotion boundary is complete. Android deploy still has a legacy
+`etc/tools/android/protoc` resolver in the SDK; moving it requires a typed
+deploy-context change and packaging validation after the IR/source-ownership
+gate, so it remains intentionally visible rather than silently removed.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+Added `PreviewSessionState`, `PreviewReloadCoordinator`, `ReloadDebouncer`,
+`StaleSessionCleaner`, `ExternalToolCatalog`, and `ExternalToolRequest`; the
+host test performs twenty successful reloads followed by a failed candidate.
 
 ### What Changed
 
-Not completed yet.
+Candidate promotion is transactional and first-frame gated. External tools use
+the shared store coordinate shape and immutable installer, with concrete
+version/source catalog entries and checksum verification required at install.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The initial external-tool request used the wrong `InstallRequest` argument order;
+the shared store test compile caught and corrected it before any install path was
+executed.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+`./tooling-java/gradlew -p tooling-java test --console=plain` passed all module
+tests, including the 20-reload candidate promotion test and the existing
+protocol/host/tooling-core suites.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+Full output: `/tmp/tooling-plan08-test.log`. The implementation is in the
+tooling branch; no SDK Android download source was deleted.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+The shared catalog is ready, but the SDK Android deployer still needs an
+explicit typed-toolchain integration and legacy fallback test before its local
+download behavior can be retired.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+Repeated reload should be described as a state-machine promotion problem, not
+as a UI repaint problem: readiness and first frame are the safety boundary.
 
 ### Possible Article Angles
 
-Not completed yet.
+Show one broken candidate in the middle of twenty successful reloads and the
+unchanged active preview as evidence of safe promotion.
 
 ### Suggested Narrative
 
-Not completed yet.
+Human review is required for the exact `protoc`/`bundletool` checksums and for
+the final SDK deployer migration after the IR gate.
 
 ### Claims Requiring Human Review
 
-Not completed yet.
+The exact `protoc`/`bundletool` checksums and the final SDK deployer migration
+remain open; Plan 09 must not start while those Plan 08 items are incomplete.
