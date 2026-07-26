@@ -46,7 +46,9 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         }
         String separator = java.io.File.pathSeparator;
         String value = classpath.stream().map(java.io.File::getAbsolutePath).collect(Collectors.joining(separator));
-        Process process = new ProcessBuilder(System.getProperty("java.home") + "/bin/java", "-cp", value,
+        String java = Paths.get(System.getProperty("java.home"), "bin",
+            System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
+        Process process = new ProcessBuilder(java, "-cp", value,
             "totalcross.Launcher", applicationClass.get())
             .directory(projectDirectory()).inheritIO().start();
         getLogger().lifecycle("TotalCross preview window started with PID {}", process.pid());
