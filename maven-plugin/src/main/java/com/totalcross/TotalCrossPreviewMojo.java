@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.jar.JarFile;
 
 @Mojo(name = "preview", requiresDependencyResolution = ResolutionScope.RUNTIME)
-public final class TotalCrossPreviewMojo extends AbstractMojo {
+public class TotalCrossPreviewMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.basedir}")
     private String projectDirectory = ".";
     @Parameter(defaultValue = "${project.build.directory}")
