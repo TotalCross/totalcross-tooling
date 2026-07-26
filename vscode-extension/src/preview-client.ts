@@ -9,11 +9,11 @@ import {BuildTool, ProjectLayout} from './project-layout';
 export interface PreviewEvent { kind: string; message?: string; [key: string]: any; }
 export interface PreviewCommand { executable: string; args: string[]; }
 
-export function previewCommand(layout: ProjectLayout, platform: NodeJS.Platform): PreviewCommand {
+export function previewCommand(layout: ProjectLayout, platform: NodeJS.Platform, launchWindow = true): PreviewCommand {
     if (layout.buildTool === 'maven') {
-        return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview']};
+        return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview'].concat(launchWindow ? [] : ['-Dtotalcross.preview.noLaunch=true'])};
     }
-    return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreview', '--console=plain']};
+    return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreview', '--console=plain'].concat(launchWindow ? [] : ['-Ptotalcross.preview.noLaunch=true'])};
 }
 
 export class PreviewClient {
@@ -40,7 +40,7 @@ export class PreviewClient {
     }
 
     public async reload(): Promise<void> {
-        const command = previewCommand(this.layout, this.platform);
+        const command = previewCommand(this.layout, this.platform, false);
         await this.run(command);
         this.emit({kind: 'reload-ready', message: this.layout.root});
     }

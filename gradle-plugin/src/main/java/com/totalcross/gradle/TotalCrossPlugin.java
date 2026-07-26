@@ -66,7 +66,10 @@ public class TotalCrossPlugin implements Plugin<Project> {
         });
         var modelTask = project.getTasks().register("totalcrossProjectModel", ProjectModelTask.class);
         project.getTasks().register("totalcrossRun", TotalCrossRunTask.class, task -> task.dependsOn(modelTask));
-        project.getTasks().register("totalcrossPreview", TotalCrossPreviewTask.class, task -> task.dependsOn(modelTask, "classes"));
+        project.getTasks().register("totalcrossPreview", TotalCrossPreviewTask.class, task -> {
+            task.dependsOn(modelTask, "classes");
+            task.getApplicationClass().convention(extension.getApplicationName());
+        });
         project.getTasks().register("totalcrossPreviewStop", TotalCrossPreviewStopTask.class);
     }
 
