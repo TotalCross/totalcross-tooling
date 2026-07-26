@@ -21,7 +21,8 @@ Workspace root: `/Users/flsobral/repos/totalcross-unified`
 
 TotalCross repository: `totalcross`
 Branch: `feature/392-feature-request-live-ui-preview-for-ides`
-Baseline commit: `21a3d17e8cde3d3d2c45afc527448ffbee22e792`
+Remote branch baseline: `21a3d17e8cde3d3d2c45afc527448ffbee22e792`
+Current rebased local commit: `d20214f87d8f936d851f3d77b37603625b838b99`
 Origin: `https://github.com/TotalCross/totalcross.git`
 
 Tooling repository: `totalcross-tooling`
@@ -38,6 +39,9 @@ The reviewed live-preview integration base is
 `origin/feature/392-feature-request-live-ui-preview-for-ides` at
 `21a3d17e8cde3d3d2c45afc527448ffbee22e792`. The IR branch is not an ancestor
 of that base. No merge was attempted.
+The local branch was explicitly rebased onto `origin/master` at
+`b7c25d7762aa326bf0c3a9bd384c173efad006da`; the rebase completed without
+conflicts and `git diff --check` passed. The remote branch was not pushed.
 
 ## Logical commits
 

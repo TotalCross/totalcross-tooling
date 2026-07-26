@@ -1,0 +1,12 @@
+// Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+// SPDX-License-Identifier: Apache-2.0
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'tooling-java'
+include 'tooling-core'

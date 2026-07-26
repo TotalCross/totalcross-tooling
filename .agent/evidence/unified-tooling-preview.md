@@ -23,3 +23,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   `/tmp/totalcross-bootstrap-baseline.log`.
 - 2026-07-26: file-size-policy unit tests passed 5/5; staged `git diff --check`
   and checker validation passed before commits `3487465` and `c27a313`.
+- 2026-07-26: local TotalCross branch 392 was rebased onto `origin/master`
+  `b7c25d7762aa326bf0c3a9bd384c173efad006da` without conflicts. Resulting local
+  HEAD is `d20214f87d8f936d851f3d77b37603625b838b99`; `git diff --check` passed,
+  and no push was performed.
+- 2026-07-26: Plan 02 inventory identified duplicated Gradle/Maven SDK and JDK
+  resolution in the paths recorded in the plan's `Surprises & Discoveries`.

@@ -27,15 +27,15 @@ as migration inputs.
 
 ## Progress
 
-- [ ] Inventory current Gradle and Maven SDK/JDK resolution.
-- [ ] Create the `tooling-java` build and `tooling-core` module.
-- [ ] Implement native data/cache root resolution.
-- [ ] Implement locked, checksum-verified, atomic installations.
-- [ ] Implement concrete SDK and JDK metadata.
-- [ ] Implement vendor-neutral JDK candidates and explicit overrides.
-- [ ] Implement subprocess capability probes.
-- [ ] Add focused tests for all supported host platforms.
-- [ ] Publish the core artifact to Maven Local for later plans.
+- [x] Inventory current Gradle and Maven SDK/JDK resolution.
+- [x] Create the `tooling-java` build and `tooling-core` module.
+- [x] Implement native data/cache root resolution.
+- [x] Implement locked, checksum-verified, atomic installations.
+- [x] Implement concrete SDK and JDK metadata.
+- [x] Implement vendor-neutral JDK candidates and explicit overrides.
+- [x] Implement subprocess capability probes.
+- [x] Add focused tests for all supported host platforms.
+- [x] Publish the core artifact to Maven Local for later plans.
 - [ ] Commit and update state to Plan 03.
 
 ## Current Architecture and Scope
@@ -180,6 +180,26 @@ Publish `tooling-core` to Maven Local with:
   while a user-provided JDK path was used as a successful comparison.
   Evidence: confirm current resolver filters and tests during inventory.
 
+- Observation: Gradle and Maven duplicate download, extraction, SDK/JDK cache,
+  and platform normalization logic. Gradle's `JdkResolver` validates only an
+  executable `bin/java` and requests a Zulu `latest` URL; Maven's
+  `JavaJDKManager` fixes Zulu JDK 11 and uses the app-data directory without a
+  checksum or completion marker.
+  Evidence: `gradle-plugin/src/main/java/com/totalcross/gradle/{SdkResolver,JdkResolver,ArchiveDownloader,CacheLock}.java`
+  and `maven-plugin/src/main/java/com/totalcross/{DownloadManager,JavaJDKManager,TotalCrossSDKManager}.java`.
+
+- Observation: the live-preview branch was rebased locally onto
+  `origin/master` before Plan 02 implementation, as explicitly requested.
+  Evidence: local TotalCross HEAD `d20214f87d8f936d851f3d77b37603625b838b99`,
+  `origin/master` is an ancestor, and the rebase had no conflicts; no push was
+  performed.
+
+- Observation: the first timeout implementation attempted to read a process
+  stream after forcible termination and received `java.io.IOException: Stream
+  closed`.
+  Evidence: `/tmp/tooling-core-test.log` captured the failure; `ProcessRunner`
+  now treats closed timeout streams as empty and the full suite passes 8 tests.
+
 ## Decision Log
 
 - Decision: select JDKs by verified capability, not vendor name.
@@ -218,12 +238,27 @@ an installation merely because a provider no longer lists it.
 
 ## Outcomes & Retrospective
 
-Not started.
+The shared Java core now provides platform roots, concrete artifact identity,
+checksum verification, safe ZIP extraction, lock-coordinated atomic installs,
+metadata/completion markers, process execution with timeout cleanup, JDK
+capability probing, vendor candidates, selection diagnostics, and SDK install
+adapters. It is independent of Gradle, Maven, AWT, and TotalCross SDK classes.
+The plugin resolvers were intentionally left unchanged; later plans will migrate
+consumers after the boundary is proven.
+
+Eight focused tests pass on the current macOS ARM64 host, including simulated
+Windows/Linux layouts, ZIP traversal rejection, checksum mismatch, side-by-side
+coordinates, lock contention, process streams/timeouts, JDK fallback/CRaC
+rejection, and provider URL checks. The artifact was published to Maven Local.
 
 ## Revision Note
 
 2026-07-26: separated store/JDK work into a bounded plan and required concrete
 metadata plus real subprocess capability probes.
+
+2026-07-26: implemented the standalone Java 17 core, added focused tests, fixed
+timeout-stream cleanup after the first test failure, and published
+`com.totalcross.tooling:tooling-core:0.1.0-SNAPSHOT` to Maven Local.
 
 ## Editorial Report
 
@@ -231,7 +266,84 @@ This section is mandatory at completion. Keep it factual and evidence-based.
 
 ### Editorial Summary
 
-Not completed yet.
+Gradle and Maven previously carried separate SDK/JDK download and cache logic,
+including a Zulu `latest` endpoint and weak executable-only validation. Plan 02
+created a vendor-neutral Java 17 core that stores concrete immutable
+installations, verifies archives, and proves external process capability before
+selection.
+
+### Original Plan versus Actual Outcome
+
+The standalone build, store, process, JDK, SDK types, focused tests, and Maven
+Local publication were completed. The existing Gradle and Maven plugins were
+not migrated, as required by the plan's bounded scope; they remain migration
+inputs for later plans.
+
+### What Changed
+
+`tooling-java/tooling-core` contains platform/store/download/process/jdk/sdk
+packages. `StoreLayout` handles macOS, Windows, and Linux roots;
+`ArtifactInstaller` creates metadata and a completion marker after atomic
+promotion; `JdkCapabilityProbe` and `JdkSelector` validate candidates and emit
+diagnostics. The `tooling-java` Gradle wrapper and Maven publication are now
+available for later consumers.
+
+### Decisions and Trade-offs
+
+The core uses immutable coordinate directories and per-coordinate lock files,
+which favors reproducibility over automatic replacement. Provider adapters build
+concrete-version URLs and reject CRaC Zulu candidates; provider API discovery and
+download metadata remain outside this slice. Explicit JDK paths take precedence
+over ordered candidates.
+
+### Unexpected Problems and Discoveries
+
+Timeout cleanup exposed a closed-stream race after process termination. The
+runner now returns a timed-out result without failing the caller when a child
+closes its pipes during cleanup.
+
+### Validation and Measurable Results
+
+`./tooling-java/gradlew -p tooling-java :tooling-core:test --console=plain`
+passed 8 tests. `./tooling-java/gradlew -p tooling-java
+:tooling-core:publishToMavenLocal --console=plain` passed and installed the
+snapshot artifact under the local Maven repository. Full logs are in
+`/tmp/tooling-core-test.log` and `/tmp/tooling-core-publish.log`.
+
+### Useful Evidence and Examples
+
+The focused test class is
+`tooling-java/tooling-core/src/test/java/com/totalcross/tooling/ToolingCoreTest.java`.
+The inventory inputs are the existing Gradle `SdkResolver`/`JdkResolver` and
+Maven `DownloadManager`/`JavaJDKManager` paths named in `Surprises & Discoveries`.
+
+### Limitations, Remaining Work, and Open Questions
+
+Providers currently describe concrete archive metadata; network API adapters and
+plugin migration remain for later plans. Cross-host execution was simulated for
+layout paths but not run on Windows or Linux in this environment. The core does
+not yet expose Gradle/Maven preview or deploy workflows.
+
+### Possible Article Angles
+
+For build-tool maintainers: “Why a JDK cache should verify capabilities, not
+just `bin/java`” demonstrates the selection diagnostics and process probe. For
+platform engineers: “Atomic side-by-side developer tool installs across three
+operating systems” explains roots, locks, checksums, and completion markers.
+
+### Suggested Narrative
+
+Start with duplicated resolver behavior and the risks of `latest` downloads,
+then show the platform-neutral coordinate model, staged install path, timeout
+and subprocess probe, the first closed-stream failure and fix, and the 8-test
+publication result. Close with provider/network and plugin migration limits.
+
+### Claims Requiring Human Review
+
+The provider URL shapes are deliberately minimal metadata adapters and should be
+reviewed before being treated as production download endpoints. The statement
+that branch 392 contains the live-preview changes is user-directed and should be
+verified against remote history before publication.
 
 ### Original Plan versus Actual Outcome
 
