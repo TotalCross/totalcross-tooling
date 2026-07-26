@@ -50,4 +50,27 @@ suite('Maven to Gradle project model', () => {
             await fs.rmdir(root, {recursive: true});
         }
     });
+
+    test('resolves project.name in TotalCross plugin configuration', async () => {
+        const root = await fs.mkdtemp(path.join(os.tmpdir(), 'totalcross-maven-name-'));
+        try {
+            await fs.writeFile(path.join(root, 'pom.xml'), projectNamePom('<name>Demo App</name>', '<name>${project.name}</name>'));
+            const project = await readMavenTotalCrossProject(path.join(root, 'pom.xml'));
+            assert.equal(project.applicationName, 'Demo App');
+        } finally { await fs.rmdir(root, {recursive: true}); }
+    });
+
+    test('uses artifactId when Maven project name is omitted', async () => {
+        const root = await fs.mkdtemp(path.join(os.tmpdir(), 'totalcross-maven-artifact-'));
+        try {
+            await fs.writeFile(path.join(root, 'pom.xml'), projectNamePom('', ''));
+            const project = await readMavenTotalCrossProject(path.join(root, 'pom.xml'));
+            assert.equal(project.applicationName, 'sample-app');
+        } finally { await fs.rmdir(root, {recursive: true}); }
+    });
 });
+
+function projectNamePom(projectName: string, pluginName: string): string {
+    const plugin = pluginName ? `<build><plugins><plugin><groupId>com.totalcross</groupId><artifactId>totalcross-maven-plugin</artifactId><configuration>${pluginName}</configuration></plugin></plugins></build>` : '';
+    return `<project><modelVersion>4.0.0</modelVersion><groupId>com.example</groupId><artifactId>sample-app</artifactId><version>1.0</version>${projectName}${plugin}<dependencies><dependency><groupId>com.totalcross</groupId><artifactId>totalcross-sdk</artifactId><version>7.3.0</version></dependency></dependencies></project>`;
+}

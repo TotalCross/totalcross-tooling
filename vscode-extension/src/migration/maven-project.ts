@@ -116,6 +116,12 @@ export async function readMavenTotalCrossProject(pomPath: string): Promise<Maven
     known['pom.groupId'] = groupId;
     known['project.version'] = version;
     known['pom.version'] = version;
+    const rawProjectName = rawText(project.name);
+    const projectName = rawProjectName && rawProjectName !== '${project.name}'
+        ? resolve(rawProjectName, properties, known, 'project name')
+        : artifactId;
+    known['project.name'] = projectName;
+    known['pom.name'] = projectName;
 
     const dependencies = list(project.dependencies && project.dependencies.dependency);
     const sdkDependencies = dependencies.filter((dependency) => rawText(dependency.groupId) === 'com.totalcross' && rawText(dependency.artifactId) === 'totalcross-sdk');
@@ -127,7 +133,7 @@ export async function readMavenTotalCrossProject(pomPath: string): Promise<Maven
     const plugins = list(project.build && project.build.plugins && project.build.plugins.plugin);
     const plugin = coordinate(plugins, 'com.totalcross', 'totalcross-maven-plugin');
     const configuration = plugin && plugin.configuration;
-    const applicationName = resolve(configurationValue(configuration, 'name') || rawText(project.name) || artifactId, properties, known, 'application name') || artifactId;
+    const applicationName = resolve(configurationValue(configuration, 'name') || projectName || artifactId, properties, known, 'application name') || artifactId;
     const repositories = list(project.repositories && project.repositories.repository)
         .map((repository) => rawText(repository.url))
         .filter((url): url is string => !!url);
