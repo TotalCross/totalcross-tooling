@@ -18,7 +18,16 @@ export interface MavenTotalCrossProject {
     certificates?: string;
     totalcrossHome?: string;
     javaRelease?: number;
+    compilerExcludes: string[];
+    dependencies: MavenDependency[];
     repositories: string[];
+}
+
+export interface MavenDependency {
+    groupId: string;
+    artifactId: string;
+    version: string;
+    scope?: string;
 }
 
 function list(value: any): any[] {
@@ -82,6 +91,28 @@ function javaRelease(project: any, properties: {[key: string]: string}, known: {
     }
     const number = Number(resolved.replace(/^1\./, ''));
     return isFinite(number) ? number : undefined;
+}
+
+function compilerExcludes(plugins: any[], properties: {[key: string]: string}, known: {[key: string]: string | undefined}): string[] {
+    const plugin = coordinate(plugins, 'org.apache.maven.plugins', 'maven-compiler-plugin');
+    const entries = list(plugin && plugin.configuration && plugin.configuration.excludes && plugin.configuration.excludes.exclude);
+    return entries.map((entry) => resolve(typeof entry === 'string' ? entry : rawText(entry), properties, known, 'compiler exclude'))
+        .filter((value): value is string => !!value);
+}
+
+function dependencyValues(dependencies: any[], properties: {[key: string]: string}, known: {[key: string]: string | undefined}): MavenDependency[] {
+    return dependencies
+        .map((dependency) => {
+            const groupId = resolve(rawText(dependency && dependency.groupId), properties, known, 'dependency group ID');
+            const artifactId = resolve(rawText(dependency && dependency.artifactId), properties, known, 'dependency artifact ID');
+            const version = resolve(rawText(dependency && dependency.version), properties, known, 'dependency version');
+            const scope = resolve(rawText(dependency && dependency.scope), properties, known, 'dependency scope');
+            return groupId && artifactId && version
+                ? {groupId, artifactId, version, ...(scope ? {scope} : {})}
+                : undefined;
+        })
+        .filter((dependency): dependency is MavenDependency => !!dependency
+            && !(dependency.groupId === 'com.totalcross' && dependency.artifactId === 'totalcross-sdk'));
 }
 
 /** Converts a supported Maven POM into the deliberately small model needed by the Gradle templates. */
@@ -148,6 +179,8 @@ export async function readMavenTotalCrossProject(pomPath: string): Promise<Maven
         certificates: resolve(configurationValue(configuration, 'certificates'), properties, known, 'certificates path'),
         totalcrossHome: resolve(configurationValue(configuration, 'totalcrossHome'), properties, known, 'TotalCross home path'),
         javaRelease: javaRelease(project, properties, known),
+        compilerExcludes: compilerExcludes(plugins, properties, known),
+        dependencies: dependencyValues(dependencies, properties, known),
         repositories
     };
 }

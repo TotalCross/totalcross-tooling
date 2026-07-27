@@ -20,6 +20,13 @@ export interface ConversionResult {
 
 type Validator = () => Promise<void>;
 const BACKUP_DIRECTORY = '.totalcross-migration-backup';
+const GRADLE_PREVIEW_CONFIG = {
+    buildCommand: './gradlew classes',
+    classOutputPaths: ['build/classes/java/main'],
+    resourcePaths: ['src/main/resources'],
+    dependencyPaths: ['build/libs'],
+    headlessOutput: 'build/totalcross-preview/preview.png'
+};
 
 async function exists(file: string): Promise<boolean> {
     try { await fs.access(file); return true; } catch (_) { return false; }
@@ -75,6 +82,45 @@ async function mergeGitIgnore(root: string): Promise<string | undefined> {
     return additions.length ? `${existing}${existing && !existing.endsWith('\n') ? '\n' : ''}${additions.join('\n')}\n` : undefined;
 }
 
+async function migratePreviewConfig(root: string, files: Map<string, Buffer | string>): Promise<void> {
+    const relative = 'totalcross.preview.json';
+    const file = path.join(root, relative);
+    if (!(await exists(file))) {
+        return;
+    }
+    const source = await fs.readFile(file, 'utf8');
+    let config: {[key: string]: unknown};
+    try {
+        const parsed = JSON.parse(source);
+        if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
+            return;
+        }
+        config = parsed as {[key: string]: unknown};
+    } catch (_) {
+        return;
+    }
+    const buildCommand = typeof config.buildCommand === 'string' ? config.buildCommand : '';
+    const classOutputPaths = Array.isArray(config.classOutputPaths) ? config.classOutputPaths : [];
+    const isMavenPreview = /\bmvn(?:w)?\b/i.test(buildCommand)
+        || classOutputPaths.some((entry) => typeof entry === 'string' && entry.replace(/\\/g, '/').startsWith('target/'));
+    if (!isMavenPreview) {
+        return;
+    }
+    files.set(relative, `${JSON.stringify({...config, ...GRADLE_PREVIEW_CONFIG}, null, 2)}\n`);
+}
+
+/** Repairs the preview descriptor when a generated Gradle project is revisited. */
+export async function synchronizeGradlePreviewConfig(root: string): Promise<boolean> {
+    const files = new Map<string, Buffer | string>();
+    await migratePreviewConfig(root, files);
+    const contents = files.get('totalcross.preview.json');
+    if (typeof contents !== 'string') {
+        return false;
+    }
+    await writeAtomic(path.join(root, 'totalcross.preview.json'), contents);
+    return true;
+}
+
 function isMissingLocalPlugin(error: Error): boolean {
     return /com\.totalcross\.application|com\.totalcross\.application\.gradle\.plugin/i.test(error.message)
         && /(not found|could not resolve|could not find|unknown plugin)/i.test(error.message);
@@ -98,6 +144,7 @@ export async function writeAndValidateGradleProject(root: string, rendered: Rend
     await removeTree(backup);
     await fs.mkdir(backup, {recursive: true});
     const files = new Map(rendered.files);
+    await migratePreviewConfig(root, files);
     const mergedIgnore = await mergeGitIgnore(root);
     if (mergedIgnore !== undefined) { files.set('.gitignore', mergedIgnore); }
     const gradleProperties = files.get('gradle.properties');
@@ -158,7 +205,16 @@ export async function convertMavenProjectToGradle(context: vscode.ExtensionConte
             vscode.window.showInformationMessage(result.message);
             return result;
         }
-        if (classification.kind !== 'eligible' && classification.kind !== 'gradle-present') {
+        if (classification.kind === 'gradle-present') {
+            const repaired = await synchronizeGradlePreviewConfig(root);
+            const message = repaired
+                ? 'This project already contains the generated Gradle build. Its TotalCross preview configuration was synchronized.'
+                : 'This project already contains a Gradle build. No conversion was performed.';
+            const result = {status: 'already-gradle' as 'already-gradle', message};
+            vscode.window.showInformationMessage(result.message);
+            return result;
+        }
+        if (classification.kind !== 'eligible') {
             const result = {status: 'unsupported' as 'unsupported', message: 'This workspace is not a supported TotalCross Maven project.'};
             vscode.window.showErrorMessage(result.message);
             return result;

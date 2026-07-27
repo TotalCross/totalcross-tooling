@@ -29,6 +29,15 @@ function totalcrossLine(name: string, value: string | undefined): string {
     return value ? `    ${name} = file('${quote(value)}')\n` : '';
 }
 
+function gradleConfiguration(scope: string | undefined): string {
+    switch (scope) {
+        case 'runtime': return 'runtimeOnly';
+        case 'test': return 'testImplementation';
+        case 'provided': return 'compileOnly';
+        default: return 'implementation';
+    }
+}
+
 function wrapper(relative: string): Buffer {
     return readFileSync(path.join(TEMPLATE_ROOT, relative));
 }
@@ -38,9 +47,11 @@ export function renderGradleProject(project: MavenTotalCrossProject, pluginVersi
     const repositories = project.repositories.length ? project.repositories : [DEFAULT_REPOSITORY];
     const javaRelease = project.javaRelease || (/^7\.(?:[3-9]|[1-9]\d)\./.test(project.sdkVersion) || /^([89]|[1-9]\d)\./.test(project.sdkVersion) ? 17 : 8);
     const platforms = project.platforms.map((platform) => `'${quote(platform)}'`).join(', ');
+    const compilerExcludes = project.compilerExcludes.map((exclude) => `    exclude '${quote(exclude)}'\n`).join('');
+    const dependencies = project.dependencies.map((dependency) => `    ${gradleConfiguration(dependency.scope)} '${quote(`${dependency.groupId}:${dependency.artifactId}:${dependency.version}`)}'\n`).join('');
     const files = new Map<string, Buffer | string>();
     files.set('settings.gradle', `${MARKER}\npluginManagement {\n    repositories {\n        mavenLocal()\n        gradlePluginPortal()\n        mavenCentral()\n    }\n}\n\nrootProject.name = '${quote(project.artifactId)}'\n`);
-    files.set('build.gradle', `${MARKER}\nplugins {\n    id 'java'\n    id 'com.totalcross.application' version '${quote(pluginVersion)}'\n}\n\ngroup = '${quote(project.groupId || 'com.totalcross')}'\nversion = '${quote(project.version || '1.0-SNAPSHOT')}'\n\nrepositories {\n${repositories.map(repositoryBlock).join('\n')}\n    mavenCentral()\n}\n\njava {\n    toolchain { languageVersion = JavaLanguageVersion.of(17) }\n}\n\ntasks.withType(JavaCompile).configureEach { options.release = ${javaRelease} }\n\ndependencies {\n    implementation 'com.totalcross:totalcross-sdk:${quote(project.sdkVersion)}'\n}\n\ntotalcross {\n    applicationName = '${quote(project.applicationName)}'\n    platforms = [${platforms}]\n    activationKey = providers.gradleProperty('totalcrossActivationKey').orNull\n${totalcrossLine('certificates', project.certificates)}${totalcrossLine('totalcrossHome', project.totalcrossHome)}}\n`);
+    files.set('build.gradle', `${MARKER}\nplugins {\n    id 'java'\n    id 'com.totalcross.application' version '${quote(pluginVersion)}'\n}\n\ngroup = '${quote(project.groupId || 'com.totalcross')}'\nversion = '${quote(project.version || '1.0-SNAPSHOT')}'\n\nrepositories {\n${repositories.map(repositoryBlock).join('\n')}\n    mavenCentral()\n}\n\njava {\n    toolchain { languageVersion = JavaLanguageVersion.of(17) }\n}\n\ntasks.withType(JavaCompile).configureEach {\n    options.release = ${javaRelease}\n${compilerExcludes}}\n\ndependencies {\n    implementation 'com.totalcross:totalcross-sdk:${quote(project.sdkVersion)}'\n${dependencies}}\n\ntotalcross {\n    applicationName = '${quote(project.applicationName)}'\n    platforms = [${platforms}]\n    activationKey = providers.gradleProperty('totalcrossActivationKey').orNull\n${totalcrossLine('certificates', project.certificates)}${totalcrossLine('totalcrossHome', project.totalcrossHome)}}\n`);
     files.set('.totalcross/project.json', JSON.stringify({buildSystem: 'gradle', artifactId: project.artifactId, applicationName: project.applicationName, sdkVersion: project.sdkVersion}, null, 2) + '\n');
     files.set('gradlew', wrapper('gradlew'));
     files.set('gradlew.bat', wrapper('gradlew.bat'));

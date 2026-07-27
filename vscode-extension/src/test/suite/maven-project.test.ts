@@ -10,7 +10,7 @@ import * as path from 'path';
 import {renderGradleProject} from '../../migration/gradle-renderer';
 import {readMavenTotalCrossProject} from '../../migration/maven-project';
 
-const pom = `<project><parent><groupId>com.example</groupId><version>1.2.3</version></parent><artifactId>demo</artifactId><properties><tc.version>7.3.0</tc.version></properties><repositories><repository><url>http://legacy.example/repo</url></repository></repositories><dependencies><dependency><groupId>com.totalcross</groupId><artifactId>totalcross-sdk</artifactId><version>${'${tc.version}'}</version></dependency></dependencies><build><plugins><plugin><groupId>com.totalcross</groupId><artifactId>totalcross-maven-plugin</artifactId><configuration><name>Demo App</name><platforms><platform>linux_arm</platform><platform>-android</platform></platforms><activationKey>secret</activationKey></configuration></plugin></plugins></build></project>`;
+const pom = `<project><parent><groupId>com.example</groupId><version>1.2.3</version></parent><artifactId>demo</artifactId><properties><tc.version>7.3.0</tc.version></properties><repositories><repository><url>http://legacy.example/repo</url></repository></repositories><dependencies><dependency><groupId>com.totalcross</groupId><artifactId>totalcross-sdk</artifactId><version>${'${tc.version}'}</version></dependency><dependency><groupId>org.xerial</groupId><artifactId>sqlite-jdbc</artifactId><version>3.8.7</version><scope>runtime</scope></dependency></dependencies><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><excludes><exclude>**/Generated.java</exclude></excludes></configuration></plugin><plugin><groupId>com.totalcross</groupId><artifactId>totalcross-maven-plugin</artifactId><configuration><name>Demo App</name><platforms><platform>linux_arm</platform><platform>-android</platform></platforms><activationKey>secret</activationKey></configuration></plugin></plugins></build></project>`;
 
 suite('Maven to Gradle project model', () => {
     test('reads inherited coordinates, properties, and TotalCross configuration', async () => {
@@ -28,6 +28,8 @@ suite('Maven to Gradle project model', () => {
             assert.ok(build.includes("allowInsecureProtocol = true"));
             assert.ok(build.includes('languageVersion = JavaLanguageVersion.of(17)'));
             assert.ok(build.includes('options.release = 17'));
+            assert.ok(build.includes("exclude '**/Generated.java'"));
+            assert.ok(build.includes("runtimeOnly 'org.xerial:sqlite-jdbc:3.8.7'"));
             assert.ok(build.includes("activationKey = providers.gradleProperty('totalcrossActivationKey').orNull"));
             assert.equal(build.includes('secret'), false);
             assert.equal(String(rendered.files.get('.totalcross/project.json')).includes('secret'), false);

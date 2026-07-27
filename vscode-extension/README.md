@@ -127,6 +127,11 @@ creates a marked Groovy Gradle project and Wrapper, and runs `./gradlew tasks
 plugin is missing from Maven Local, the generated Gradle files and original POM
 remain so that publishing the plugin and retrying the command is safe.
 
+When `totalcross.preview.json` already exists, conversion updates its build
+command and Gradle output paths while preserving the selected MainWindow and
+other preview preferences. Maven compiler excludes and additional active Maven
+dependencies are carried into the generated `build.gradle`.
+
 The conversion writes activation keys only to project-local `gradle.properties`,
 which it adds to `.gitignore`; it does not put the key in `build.gradle` or
 `.totalcross/project.json`. A root with unrelated Maven and Gradle files is
