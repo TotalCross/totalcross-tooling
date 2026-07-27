@@ -27,6 +27,14 @@ const GRADLE_PREVIEW_CONFIG = {
     dependencyPaths: ['build/libs'],
     headlessOutput: 'build/totalcross-preview/preview.png'
 };
+const LEGACY_ECLIPSE_METADATA = [
+    '.classpath',
+    '.project',
+    '.settings/org.eclipse.core.resources.prefs',
+    '.settings/org.eclipse.jdt.apt.core.prefs',
+    '.settings/org.eclipse.jdt.core.prefs',
+    '.settings/org.eclipse.m2e.core.prefs'
+];
 
 async function exists(file: string): Promise<boolean> {
     try { await fs.access(file); return true; } catch (_) { return false; }
@@ -55,8 +63,8 @@ async function copyToBackup(root: string, backup: string, relative: string): Pro
     return true;
 }
 
-async function restore(root: string, backup: string, originalFiles: Set<string>, writtenFiles: string[]): Promise<void> {
-    for (const relative of writtenFiles) {
+async function restore(root: string, backup: string, originalFiles: Set<string>, changedFiles: string[]): Promise<void> {
+    for (const relative of changedFiles) {
         const destination = path.join(root, relative);
         if (originalFiles.has(relative)) {
             await fs.mkdir(path.dirname(destination), {recursive: true});
@@ -174,9 +182,10 @@ export async function writeAndValidateGradleProject(root: string, rendered: Rend
             : `${existing}${existing && !existing.endsWith('\n') ? '\n' : ''}${activation}\n`);
     }
     const written = Array.from(files.keys());
+    const changed = Array.from(new Set([...written, ...LEGACY_ECLIPSE_METADATA]));
     const originals = new Set<string>();
     try {
-        for (const relative of written) {
+        for (const relative of changed) {
             if (await copyToBackup(root, backup, relative)) { originals.add(relative); }
         }
         for (const relative of written) {
@@ -189,6 +198,9 @@ export async function writeAndValidateGradleProject(root: string, rendered: Rend
             }
         }
         await validate();
+        for (const relative of LEGACY_ECLIPSE_METADATA) {
+            try { await fs.unlink(path.join(root, relative)); } catch (_) { /* Already absent. */ }
+        }
         await fs.rename(path.join(root, 'pom.xml'), await nextPomBackup(root));
         await removeTree(backup);
         return 'converted';
@@ -198,7 +210,7 @@ export async function writeAndValidateGradleProject(root: string, rendered: Rend
             await removeTree(backup);
             return 'plugin-not-local';
         }
-        await restore(root, backup, originals, written);
+        await restore(root, backup, originals, changed);
         await removeTree(backup);
         throw failure;
     }

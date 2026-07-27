@@ -133,6 +133,9 @@ When `totalcross.preview.json` already exists, conversion updates its build
 command and Gradle output paths while preserving the selected MainWindow and
 other preview preferences. Maven compiler excludes and additional active Maven
 dependencies are carried into the generated `build.gradle`.
+Legacy Eclipse/Maven metadata (`.classpath`, `.project`, and the generated
+`.settings` entries) is removed after successful validation so the VS Code Java
+extension imports the Gradle model instead of retaining the old Maven classpath.
 
 The conversion writes activation keys only to project-local `gradle.properties`,
 which it adds to `.gitignore`; it does not put the key in `build.gradle` or

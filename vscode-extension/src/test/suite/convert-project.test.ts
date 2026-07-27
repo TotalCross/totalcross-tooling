@@ -15,6 +15,10 @@ suite('Maven to Gradle conversion transaction', () => {
         try {
             await fs.writeFile(path.join(root, 'pom.xml'), '<project/>');
             await fs.writeFile(path.join(root, 'gradle.properties'), 'other=value\n');
+            await fs.writeFile(path.join(root, '.classpath'), 'maven classpath');
+            await fs.writeFile(path.join(root, '.project'), 'maven project');
+            await fs.mkdir(path.join(root, '.settings'), {recursive: true});
+            await fs.writeFile(path.join(root, '.settings/org.eclipse.m2e.core.prefs'), 'maven settings');
             await fs.writeFile(path.join(root, 'totalcross.preview.json'), JSON.stringify({
                 mainWindow: 'com.example.MainWindow',
                 buildCommand: 'mvn compile',
@@ -31,6 +35,9 @@ suite('Maven to Gradle conversion transaction', () => {
             assert.equal(result, 'converted');
             assert.equal(await exists(path.join(root, 'pom.xml')), false);
             assert.equal(await exists(path.join(root, 'pom.xml.maven-backup')), true);
+            assert.equal(await exists(path.join(root, '.classpath')), false);
+            assert.equal(await exists(path.join(root, '.project')), false);
+            assert.equal(await exists(path.join(root, '.settings/org.eclipse.m2e.core.prefs')), false);
             assert.equal(await fs.readFile(path.join(root, 'gradle.properties'), 'utf8'), 'other=value\ntotalcrossActivationKey=secret\n');
             const preview = JSON.parse(await fs.readFile(path.join(root, 'totalcross.preview.json'), 'utf8'));
             assert.equal(preview.mainWindow, 'com.example.MainWindow');
