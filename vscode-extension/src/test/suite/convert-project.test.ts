@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import {promises as fs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import {synchronizeGradlePreviewConfig, writeAndValidateGradleProject} from '../../migration/convert-project';
+import {synchronizeGradlePreviewConfig, validateGradlePreviewTasks, writeAndValidateGradleProject} from '../../migration/convert-project';
 
 suite('Maven to Gradle conversion transaction', () => {
     test('preserves the POM only after successful validation and keeps unrelated properties', async () => {
@@ -79,6 +79,14 @@ suite('Maven to Gradle conversion transaction', () => {
             assert.equal(preview.buildCommand, './gradlew classes');
             assert.deepEqual(preview.classOutputPaths, ['build/classes/java/main']);
         } finally { await fs.rmdir(root, {recursive: true}); }
+    });
+
+    test('rejects a Gradle plugin without the preview and run tasks', () => {
+        assert.throws(
+            () => validateGradlePreviewTasks('totalcrossPackage - Packages the application'),
+            /does not provide totalcrossPreview and totalcrossRun/
+        );
+        assert.doesNotThrow(() => validateGradlePreviewTasks('totalcrossPreview\ntotalcrossRun\n'));
     });
 });
 

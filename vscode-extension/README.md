@@ -126,6 +126,8 @@ creates a marked Groovy Gradle project and Wrapper, and runs `./gradlew tasks
 `pom.xml.maven-backup` only after that validation succeeds. If the unpublished
 plugin is missing from Maven Local, the generated Gradle files and original POM
 remain so that publishing the plugin and retrying the command is safe.
+The validation also checks that the installed plugin exposes the
+`totalcrossPreview` and `totalcrossRun` tasks used by the extension.
 
 When `totalcross.preview.json` already exists, conversion updates its build
 command and Gradle output paths while preserving the selected MainWindow and

@@ -126,6 +126,13 @@ function isMissingLocalPlugin(error: Error): boolean {
         && /(not found|could not resolve|could not find|unknown plugin)/i.test(error.message);
 }
 
+export function validateGradlePreviewTasks(output: string): void {
+    const missing = ['totalcrossPreview', 'totalcrossRun'].filter((task) => !new RegExp(`^\\s*${task}(?:\\s|$)`, 'm').test(output));
+    if (missing.length > 0) {
+        throw new Error(`The installed TotalCross Gradle plugin does not provide ${missing.join(' and ')}. Publish the current TotalCross Gradle plugin to Maven Local and run the conversion again.`);
+    }
+}
+
 function runWrapper(root: string): Promise<void> {
     const command = process.platform === 'win32' ? 'gradlew.bat' : './gradlew';
     return new Promise((resolve, reject) => {
@@ -134,7 +141,18 @@ function runWrapper(root: string): Promise<void> {
         child.stdout.on('data', (chunk) => output += chunk.toString());
         child.stderr.on('data', (chunk) => output += chunk.toString());
         child.on('error', (error) => reject(error));
-        child.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Gradle Wrapper exited with ${code}.\n${output}`)));
+        child.on('close', (code) => {
+            if (code !== 0) {
+                reject(new Error(`Gradle Wrapper exited with ${code}.\n${output}`));
+                return;
+            }
+            try {
+                validateGradlePreviewTasks(output);
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
     });
 }
 
@@ -206,6 +224,9 @@ export async function convertMavenProjectToGradle(context: vscode.ExtensionConte
             return result;
         }
         if (classification.kind === 'gradle-present') {
+            if (await generatedMigrationBuild(root)) {
+                await runWrapper(root);
+            }
             const repaired = await synchronizeGradlePreviewConfig(root);
             const message = repaired
                 ? 'This project already contains the generated Gradle build. Its TotalCross preview configuration was synchronized.'
