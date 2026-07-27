@@ -1,0 +1,49 @@
+// Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+// SPDX-License-Identifier: LGPL-2.1-only
+
+plugins {
+    id 'application'
+    id 'maven-publish'
+}
+
+group = 'com.totalcross'
+version = '0.1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+def sdkVersion = providers.gradleProperty('totalcrossSdkVersion')
+if (!sdkVersion.present) {
+    throw new GradleException('Set -PtotalcrossSdkVersion to an SDK build that exposes PreviewRuntime.')
+}
+
+dependencies {
+    implementation "com.totalcross:totalcross-sdk:${sdkVersion.get()}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+application {
+    mainClass = 'com.totalcross.livepreview.LivePreviewServer'
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifactId = 'totalcross-live-preview-server'
+        }
+    }
+}

@@ -2,11 +2,11 @@
 	"name": "vscode-totalcross",
 	"displayName": "TotalCross Extension",
 	"description": "This is TotalCross plugin extension for vs code. ",
-	"version": "0.0.16",
+	"version": "0.1.0",
 	"publisher": "TotalCross",
 	"icon": "icon.png",
 	"engines": {
-		"vscode": "^1.40.0"
+		"vscode": "^1.85.0"
 	},
 	"repository": {
 		"type": "git",
@@ -27,11 +27,17 @@
 		"onCommand:extension.package",
 		"onCommand:extension.deploy",
 		"onCommand:extension.deployAndRun",
-		"onCommand:extension.convertMavenProjectToGradle"
-		,"onCommand:extension.preview"
-		,"onCommand:extension.run"
-		,"onCommand:extension.previewStop"
-		,"onCommand:extension.previewDiagnostics"
+		"onCommand:extension.convertMavenProjectToGradle",
+		"onCommand:totalcross.startPreview",
+		"onCommand:totalcross.openLivePreview",
+		"onCommand:totalcross.stopPreview",
+		"onCommand:totalcross.reloadPreview",
+		"onCommand:totalcross.openPreviewConfig",
+		"onWebviewPanel:totalcrossLivePreview",
+		"onCommand:extension.preview",
+		"onCommand:extension.run",
+		"onCommand:extension.previewStop",
+		"onCommand:extension.previewDiagnostics"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -57,6 +63,26 @@
 				"title": "TotalCross: Convert Maven Project to Gradle"
 			},
 			{
+				"command": "totalcross.startPreview",
+				"title": "TotalCross: Start Preview"
+			},
+			{
+				"command": "totalcross.openLivePreview",
+				"title": "TotalCross: Open Live Preview"
+			},
+			{
+				"command": "totalcross.stopPreview",
+				"title": "TotalCross: Stop Preview"
+			},
+			{
+				"command": "totalcross.reloadPreview",
+				"title": "TotalCross: Reload Preview"
+			},
+			{
+				"command": "totalcross.openPreviewConfig",
+				"title": "TotalCross: Open Preview Config"
+			},
+			{
 				"command": "extension.preview",
 				"title": "TotalCross: Preview"
 			},
@@ -80,6 +106,66 @@
 					"type": "string",
 					"default": "0.1.0-SNAPSHOT",
 					"description": "Version of com.totalcross.application used in new projects. An unpublished version must first be installed with publishToMavenLocal."
+				},
+				"totalcross.livePreview.javaCommand": {
+					"type": "string",
+					"default": "java",
+					"description": "Java executable used to start the local TotalCross preview service."
+				},
+				"totalcross.livePreview.jvmArgs": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Additional JVM arguments for the preview service."
+				},
+				"totalcross.livePreview.extraClasspath": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Additional local SDK or dependency classpath entries. Relative paths are resolved from the workspace folder."
+				},
+				"totalcross.livePreview.port": {
+					"type": "number",
+					"default": 0,
+					"description": "Local port for the preview service. Use 0 to select a free port."
+				},
+				"totalcross.livePreview.width": {
+					"type": "number",
+					"default": 360,
+					"description": "Initial preview screen width."
+				},
+				"totalcross.livePreview.height": {
+					"type": "number",
+					"default": 592,
+					"description": "Initial preview screen height."
+				},
+				"totalcross.livePreview.orientation": {
+					"type": "string",
+					"enum": [
+						"portrait",
+						"landscape"
+					],
+					"default": "portrait",
+					"description": "Initial preview orientation."
+				},
+				"totalcross.livePreview.deviceProfile": {
+					"type": "string",
+					"default": "android",
+					"description": "Device profile label written to the project preview configuration."
+				},
+				"totalcross.livePreview.framePollInterval": {
+					"type": "number",
+					"default": 500,
+					"description": "Milliseconds between Webview frame refreshes."
+				},
+				"totalcross.livePreview.controlTimeout": {
+					"type": "number",
+					"default": 30000,
+					"description": "Milliseconds allowed for local preview control requests."
 				}
 			}
 		}
@@ -97,11 +183,11 @@
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "1.40.0",
+		"@types/node": "20.11.0",
+		"@types/vscode": "1.85.0",
 		"glob": "^7.1.5",
 		"mocha": "^11.7.6",
-		"typescript": "^3.6.4",
+		"typescript": "5.3.3",
 		"@vscode/test-electron": "^2.5.2"
 	},
 	"dependencies": {

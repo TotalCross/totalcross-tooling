@@ -1,0 +1,9 @@
+TotalCross Live Preview Server
+
+Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+
+This project is licensed under LGPL-2.1-only; see LICENSE.
+
+Initial Live Preview implementation sources are imported with authorization
+from TotalCross SDK commit 0db656ad9, which had not been published when this
+project was created. Imported file headers and authorship are preserved.

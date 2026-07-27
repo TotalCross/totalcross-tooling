@@ -2227,6 +2227,244 @@
       "rename_following": "automatic",
       "source_path": "vsc-extension-quickstart.md",
       "source_repository": "totalcross-vscode-plugin"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/DisposableAppClassLoader.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/preview/DisposableAppClassLoader.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/HeadlessPngSurface.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/preview/HeadlessPngSurface.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/HeadlessPreviewSurface.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/preview/HeadlessPreviewSurface.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/LivePreviewServer.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/preview/PreviewServer.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/PreviewConfig.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/preview/PreviewConfig.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/PreviewConfigLoader.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/preview/PreviewConfigLoader.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/main/java/com/totalcross/livepreview/PreviewRunner.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/main/java/totalcross/PreviewRunner.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/com/totalcross/livepreview/DisposableAppClassLoaderTest.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/totalcross/preview/DisposableAppClassLoaderTest.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/com/totalcross/livepreview/HeadlessPreviewSurfaceTest.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/totalcross/preview/HeadlessPreviewSurfaceTest.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/com/totalcross/livepreview/LivePreviewServerProcessTest.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/totalcross/preview/PreviewServerTest.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/com/totalcross/livepreview/PreviewConfigLoaderTest.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/totalcross/preview/PreviewConfigLoaderTest.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/previewfixture/AppClass.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/previewfixture/AppClass.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/previewfixture/PreviewMainWindow.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/previewfixture/PreviewMainWindow.java",
+      "source_repository": "totalcross"
+    },
+    {
+      "excluded": false,
+      "expected_copyright_lines": [
+        "Copyright (C) 2026 Amalgam Solucoes em TI Ltda."
+      ],
+      "expected_license": "LGPL-2.1-only",
+      "final_path": "live-preview-server/src/test/java/totalcross/sample/previewfixture/AppClass.java",
+      "first_post_2021_substantive_year": null,
+      "introduction_commit": "0db656ad9",
+      "introduction_year": 2026,
+      "original_license": "LGPL-2.1-only",
+      "project": "live-preview-server",
+      "reason": "Authorized unpublished source introduced by 0db656ad9; project policy determines the required LGPL header",
+      "rename_following": "manual extraction",
+      "source_path": "TotalCrossSDK/src/test/java/totalcross/sample/previewfixture/AppClass.java",
+      "source_repository": "totalcross"
     }
   ]
 }
