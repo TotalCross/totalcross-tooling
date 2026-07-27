@@ -86,6 +86,12 @@ application name, platforms, activation key, certificates, a supplied SDK/JDK,
 external resources, and TotalCross libraries. External resources and `*Lib.tcz`
 libraries are added to the generated `all.pkg` file.
 
+`totalcrossPreview` recompiles as needed, writes the preview session descriptor,
+and opens the desktop window on every invocation, even when a previous
+descriptor exists. It resolves the application FQN from the compiled output
+and includes the main source set's classes, resources, and runtime dependencies
+in the launched classpath. `totalcrossRun` depends on this preview task.
+
 `logLevel` accepts `quiet`, `normal`, `verbose` and `debug`. SDK 7.3.0 or newer
 receives `/log-level <level>`; for earlier SDKs, only `verbose` is honored and
 is translated to `/v`. Other configured levels are ignored for those SDKs.

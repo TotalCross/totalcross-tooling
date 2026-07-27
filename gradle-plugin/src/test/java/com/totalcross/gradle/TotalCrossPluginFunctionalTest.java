@@ -114,6 +114,31 @@ class TotalCrossPluginFunctionalTest {
         assertTrue(Files.readString(projectDirectory.resolve("build/totalcross/preview-session.json")).contains("GRADLE"));
     }
 
+    @Test
+    void previewRunsAgainWhenItsDescriptorAlreadyExistsAndRunDependsOnPreview() throws Exception {
+        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'preview-app'\n");
+        Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n");
+
+        var first = GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
+                .withArguments("totalcrossPreview", "--stacktrace").build();
+        var second = GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
+                .withArguments("totalcrossRun", "--stacktrace").build();
+
+        assertTrue(first.getOutput().contains("TotalCross preview session ready"));
+        assertTrue(second.getOutput().contains("TotalCross preview session ready"));
+        assertTrue(second.getOutput().contains("TotalCross run uses the external preview host"));
+    }
+
+    @Test
+    void discoversApplicationFqnFromCompiledOutput() throws Exception {
+        Path output = projectDirectory.resolve("build/classes/java/main");
+        Files.createDirectories(output.resolve("totalcross/sample/main"));
+        Files.write(output.resolve("totalcross/sample/main/TCSample.class"), new byte[] {0});
+
+        assertEquals("totalcross.sample.main.TCSample",
+                TotalCrossPreviewTask.discoverApplicationClass(output, "TCSample"));
+    }
+
     private String buildScript(Path repository, Path sdkHome, String pluginId) {
         return buildScript(repository, sdkHome, pluginId, null);
     }
