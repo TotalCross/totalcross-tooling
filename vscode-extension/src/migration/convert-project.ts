@@ -36,6 +36,13 @@ const LEGACY_ECLIPSE_METADATA = [
     '.settings/org.eclipse.m2e.core.prefs'
 ];
 
+/** Removes Eclipse/Maven project metadata that would override Gradle import in VS Code. */
+export async function removeLegacyEclipseMetadata(root: string): Promise<void> {
+    for (const relative of LEGACY_ECLIPSE_METADATA) {
+        try { await fs.unlink(path.join(root, relative)); } catch (_) { /* Already absent. */ }
+    }
+}
+
 async function exists(file: string): Promise<boolean> {
     try { await fs.access(file); return true; } catch (_) { return false; }
 }
@@ -198,9 +205,7 @@ export async function writeAndValidateGradleProject(root: string, rendered: Rend
             }
         }
         await validate();
-        for (const relative of LEGACY_ECLIPSE_METADATA) {
-            try { await fs.unlink(path.join(root, relative)); } catch (_) { /* Already absent. */ }
-        }
+        await removeLegacyEclipseMetadata(root);
         await fs.rename(path.join(root, 'pom.xml'), await nextPomBackup(root));
         await removeTree(backup);
         return 'converted';
@@ -238,6 +243,7 @@ export async function convertMavenProjectToGradle(context: vscode.ExtensionConte
         if (classification.kind === 'gradle-present') {
             if (await generatedMigrationBuild(root)) {
                 await runWrapper(root);
+                await removeLegacyEclipseMetadata(root);
             }
             const repaired = await synchronizeGradlePreviewConfig(root);
             const message = repaired

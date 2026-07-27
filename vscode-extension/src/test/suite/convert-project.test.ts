@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import {promises as fs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import {synchronizeGradlePreviewConfig, validateGradlePreviewTasks, writeAndValidateGradleProject} from '../../migration/convert-project';
+import {removeLegacyEclipseMetadata, synchronizeGradlePreviewConfig, validateGradlePreviewTasks, writeAndValidateGradleProject} from '../../migration/convert-project';
 
 suite('Maven to Gradle conversion transaction', () => {
     test('preserves the POM only after successful validation and keeps unrelated properties', async () => {
@@ -94,6 +94,20 @@ suite('Maven to Gradle conversion transaction', () => {
             /does not provide totalcrossPreview and totalcrossRun/
         );
         assert.doesNotThrow(() => validateGradlePreviewTasks('totalcrossPreview\ntotalcrossRun\n'));
+    });
+
+    test('cleans stale Eclipse metadata when revisiting an already generated Gradle project', async () => {
+        const root = await fs.mkdtemp(path.join(os.tmpdir(), 'totalcross-gradle-metadata-repair-'));
+        try {
+            await fs.writeFile(path.join(root, '.classpath'), 'maven classpath');
+            await fs.writeFile(path.join(root, '.project'), 'maven project');
+            await fs.mkdir(path.join(root, '.settings'), {recursive: true});
+            await fs.writeFile(path.join(root, '.settings/org.eclipse.m2e.core.prefs'), 'maven settings');
+            await removeLegacyEclipseMetadata(root);
+            assert.equal(await exists(path.join(root, '.classpath')), false);
+            assert.equal(await exists(path.join(root, '.project')), false);
+            assert.equal(await exists(path.join(root, '.settings/org.eclipse.m2e.core.prefs')), false);
+        } finally { await fs.rmdir(root, {recursive: true}); }
     });
 });
 
