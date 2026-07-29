@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Calls tc.Deploy in a disposable classloader while keeping legacy static state isolated. */
 public final class LegacyDeployService implements DeployService {
@@ -31,23 +32,43 @@ public final class LegacyDeployService implements DeployService {
         synchronized (INVOCATION_LOCK) {
             String previousProtoc = System.getProperty(DeployToolchain.PROTOC_PROPERTY);
             String previousBundletool = System.getProperty(DeployToolchain.BUNDLETOOL_PROPERTY);
+            String previousUserDir = System.getProperty("user.dir");
             try (URLClassLoader loader = new URLClassLoader(urls(), null)) {
                 configureAndroidTools(request, diagnostics);
                 Class<?> deploy = Class.forName("tc.Deploy", true, loader);
                 PrintStream previousErr = System.err;
                 PrintStream previousOut = System.out;
                 try (PrintStream output = new PrintStream(captured, true, StandardCharsets.UTF_8)) {
+                    System.setProperty("user.dir", request.sdkInstallation().toAbsolutePath().toString());
                     System.setOut(output);
                     System.setErr(output);
                     String[] deployArguments = arguments.toArray(String[]::new);
-                    try {
-                        deploy.getConstructor(String[].class).newInstance((Object) deployArguments);
-                    } catch (NoSuchMethodException legacyMainOnly) {
-                        deploy.getMethod("main", String[].class).invoke(null, (Object) deployArguments);
+                    AtomicReference<Throwable> invocationFailure = new AtomicReference<>();
+                    Thread invocation = new Thread(() -> {
+                        try {
+                            try {
+                                deploy.getConstructor(String[].class).newInstance((Object) deployArguments);
+                            } catch (NoSuchMethodException legacyMainOnly) {
+                                deploy.getMethod("main", String[].class).invoke(null, (Object) deployArguments);
+                            }
+                        } catch (Throwable failure) {
+                            invocationFailure.set(failure);
+                        }
+                    }, "totalcross-deploy");
+                    invocation.setDaemon(true);
+                    invocation.start();
+                    invocation.join();
+                    Throwable failure = invocationFailure.get();
+                    if (failure != null) {
+                        if (failure instanceof Exception exception) throw exception;
+                        if (failure instanceof Error error) throw error;
+                        throw new RuntimeException(failure);
                     }
                 } finally {
                     System.setOut(previousOut);
                     System.setErr(previousErr);
+                    if (previousUserDir == null) System.clearProperty("user.dir");
+                    else System.setProperty("user.dir", previousUserDir);
                 }
             } catch (InvocationTargetException failure) {
                 diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.ERROR,
