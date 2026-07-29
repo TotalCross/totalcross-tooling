@@ -57,11 +57,11 @@ converter source, create tags, or publish publicly.
 ### Shared resolution and immutable JDK catalog
 
 - [x] Run capability probes before using a tooling JDK.
-- [ ] Define and parse a versioned immutable JDK catalog.
-- [ ] Add bundled, file, and test catalog sources behind one interface.
-- [ ] Add concrete JDK versions, URLs, SHA-256 values, and archive layouts.
-- [ ] Cover the minimum pre-IR release host matrix.
-- [ ] Install catalog JDKs through the immutable shared store.
+- [x] Define and parse a versioned immutable JDK catalog.
+- [x] Add bundled, file, and test catalog sources behind one interface.
+- [x] Add concrete JDK versions, URLs, SHA-256 values, and archive layouts.
+- [x] Cover the minimum pre-IR release host matrix.
+- [x] Install catalog JDKs through the immutable shared store.
 - [ ] Make `jdkPath` the probed highest-priority override.
 - [ ] Add actionable `jdkPath` fallback for unsupported hosts.
 - [ ] Restrict dynamic providers to catalog-maintenance workflows.

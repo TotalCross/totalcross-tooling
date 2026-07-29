@@ -32,6 +32,15 @@ public final class ArtifactInstaller {
         return install(request, (staging, ignored) -> extractor.extract(request.archive(), staging));
     }
 
+    /** Installs an archive and prepares its extracted content before completion is recorded. */
+    public InstalledArtifact install(InstallRequest request, InstallationCustomizer customizer) throws IOException {
+        if (customizer == null) throw new IllegalArgumentException("installation customizer is required");
+        return install(request, (staging, ignored) -> {
+            extractor.extract(request.archive(), staging);
+            customizer.prepare(staging);
+        });
+    }
+
     /** Installs a single-file artifact, such as bundletool's executable JAR. */
     public InstalledArtifact installFile(InstallRequest request, String fileName) throws IOException {
         if (fileName == null || fileName.isBlank() || fileName.contains("/") || fileName.contains("\\")) {
@@ -70,6 +79,11 @@ public final class ArtifactInstaller {
     @FunctionalInterface
     private interface Installer {
         void install(Path staging, InstallRequest request) throws IOException;
+    }
+
+    @FunctionalInterface
+    public interface InstallationCustomizer {
+        void prepare(Path staging) throws IOException;
     }
 
     private static void writeMetadata(Path root, InstallRequest request) throws IOException {

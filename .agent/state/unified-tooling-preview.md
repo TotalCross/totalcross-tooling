@@ -6,7 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 This is the concise resumable checkpoint for
 `.agent/plans/unified-tooling-preview/`. Detailed history belongs in
-`.agent/evidence/unified-tooling-preview.md`.
+`.agent/evidence/`, split by active plan when a journal reaches the text-file
+size limit.
 
 ## Checkpoint
 
@@ -18,8 +19,9 @@ Reason:
 
     Plan 08B produced a useful E2E checkpoint, but a later audit found that
     resolver, model, VS Code input, and release details remained incomplete.
-    Process-backed promotion is now implemented. The current decision gate is
-    reproducible tooling-JDK installation before removing JavaJDKManager.
+    Process-backed promotion and immutable catalog installation are now
+    implemented. The current decision gate is authoritative catalog selection
+    across Gradle, Maven, CLI, and the companion before removing JavaJDKManager.
 
 Next command:
 
@@ -73,6 +75,9 @@ Completed Plan 08C slices:
     twenty real-worker replacements with failed-candidate preservation
     shared environment facade adopted by Gradle and Maven
     capability probes for selected tooling JDKs
+    versioned immutable JDK catalog with bundled, file, and test sources
+    concrete Java 17 catalog entries for the minimum release host matrix
+    atomic catalog installation, real macOS ARM64 probe, and offline reuse
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -80,17 +85,11 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    versioned immutable JDK catalog schema and parser
-    bundled, file, and test catalog sources
-    concrete JDK URLs and SHA-256 values
-    Java 17 release matrix for macOS ARM64/x64, Linux x64, and Windows x64
-    atomic shared-store JDK installation
+    authoritative catalog selection across every production adapter
     explicit jdkPath precedence with capability probes
-    unsupported-platform jdkPath diagnostic
     dynamic providers restricted to catalog maintenance
     removal of Maven JavaJDKManager
-    removal of latest URLs and forced arch=x86
-    clean-cache installation and offline reuse
+    removal of latest URLs and forced arch=x86 from production resolution
 
 Remaining Plan 08C blockers:
 
