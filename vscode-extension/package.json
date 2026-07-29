@@ -78,8 +78,8 @@
 			"properties": {
 				"totalcross.gradlePluginVersion": {
 					"type": "string",
-					"default": "0.1.0-SNAPSHOT",
-					"description": "Version of com.totalcross.application used in new projects. An unpublished version must first be installed with publishToMavenLocal."
+					"default": "0.1.0",
+					"description": "Released version of com.totalcross.application used in new projects."
 				},
 				"totalcross.livePreview.javaCommand": {
 					"type": "string",
@@ -145,6 +145,8 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
+		"package:vsix": "npm run compile && node tools/package-vsix.js totalcross-preview.vsix",
+		"verify:vsix": "npm run package:vsix && node tools/verify-vsix.js totalcross-preview.vsix",
 		"watch": "tsc -watch -p ./",
 		"validate:governance": "python3 tools/check-repository-governance.py",
 		"test:governance": "python3 -m unittest tests.test_repository_governance",
@@ -157,10 +159,10 @@
 		"@types/mocha": "^10.0.10",
 		"@types/node": "20.11.0",
 		"@types/vscode": "1.85.0",
+		"@vscode/test-electron": "^2.5.2",
 		"glob": "^7.1.5",
 		"mocha": "^11.7.6",
-		"typescript": "5.3.3",
-		"@vscode/test-electron": "^2.5.2"
+		"typescript": "5.3.3"
 	},
 	"dependencies": {
 		"child_process": "^1.0.2",
@@ -178,5 +180,5 @@
 	},
 	"extensionDependencies": [
 		"vscjava.vscode-java-pack"
-	]	
+	]
 }

@@ -26,7 +26,7 @@ suite('Maven to Gradle migration classification', () => {
             await fs.writeFile(path.join(root, 'pom.xml'), '<project>');
             assert.equal((await classifyProject(root)).kind, 'invalid-pom');
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 

@@ -86,3 +86,15 @@ reached the text-file size limit. Full command output remains outside the repo.
   height, density, and orientation (applied by ordering the dimensions), and
   observes Webview layout changes to reapply the device profile. TypeScript
   compilation passed.
+- 2026-07-29: deterministic local VSIX construction now assembles only the
+  compiled extension, resources, declared runtime dependency closure, and VSIX
+  metadata. It normalizes timestamps and orders archive paths; two consecutive
+  builds produced the same SHA-256. `npm run verify:vsix` verifies the local
+  VSIX contains the extension entry point and declared runtime dependencies
+  while excluding source, test output, and the VS Code test cache. The focused
+  generator, Maven-model, layout, and migration-classifier suites passed (14
+  cases). Generated and migrated projects use released Gradle plugin version
+  0.1.0, do not add `mavenLocal()`, and no longer instruct users to run
+  `publishToMavenLocal`. Runtime dependency audit passed with zero findings;
+  four pre-existing high findings remain only in the development Mocha chain,
+  whose automated fix requires a breaking upgrade.

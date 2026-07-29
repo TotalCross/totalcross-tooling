@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import {promises as fs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import {generateGradleProject, javaReleaseForSdk, renderPlatforms, renderTemplate} from '../../project-generator';
+import {DEFAULT_GRADLE_PLUGIN_VERSION, generateGradleProject, javaReleaseForSdk, renderPlatforms, renderTemplate} from '../../project-generator';
 
 const templateRoot = path.resolve(__dirname, '../../../resources/gradle');
 
@@ -22,9 +22,9 @@ suite('Gradle project generator', () => {
     test('renders every known placeholder', () => {
         const rendered = renderTemplate("${'groupid'} ${'artifactid'} ${'version'} ${'platforms'} ${'activation_key'} ${'gradle_plugin_version'} ${'java_release'}", {
             groupId: 'com.example', artifactId: 'Demo', sdkVersion: '7.3.0', platforms: ['linux'],
-            activationKey: 'key', gradlePluginVersion: '0.1.0-SNAPSHOT'
+            activationKey: 'key', gradlePluginVersion: DEFAULT_GRADLE_PLUGIN_VERSION
         });
-        assert.equal(rendered, "com.example Demo 7.3.0 'linux' key 0.1.0-SNAPSHOT 17");
+        assert.equal(rendered, "com.example Demo 7.3.0 'linux' key 0.1.0 17");
     });
 
     test('creates a complete Gradle project without Maven files', async () => {
@@ -32,10 +32,13 @@ suite('Gradle project generator', () => {
         try {
             await generateGradleProject(templateRoot, destination, {
                 groupId: 'com.example.demo', artifactId: 'Demo', sdkVersion: '7.2.2',
-                platforms: ['android', 'linux_arm'], activationKey: 'test-key', gradlePluginVersion: '0.1.0-SNAPSHOT'
+                platforms: ['android', 'linux_arm'], activationKey: 'test-key', gradlePluginVersion: DEFAULT_GRADLE_PLUGIN_VERSION
             });
             const build = await fs.readFile(path.join(destination, 'build.gradle'), 'utf8');
-            assert.ok(build.includes("id 'com.totalcross.application' version '0.1.0-SNAPSHOT'"));
+            const settings = await fs.readFile(path.join(destination, 'settings.gradle'), 'utf8');
+            assert.ok(build.includes("id 'com.totalcross.application' version '0.1.0'"));
+            assert.ok(build.includes("version = '1.0.0'"));
+            assert.equal(settings.includes('mavenLocal()'), false);
             assert.ok(build.includes("platforms = ['android', 'linux_arm']"));
             assert.ok(build.includes('options.release = 8'));
             assert.equal(await fileExists(path.join(destination, 'pom.xml')), false);
@@ -45,7 +48,7 @@ suite('Gradle project generator', () => {
             assert.ok(source.includes('package com.example.demo;'));
             assert.equal(build.includes("${'groupid'}"), false);
         } finally {
-            await fs.rmdir(destination, {recursive: true});
+            await fs.rm(destination, {recursive: true, force: true});
         }
     });
 });

@@ -16,6 +16,7 @@ export interface TotalCrossProjectOptions {
 }
 
 const SUPPORTED_PLATFORMS = ['android', 'ios', 'linux', 'linux_arm', 'win32', 'wince'];
+export const DEFAULT_GRADLE_PLUGIN_VERSION = '0.1.0';
 const PLACEHOLDER = /\$\{'(groupid|artifactid|version|platforms|activation_key|gradle_plugin_version|java_release)'\}/g;
 const UNREPLACED_PLACEHOLDER = /\$\{'(groupid|artifactid|version|platforms|activation_key|gradle_plugin_version|java_release)'\}/;
 

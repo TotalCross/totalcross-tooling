@@ -7,13 +7,14 @@ import {spawn} from 'child_process';
 import {promises as fs} from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import {DEFAULT_GRADLE_PLUGIN_VERSION} from '../project-generator';
 import {GENERATED_GRADLE_MARKER, RenderedGradleProject, renderGradleProject} from './gradle-renderer';
 import {readMavenTotalCrossProject} from './maven-project';
 import {classifyProject} from './project-classifier';
 import {clearMigrationReminder} from './reminder-state';
 
 export interface ConversionResult {
-    status: 'converted' | 'plugin-not-local' | 'already-gradle' | 'unsupported' | 'failed';
+    status: 'converted' | 'plugin-unavailable' | 'already-gradle' | 'unsupported' | 'failed';
     message: string;
     details?: string;
 }
@@ -47,9 +48,9 @@ async function exists(file: string): Promise<boolean> {
     try { await fs.access(file); return true; } catch (_) { return false; }
 }
 
-/** `fs.promises.rm` is newer than this extension's declared Node type baseline. */
+/** Removes an existing directory without treating a missing path as an error. */
 async function removeTree(directory: string): Promise<void> {
-    try { await fs.rmdir(directory, {recursive: true}); } catch (_) { /* Already absent. */ }
+    try { await fs.rm(directory, {recursive: true, force: true}); } catch (_) { /* Already absent. */ }
 }
 
 async function writeAtomic(file: string, contents: Buffer | string): Promise<void> {
@@ -136,7 +137,7 @@ export async function synchronizeGradlePreviewConfig(root: string): Promise<bool
     return true;
 }
 
-function isMissingLocalPlugin(error: Error): boolean {
+function isMissingPlugin(error: Error): boolean {
     return /com\.totalcross\.application|com\.totalcross\.application\.gradle\.plugin/i.test(error.message)
         && /(not found|could not resolve|could not find|unknown plugin)/i.test(error.message);
 }
@@ -144,7 +145,7 @@ function isMissingLocalPlugin(error: Error): boolean {
 export function validateGradlePreviewTasks(output: string): void {
     const missing = ['totalcrossPreview', 'totalcrossRun'].filter((task) => !new RegExp(`^\\s*${task}(?:\\s|$)`, 'm').test(output));
     if (missing.length > 0) {
-        throw new Error(`The installed TotalCross Gradle plugin does not provide ${missing.join(' and ')}. Publish the current TotalCross Gradle plugin to Maven Local and run the conversion again.`);
+        throw new Error(`The installed TotalCross Gradle plugin does not provide ${missing.join(' and ')}. Configure a released TotalCross Gradle plugin version and run the conversion again.`);
     }
 }
 
@@ -172,7 +173,7 @@ function runWrapper(root: string): Promise<void> {
 }
 
 /** Performs file writes atomically and restores pre-existing files after any ordinary validation failure. */
-export async function writeAndValidateGradleProject(root: string, rendered: RenderedGradleProject, validate: Validator): Promise<'converted' | 'plugin-not-local'> {
+export async function writeAndValidateGradleProject(root: string, rendered: RenderedGradleProject, validate: Validator): Promise<'converted' | 'plugin-unavailable'> {
     const backup = path.join(root, BACKUP_DIRECTORY);
     await removeTree(backup);
     await fs.mkdir(backup, {recursive: true});
@@ -211,9 +212,9 @@ export async function writeAndValidateGradleProject(root: string, rendered: Rend
         return 'converted';
     } catch (error) {
         const failure = error instanceof Error ? error : new Error(String(error));
-        if (isMissingLocalPlugin(failure)) {
+        if (isMissingPlugin(failure)) {
             await removeTree(backup);
-            return 'plugin-not-local';
+            return 'plugin-unavailable';
         }
         await restore(root, backup, originals, changed);
         await removeTree(backup);
@@ -259,11 +260,11 @@ export async function convertMavenProjectToGradle(context: vscode.ExtensionConte
             return result;
         }
         const project = await readMavenTotalCrossProject(path.join(root, 'pom.xml'));
-        const pluginVersion = vscode.workspace.getConfiguration('totalcross').get<string>('gradlePluginVersion', '0.1.0-SNAPSHOT');
+        const pluginVersion = vscode.workspace.getConfiguration('totalcross').get<string>('gradlePluginVersion', DEFAULT_GRADLE_PLUGIN_VERSION);
         const rendered = renderGradleProject(project, pluginVersion);
         const status = await vscode.window.withProgress({location: vscode.ProgressLocation.Notification, title: 'Converting TotalCross project to Gradle...'}, () => writeAndValidateGradleProject(root, rendered, () => runWrapper(root)));
-        if (status === 'plugin-not-local') {
-            const result = {status, message: 'The Gradle files were created, but the TotalCross Gradle plugin is not available in Maven Local. Run `./gradlew publishToMavenLocal` in the totalcross-gradle-plugin repository, then run the conversion command again.'};
+        if (status === 'plugin-unavailable') {
+            const result = {status, message: `The Gradle files were created, but TotalCross Gradle plugin ${pluginVersion} could not be resolved from the configured release repositories. Configure totalcross.gradlePluginVersion with an available released version, then run the conversion again.`};
             vscode.window.showErrorMessage(result.message);
             return result;
         }

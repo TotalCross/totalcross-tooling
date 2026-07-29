@@ -97,6 +97,8 @@ Completed Plan 08C slices:
     preview frame-stream and standalone run-window presentation modes separated
     VS Code preview commands prefer Maven Wrapper when present
     VS Code scales pointer input and applies configured device resize and density
+    deterministic local VSIX packaging with runtime-content verification
+    release-facing VS Code defaults use Gradle plugin 0.1.0 without Maven Local
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -108,9 +110,8 @@ Current Plan 08C milestone:
 
 Remaining Plan 08C blockers:
 
-    failed-build preservation in VS Code
-    deterministic VSIX bundling
-    removal of release-facing SNAPSHOT defaults
+    installed-VSIX E2E proof of build-before-reload and failed-build preservation
+    focused and installed-VSIX E2E execution on a usable VS Code test bundle
 
 Plan 08D after Plan 08C:
 

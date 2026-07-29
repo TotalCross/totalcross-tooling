@@ -7,7 +7,7 @@
 import * as vscode from 'vscode';
 import {showInputBox} from './components/components';
 import {latestTotalCrossSdkVersions} from './maven-metadata';
-import {generateGradleProject} from './project-generator';
+import {DEFAULT_GRADLE_PLUGIN_VERSION, generateGradleProject} from './project-generator';
 import * as path from 'path';
 
 const validators = require('./validators/creator');
@@ -57,7 +57,7 @@ export async function createNewProject(context: vscode.ExtensionContext): Promis
     
     const activationKey = DEFAULT_ACTIVATION_KEY;
     const gradlePluginVersion = vscode.workspace.getConfiguration('totalcross')
-        .get<string>('gradlePluginVersion', '0.1.0-SNAPSHOT');
+        .get<string>('gradlePluginVersion', DEFAULT_GRADLE_PLUGIN_VERSION);
     const destination = file[0].fsPath;
     try {
         await generateGradleProject(path.join(context.extensionPath, 'resources', 'gradle'), destination, {

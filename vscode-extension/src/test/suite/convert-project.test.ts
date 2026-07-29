@@ -45,7 +45,7 @@ suite('Maven to Gradle conversion transaction', () => {
             assert.deepEqual(preview.classOutputPaths, ['build/classes/java/main']);
             assert.deepEqual(preview.dependencyPaths, ['build/libs']);
             assert.equal(preview.headlessOutput, 'build/totalcross-preview/preview.png');
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 
     test('restores modified files after validation failure', async () => {
@@ -58,20 +58,20 @@ suite('Maven to Gradle conversion transaction', () => {
             await assert.rejects(writeAndValidateGradleProject(root, {files, sensitiveFiles: []}, () => Promise.reject(new Error('validation failed'))), /validation failed/);
             assert.equal(await fs.readFile(path.join(root, 'build.gradle'), 'utf8'), 'original');
             assert.equal(await exists(path.join(root, 'pom.xml')), true);
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 
-    test('keeps generated files and the POM when Maven Local lacks the plugin', async () => {
+    test('keeps generated files and the POM when the release plugin is unavailable', async () => {
         const root = await fs.mkdtemp(path.join(os.tmpdir(), 'totalcross-convert-local-plugin-'));
         try {
             await fs.writeFile(path.join(root, 'pom.xml'), '<project/>');
             const files = new Map<string, Buffer | string>();
             files.set('build.gradle', 'generated');
             const result = await writeAndValidateGradleProject(root, {files, sensitiveFiles: []}, () => Promise.reject(new Error('Could not resolve com.totalcross.application plugin: not found')));
-            assert.equal(result, 'plugin-not-local');
+            assert.equal(result, 'plugin-unavailable');
             assert.equal(await fs.readFile(path.join(root, 'build.gradle'), 'utf8'), 'generated');
             assert.equal(await exists(path.join(root, 'pom.xml')), true);
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 
     test('repairs a stale Maven preview descriptor in an existing generated Gradle project', async () => {
@@ -85,7 +85,7 @@ suite('Maven to Gradle conversion transaction', () => {
             assert.equal(preview.mainWindow, 'com.example.MainWindow');
             assert.equal(preview.buildCommand, './gradlew classes');
             assert.deepEqual(preview.classOutputPaths, ['build/classes/java/main']);
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 
     test('rejects a Gradle plugin without the preview and run tasks', () => {
@@ -107,7 +107,7 @@ suite('Maven to Gradle conversion transaction', () => {
             assert.equal(await exists(path.join(root, '.classpath')), false);
             assert.equal(await exists(path.join(root, '.project')), false);
             assert.equal(await exists(path.join(root, '.settings/org.eclipse.m2e.core.prefs')), false);
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 });
 

@@ -123,9 +123,9 @@ exactly 24 hours. Other workspace folders have independent reminders.
 `Convert Now` reads the TotalCross SDK and plugin configuration from the POM,
 creates a marked Groovy Gradle project and Wrapper, and runs `./gradlew tasks
 --console=plain`. The Java source tree is unchanged. The POM becomes
-`pom.xml.maven-backup` only after that validation succeeds. If the unpublished
-plugin is missing from Maven Local, the generated Gradle files and original POM
-remain so that publishing the plugin and retrying the command is safe.
+`pom.xml.maven-backup` only after that validation succeeds. If the configured
+release plugin cannot be resolved, the generated Gradle files and original POM
+remain so that selecting an available released version and retrying is safe.
 The validation also checks that the installed plugin exposes the
 `totalcrossPreview` and `totalcrossRun` tasks used by the extension.
 
@@ -148,18 +148,12 @@ the SSH deployer's install directory beneath
 `build/totalcross/install/linux_arm`, so `TotalCross: Deploy` uses that output
 after packaging.
 
-## Using the unpublished Gradle plugin locally
+## Gradle plugin version
 
-Before creating a project with the default `0.1.0-SNAPSHOT` plugin version,
-publish the plugin checkout to Maven Local:
-
-    ./gradlew clean test publishToMavenLocal --console=plain
-
-Run that command from `totalcross-gradle-plugin`. Generated `settings.gradle`
-files search Maven Local before public plugin repositories, so Gradle can find
-the local plugin marker and implementation. The
-`totalcross.gradlePluginVersion` VS Code setting must match the version that
-was published locally.
+New and migrated projects use the released `0.1.0` TotalCross Gradle plugin
+through public release repositories. To use a later release, set
+`totalcross.gradlePluginVersion` to that published version before creating or
+converting the project. Generated projects never add Maven Local implicitly.
 
 ## Development
 

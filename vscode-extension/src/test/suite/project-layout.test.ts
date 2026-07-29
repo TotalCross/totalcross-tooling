@@ -32,7 +32,7 @@ suite('Project layout', () => {
             assert.ok(layout);
             assert.equal(layout && layout.buildTool, 'mixed');
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 
@@ -44,7 +44,7 @@ suite('Project layout', () => {
             assert.ok(layout);
             assert.equal(layout && layout.buildTool, 'maven');
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 
@@ -56,7 +56,7 @@ suite('Project layout', () => {
             await fs.writeFile(path.join(root, 'settings.gradle'), "rootProject.name = 'Sample'");
             assert.deepEqual(await resolveGradleApplicationName(root, 'fallback'), {name: 'Sample'});
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 
@@ -67,7 +67,7 @@ suite('Project layout', () => {
             await fs.writeFile(path.join(root, '.totalcross', 'project.json'), '{"applicationName":"Migrated App"}');
             assert.deepEqual(await resolveGradleApplicationName(root, 'fallback'), {name: 'Migrated App'});
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 });

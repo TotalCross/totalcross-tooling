@@ -81,8 +81,8 @@ converter source, create tags, or publish publicly.
 - [x] Prefer Maven Wrapper when present.
 - [x] Scale pointer coordinates to intrinsic frame pixels.
 - [x] Send resize and apply device size, density, and orientation.
-- [ ] Bundle production dependencies deterministically into the VSIX.
-- [ ] Remove SNAPSHOT and `publishToMavenLocal` from release defaults.
+- [x] Bundle production dependencies deterministically into the VSIX.
+- [x] Remove SNAPSHOT and `publishToMavenLocal` from release defaults.
 - [ ] Pass focused and installed-VSIX E2E tests.
 - [ ] Commit focused slices and update state to Plan 08D.
 

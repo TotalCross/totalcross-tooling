@@ -23,20 +23,22 @@ suite('Maven to Gradle project model', () => {
             assert.equal(project.version, '1.2.3');
             assert.equal(project.sdkVersion, '7.3.0');
             assert.deepEqual(project.platforms, ['linux_arm', '-android']);
-            const rendered = renderGradleProject(project, '0.1.0-SNAPSHOT');
+            const rendered = renderGradleProject(project, '0.1.0');
             const build = String(rendered.files.get('build.gradle'));
+            const settings = String(rendered.files.get('settings.gradle'));
             assert.ok(build.includes("allowInsecureProtocol = true"));
             assert.ok(build.includes('languageVersion = JavaLanguageVersion.of(17)'));
             assert.ok(build.includes('options.release = 17'));
             assert.ok(build.includes("exclude '**/Generated.java'"));
             assert.ok(build.includes("runtimeOnly 'org.xerial:sqlite-jdbc:3.8.7'"));
             assert.ok(build.includes("activationKey = providers.gradleProperty('totalcrossActivationKey').orNull"));
+            assert.equal(settings.includes('mavenLocal()'), false);
             assert.equal(build.includes('secret'), false);
             assert.equal(String(rendered.files.get('.totalcross/project.json')).includes('secret'), false);
             assert.ok(rendered.files.get('gradle/wrapper/gradle-wrapper.jar') instanceof Buffer);
             assert.deepEqual(rendered.sensitiveFiles, ['gradle.properties']);
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 
@@ -49,7 +51,7 @@ suite('Maven to Gradle project model', () => {
             await fs.writeFile(pomPath, pom.replace('</dependencies>', '<dependency><groupId>com.totalcross</groupId><artifactId>totalcross-sdk</artifactId><version>7.2.2</version></dependency></dependencies>'));
             await assert.rejects(readMavenTotalCrossProject(pomPath), /more than one/);
         } finally {
-            await fs.rmdir(root, {recursive: true});
+            await fs.rm(root, {recursive: true, force: true});
         }
     });
 
@@ -59,7 +61,7 @@ suite('Maven to Gradle project model', () => {
             await fs.writeFile(path.join(root, 'pom.xml'), projectNamePom('<name>Demo App</name>', '<name>${project.name}</name>'));
             const project = await readMavenTotalCrossProject(path.join(root, 'pom.xml'));
             assert.equal(project.applicationName, 'Demo App');
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 
     test('uses artifactId when Maven project name is omitted', async () => {
@@ -68,7 +70,7 @@ suite('Maven to Gradle project model', () => {
             await fs.writeFile(path.join(root, 'pom.xml'), projectNamePom('', ''));
             const project = await readMavenTotalCrossProject(path.join(root, 'pom.xml'));
             assert.equal(project.applicationName, 'sample-app');
-        } finally { await fs.rmdir(root, {recursive: true}); }
+        } finally { await fs.rm(root, {recursive: true, force: true}); }
     });
 });
 
