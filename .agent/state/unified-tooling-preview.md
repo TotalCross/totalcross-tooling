@@ -56,7 +56,7 @@ implementation commit. Do not copy stale SHAs from historical state entries.
 
 Verified 2026-07-29 before the catalog-resolver slice:
 
-    totalcross-tooling local: dae0f5cf6ec7680f3b9111e5434f89ccac5be0be
+    totalcross-tooling local: dae0f5cd546bb2df4b3f1529f7b5303928e088a0
     totalcross-tooling origin/feature/unify-tooling-and-preview: 718eb450ca5e05099dafb1b59d0ccde5378642b2
     totalcross local and origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d
 
