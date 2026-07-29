@@ -133,10 +133,17 @@ contract is covered by the plugin functional suite, while release-grade real
 packaging remains open.
 The legacy deploy adapter was hardened in tooling `e8c79a4` to isolate
 non-daemon deploy threads and honor the requested SDK home. Core/tooling and
-plugin tests passed; a real SDK packaging smoke remains open after an external
-`Connection reset`.
+plugin tests passed. A fresh Gradle packaging run using target 8, the current
+plugin, and the complete SDK generated the Linux installation outputs
+successfully; the plugin now selects the Java-17 SDK variant independently of
+the application bytecode target. The previous external `Connection reset` run
+used the incompatible target-17 setup. Maven real packaging and the complete
+release matrix remain open. The successful log still contains a non-fatal
+legacy SDK telemetry `NoClassDefFoundError` emitted after deployment; it does
+not change the generated outputs or task result.
 Failure output is now retained by tooling `d0c6e1e`; tooling-core validation
-passed, but the real packaging smoke has not been rerun to completion.
+passed. The successful Gradle output is logged at
+`/tmp/totalcross-gradle-typed-deploy-real-success.log`.
 Preview version gating is proven against cached SDK 7.2.0: the CLI returns a
 structured compatibility error and exit 1 when the required preview contract is
 absent. Aggregate binary compatibility with that public baseline remains open.

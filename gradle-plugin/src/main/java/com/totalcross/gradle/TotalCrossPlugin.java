@@ -9,6 +9,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.attributes.java.TargetJvmVersion;
 import org.gradle.api.tasks.bundling.Jar;
 
 /** Registers the TotalCross application packaging task on Java projects. */
@@ -22,7 +23,15 @@ public class TotalCrossPlugin implements Plugin<Project> {
         extension.getApplicationName().convention(project.getName());
         extension.getTotalcrossLib().convention(library);
 
+        // The compiler runs on the Java 17 toolchain while the application
+        // bytecode target is independently constrained by the SDK policy.
+        // Keep dependency variant selection on the compiler JVM instead of
+        // letting JavaCompile.options.release (for example, 8) reject the
+        // Java-17 aggregate SDK before the packaging policy can run.
+        project.getConfigurations().named("compileClasspath").configure(configuration ->
+                configuration.getAttributes().attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17));
         Configuration runtimeClasspath = project.getConfigurations().getByName("runtimeClasspath");
+        runtimeClasspath.getAttributes().attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17);
         Configuration retrolambda = project.getConfigurations().maybeCreate("totalcrossRetrolambda");
         retrolambda.setCanBeConsumed(false);
         retrolambda.setCanBeResolved(true);

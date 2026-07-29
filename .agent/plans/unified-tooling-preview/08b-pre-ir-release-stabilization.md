@@ -239,8 +239,9 @@ the same events. Isolated Gradle and Maven projects now pass first frame, source
 reload after a failed compile, resource processing, input controls, and stop
 through their native goals. Clean-cache SDK/tooling resolution and a
 checkpoint-based aggregate compatibility gate now pass. Release acceptance
-remains open for typed deploy packaging, the public-baseline compatibility
-decision, the complete VS Code matrix, and installed-VSIX acceptance.
+now has a successful real Gradle packaging path with the official SDK 7.2.2;
+the Maven real-packaging path, public-baseline compatibility decision, complete
+VS Code matrix, and installed-VSIX acceptance remain open.
 
 ## Revision Note
 
@@ -341,8 +342,14 @@ stopped because that home lacked the complete distribution required by
 release-grade real packaging run still requires a complete SDK home.
 With the official 7.2.2 SDK archive, the adapter now isolates legacy non-daemon
 threads and honors the requested SDK home (`e8c79a4`). Deterministic core,
-Gradle, and Maven validations pass, but the real packaging smoke still ends in
-an external `Connection reset`, so the typed-deploy gate remains open.
+Gradle, and Maven validations pass. A fresh Gradle real-packaging smoke with
+target 8, the complete SDK, and the current plugin generated the Linux
+installation outputs successfully; the plugin now selects the Java-17 SDK
+dependency variant independently of the application bytecode target. Maven
+real packaging remains open after the previous external `Connection reset`
+run used the incompatible target-17 setup. The successful Gradle log retains a
+non-fatal `NoClassDefFoundError` from the SDK's asynchronous telemetry after
+deployment; generated outputs and the task result are successful.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.

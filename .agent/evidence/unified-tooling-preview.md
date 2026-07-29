@@ -203,3 +203,13 @@ program. Full command output belongs in `/tmp` or build artifacts.
   palette; a Java language-server warning then made the window unavailable to
   accessibility control. No preview frame or stop result was recorded, so the
   installed-project E2E gate remains open.
+- 2026-07-29: a fresh Gradle real-packaging smoke used the official SDK 7.2.2
+  distribution, the current local plugin, Java target 8, and test-only local
+  plugin resolution. It passed `clean totalcrossPackage` and generated
+  `build/totalcross/install/linux/MainWindow`, `MainWindow.tcz`, the bundled
+  runtime files, and `libtcvm.so`. Output is
+  `/tmp/totalcross-gradle-typed-deploy-real-success.log`. The plugin fix in
+  `TotalCrossPlugin.java` pins dependency variant selection to the Java-17
+  compiler JVM while preserving the independent SDK bytecode policy. The task
+  succeeds, although the legacy SDK's asynchronous telemetry emits a
+  non-fatal `NoClassDefFoundError` after the deployer returns.
