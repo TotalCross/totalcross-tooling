@@ -139,3 +139,25 @@ program. Full command output belongs in `/tmp` or build artifacts.
   integration suite then passed all 30 tests; those tests still load the
   development extension path, so installed-VSIX activation and the full
   installed-project flow remain a separate release gate.
+- 2026-07-29: the isolated Gradle matrix used staging repositories and an
+  isolated Gradle home. It passed first frame, valid source compile, failed
+  compile with the old coordinator still alive, repaired compile, reload,
+  resource processing, resize, pointer, key, and stop with no remaining
+  coordinator. Logs are `/tmp/totalcross-gradle-reload-matrix-start.log`,
+  `/tmp/totalcross-gradle-reload-matrix-sdkfix-failed.log`,
+  `/tmp/totalcross-gradle-reload-matrix-sdkfix-repaired.log`, and
+  `/tmp/totalcross-gradle-reload-matrix-stop.log`.
+- 2026-07-29: the equivalent Maven matrix used the clean repository
+  `/tmp/totalcross-maven-home4.cb3WCM`. It passed first frame, failed compile
+  while preserving the detached coordinator, repaired compile, reload, resource
+  processing, resize, pointer, key, and `totalcross:preview-stop`; the descriptor
+  was removed and the coordinator exited. Evidence is in
+  `/tmp/totalcross-maven-reload-matrix-detached3-start.log`,
+  `/tmp/totalcross-maven-reload-matrix-detached3-failed.log`,
+  `/tmp/totalcross-maven-reload-matrix-detached3-repaired.log`, and
+  `/tmp/totalcross-maven-reload-matrix-detached3-stop.log`.
+- 2026-07-29: SDK resize commands now run on the preview event thread to avoid
+  inconsistent frame payloads during concurrent rendering; Maven preview uses a
+  detached POSIX session on macOS/Linux-compatible hosts so a failed Maven
+  compile does not terminate the active coordinator. Fixes are TotalCross
+  `405275156` and tooling `0a0e04c`.

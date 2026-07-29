@@ -112,7 +112,12 @@ preview, and stop through their native goals. The full Gradle/Maven/VS Code
 matrix, installed VSIX acceptance, and public-baseline compatibility review
 remain open. The logical stabilization commits include tooling `612e658`,
 `b9ece39`, `8a2783f`, `3a1bc74` and TotalCross `a020512e4`, `fab77de18`,
-`6e9161739`; the shared Java compatibility policy is tooling `e080c4e`.
+`6e9161739`, `405275156`; the shared Java compatibility policy is tooling
+`e080c4e`, and reload/session stabilization is tooling `0a0e04c`. The isolated
+Gradle and Maven matrices now preserve the active worker through failed compile,
+reload repaired classes, process controls/resources, and stop cleanly. Typed
+deploy packaging, installed-VSIX activation, and public-baseline review remain
+open.
 The local VSIX was packaged/installed and the existing VS Code suite passed 30
 tests, but installed-VSIX activation remains an explicit release gate.
 

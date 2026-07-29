@@ -234,11 +234,12 @@ The canonical host/worker path, build-tool adapters, VS Code command surface,
 shared deploy service, narrow Maven publications, and a local staging repository
 are implemented. The CLI now produces a real fixture PNG and accepts control-file
 resize, pointer, key, and stop commands; VS Code polls that frame and forwards
-the same events. Gradle and Maven temporary projects also pass compile,
-first-frame preview, and stop through their native goals. Clean-cache SDK/tooling
-resolution and a checkpoint-based aggregate compatibility gate now pass. Release
-acceptance remains open for the public-baseline compatibility decision, the
-complete Gradle/Maven/VS Code matrix, and installed-VSIX acceptance.
+the same events. Isolated Gradle and Maven projects now pass first frame, source
+reload after a failed compile, resource processing, input controls, and stop
+through their native goals. Clean-cache SDK/tooling resolution and a
+checkpoint-based aggregate compatibility gate now pass. Release acceptance
+remains open for typed deploy packaging, the public-baseline compatibility
+decision, the complete VS Code matrix, and installed-VSIX acceptance.
 
 ## Revision Note
 
@@ -254,8 +255,9 @@ Complete this section only from executed evidence.
 The slice exceeded the original structural checkpoint by making Gradle and Maven
 fork the shared CLI and by moving both package goals behind `DeployService`.
 Artifact staging, the canonical CLI first-frame/control path, and native Gradle
-and Maven first-frame/stop flows are proven locally. Release-level compatibility
-and complete clean-environment acceptance remain pending.
+and Maven reload/control/stop flows are proven locally. Release-level
+compatibility, typed deploy packaging, and complete VS Code clean-environment
+acceptance remain pending.
 
 ### Original Plan versus Actual Outcome
 
@@ -300,6 +302,9 @@ Temporary Gradle and Maven projects compiled the same fixture, produced a
 non-empty 320x568 preview frame, and stopped through `totalcrossPreview` /
 `totalcross:preview`; the Maven frame was
 `/tmp/totalcross-maven-e2e.i20RTr/target/totalcross/preview-frame.png`.
+The isolated Gradle and Maven matrix also preserved the active coordinator after
+a failed compile, reloaded repaired classes, processed a changed resource,
+accepted resize/pointer/key commands, and stopped without a remaining process.
 The shared compatibility policy tests passed in tooling-core; Gradle plugin
 tests, Maven compilation/package, targeted Retrolambda coverage, and JDK 17
 selection coverage also passed. A local VSIX was packaged and installed in the
