@@ -22,6 +22,9 @@ import com.totalcross.tooling.deploy.DeployResult;
 import com.totalcross.tooling.deploy.DeployToolchain;
 import com.totalcross.tooling.deploy.LegacyDeployService;
 import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
+import com.totalcross.tooling.environment.*;
+import com.totalcross.tooling.jdk.*;
+import com.totalcross.tooling.platform.HostPlatform;
 import com.totalcross.tooling.store.ExternalToolResolver;
 
 import org.apache.maven.artifact.Artifact;
@@ -123,7 +126,8 @@ public class TotalCrossMojo extends AbstractMojo {
         }
 
         // Setup environment variable
-        if (totalcrossHome == null) { // check if SDK path is provided, if not
+        boolean configuredSdkHome = totalcrossHome != null;
+        if (!configuredSdkHome) { // check if SDK path is provided, if not
                                       // totalCrossDownloader will check if SDK
                                       // exists, if not, will download it.
             Artifact totalcrossArtifact = mavenProject.getArtifactMap()
@@ -141,6 +145,19 @@ public class TotalCrossMojo extends AbstractMojo {
                     JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17");
             javaJDKManager.init();
             jdkPath = javaJDKManager.getPath().getAbsolutePath();
+        }
+        try {
+            ToolingEnvironment environment = new ToolingEnvironmentResolver(
+                    new JdkSelector(new JdkCapabilityProbe(HostPlatform.detect()))).resolve(
+                    new ToolingEnvironmentRequest(sdk.getVersion(), Paths.get(totalcrossHome),
+                            configuredSdkHome ? "totalcrossHome" : "Maven legacy SDK manager",
+                            JavaCompatibilityPolicy.targetVersion(Paths.get(outputDirectory, finalName + "." + packaging)),
+                            new JdkRequest(JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17",
+                                    Paths.get(jdkPath), null), List.of()));
+            totalcrossHome = environment.sdkHome().toString();
+            jdkPath = environment.toolingJdk().home().toString();
+        } catch (JdkSelectionException | IllegalArgumentException failure) {
+            throw new IOException("TotalCross tooling environment is not usable: " + failure.getMessage(), failure);
         }
     }
 
