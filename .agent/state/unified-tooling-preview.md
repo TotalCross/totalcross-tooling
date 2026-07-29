@@ -173,6 +173,14 @@ worker; the initial plain-suite failures were only missing-environment failures.
 TotalCross commit `62a4df7b5` now excludes the `artifact-boundary` tag from the
 ordinary SDK test task, so both the standard suite and dedicated boundary task
 pass without temporary initialization.
+User decision update: the strict aggregate comparison differences are accepted
+as a documented pre-IR compatibility waiver. The accepted exceptions are
+internal converter/deployer utilities, the intentional
+`totalcross.lang.IllegalStateException4D` relocation to `jdkcompat.lang`, and
+the `totalcross.Launcher` construction/argument execution contract. TotalCross
+commit `9a36178ef` disables `AnonymousUserData` in launcher/deploy runtime paths
+and disables its endpoint-dependent test. The remaining Plan 08B gates are the
+complete VS Code matrix and installed-project E2E.
 
 ## Deferrals and exclusions
 

@@ -43,7 +43,7 @@ Do not merge IR, move converter source, tag, or publish publicly.
 - [x] Preserve wizard and Maven-to-Gradle migration behavior and rollback.
 - [x] Publish aggregate and narrow artifacts to a local staging repository.
 - [x] Prove preview version gating and its clear older-SDK diagnostic.
-- [ ] Prove aggregate-SDK compatibility against the public baseline.
+- [x] Review aggregate-SDK compatibility against the public baseline and record the accepted release waiver.
 - [ ] Pass the pre-IR end-to-end matrix.
 - [ ] Commit and update state to Plan 08R.
 
@@ -190,6 +190,20 @@ layout.
   Rationale: packaging compatibility and new preview capability are separate.
   Date/Author: 2026-07-28 / OpenAI.
 
+- Decision: accept the reviewed 7.2.0 aggregate API differences for this
+  pre-IR release. Internal converter/deployer utility changes are accepted;
+  `totalcross.lang.IllegalStateException4D` was intentionally relocated to
+  `jdkcompat.lang`; and `totalcross.Launcher` is accepted by its construction
+  and argument-execution contract rather than its historical desktop
+  superclass and internal nested helpers. The strict japicmp result remains
+  attached as an explicit waiver.
+  Date/Author: 2026-07-29 / User.
+
+- Decision: disable `AnonymousUserData` for this release slice. Launcher and
+  deploy no longer perform external telemetry, and its endpoint-dependent test
+  is disabled until a maintained opt-in service exists.
+  Date/Author: 2026-07-29 / User.
+
 ## Validation and Acceptance
 
 Run equivalent sample projects for Gradle and Maven. For each:
@@ -237,11 +251,12 @@ are implemented. The CLI now produces a real fixture PNG and accepts control-fil
 resize, pointer, key, and stop commands; VS Code polls that frame and forwards
 the same events. Isolated Gradle and Maven projects now pass first frame, source
 reload after a failed compile, resource processing, input controls, and stop
-through their native goals. Clean-cache SDK/tooling resolution and a
-checkpoint-based aggregate compatibility gate now pass. Release acceptance
-now has a successful real Gradle packaging path with the official SDK 7.2.2;
-the Maven real-packaging path, public-baseline compatibility decision, complete
-VS Code matrix, and installed-VSIX acceptance remain open.
+through their native goals. Clean-cache SDK/tooling resolution and the
+checkpoint-based aggregate compatibility review are documented. Release
+acceptance now has successful real Gradle and Maven packaging paths with the
+official SDK 7.2.2. The public-baseline review is accepted by the user with a
+documented waiver; only the complete VS Code matrix and installed-project E2E
+remain open in this slice.
 
 ## Revision Note
 
@@ -346,16 +361,16 @@ threads and honors the requested SDK home (`e8c79a4`). Deterministic core,
 Gradle, and Maven validations pass. A fresh Gradle real-packaging smoke with
 target 8, the complete SDK, and the current plugin generated the Linux
 installation outputs successfully; the plugin now selects the Java-17 SDK
-dependency variant independently of the application bytecode target. The
-successful Gradle and Maven logs retain a
-non-fatal `NoClassDefFoundError` from the SDK's asynchronous telemetry after
-deployment; generated outputs and both task results are successful. The
+dependency variant independently of the application bytecode target. TotalCross
+commit `9a36178ef` disables the SDK telemetry path, so launcher and deploy no
+longer start an external request thread; generated outputs and both task results
+remain successful. The
 successful Maven log is `/tmp/totalcross-maven-real-package-final-success.log`,
 and its full plugin test log is `/tmp/totalcross-maven-plugin-test-current.log`.
 The network source lookup log is `/tmp/gradle-plugin-sdk-source-network.log`.
-The explicitly enabled SDK `AnonymousUserDataTest` reached its configured
-external service but all three cases received HTTP 404 / `No such app`; the
-service is unavailable and the test remains an external infrastructure blocker.
+The former `AnonymousUserDataTest` endpoint returned HTTP 404 / `No such app`;
+the test and runtime telemetry are now disabled by TotalCross commit
+`9a36178ef` until a maintained opt-in service exists.
 The SDK standard suite and `artifactContentTest` passed after injecting the
 test-only artifact directory into the Gradle Test worker; a plain suite run
 without that property produced only setup failures in `ArtifactBoundariesTest`.
@@ -364,15 +379,15 @@ TotalCross commit `62a4df7b5` corrected the task separation by excluding the
 dedicated boundary task now pass without temporary initialization.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
-is absent. The separate aggregate binary compatibility decision remains open.
+is absent. The separate aggregate binary compatibility decision is closed by
+the user's documented waiver.
 The aggregate check against 7.2.0 reports concrete public API removals and
 classfile changes, so the current preview-capable floor proven locally is SDK
 7.2.2 and public publication requires an explicit versioning/compatibility
 decision.
 The older cached 7.2.0 comparison still reports historical Launcher/deployer
-incompatibilities and requires a release-owner compatibility decision; the
-preceding checkpoint comparison is green. No IR merge, tag, push, or public
-publication was performed.
+incompatibilities, now explicitly accepted by the user. No IR merge, tag, push,
+or public publication was performed.
 
 ### Possible Article Angles
 
