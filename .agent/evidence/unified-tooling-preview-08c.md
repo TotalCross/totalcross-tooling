@@ -72,3 +72,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   and Maven select the corresponding CLI command for their run tasks/goals.
   The duplicate Gradle run wrapper was removed. Tooling CLI, Gradle plugin, and
   Maven plugin tests passed.
+- 2026-07-29: VS Code reload now compiles before it requests `reload` from the
+  active coordinator, preserving the current session and frame when compilation
+  fails. TypeScript compilation passed. The installed-extension test runner is
+  currently blocked locally because its downloaded VS Code test bundle lacks the
+  expected macOS `Contents/MacOS/Electron` executable; no behavior result is
+  recorded from that E2E attempt.

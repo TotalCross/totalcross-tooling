@@ -29,6 +29,8 @@ export class PreviewClient {
     public constructor(private readonly layout: ProjectLayout, private readonly platform: NodeJS.Platform = process.platform) {}
 
     public onEvent(listener: (event: PreviewEvent) => void): void { this.listeners.push(listener); }
+    public root(): string { return this.layout.root; }
+    public buildTool(): BuildTool { return this.layout.buildTool; }
 
     public async start(): Promise<void> {
         if (this.process && !this.process.killed) return;
@@ -45,10 +47,15 @@ export class PreviewClient {
     }
 
     public async reload(): Promise<void> {
-        await this.run(this.stopCommand());
         await this.run(buildCommand(this.layout, this.platform));
-        await this.start();
-        this.emit({kind: 'reload-ready', message: this.layout.root});
+        this.emit({kind: 'build-succeeded', message: this.layout.root});
+    }
+
+    public async mainClass(): Promise<string> {
+        const root = this.layout.buildTool === 'gradle' ? this.layout.packageOutputRoot : path.join(this.layout.packageOutputRoot, 'totalcross');
+        const model = JSON.parse(await fs.readFile(path.join(root, 'project-model.json'), 'utf8'));
+        if (!model || typeof model.mainClass !== 'string' || !model.mainClass.trim()) throw new Error('preview project model has no mainClass');
+        return model.mainClass;
     }
 
     public stop(): void {

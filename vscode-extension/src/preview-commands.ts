@@ -50,7 +50,15 @@ export class PreviewManager {
 
     private scheduleReload(): void {
         if (this.reloadTimer) clearTimeout(this.reloadTimer);
-        this.reloadTimer = setTimeout(() => this.client!.reload().catch((error) => this.show({kind: 'error', message: error.message})), 250);
+        this.reloadTimer = setTimeout(() => this.reloadAfterBuild().catch((error) => this.show({kind: 'error', message: error.message})), 250);
+    }
+
+    private async reloadAfterBuild(): Promise<void> {
+        if (!this.client) return;
+        await this.client.reload();
+        const mainClass = await this.client.mainClass();
+        await this.sendControl(this.client.root(), this.client.buildTool(), {command: 'reload', values: [mainClass]});
+        this.show({kind: 'reload-requested', message: mainClass});
     }
 
     private show(event: PreviewEvent): void {
