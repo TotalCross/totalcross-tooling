@@ -53,6 +53,7 @@ commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
 Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 commit
 `ce22dc9`; Plan 07 commit `a776258`; Plan 08 commit `27d3e18`.
 TotalCross Plan 08 Android migration commit: `fac934fa3`.
+Plan 08B stabilization slice: tooling `612e658`; TotalCross SDK `a020512e4`.
 
 ## Active paths
 
@@ -97,6 +98,10 @@ the SDK compiled, and official Protobuf/Bundletool version probes passed. Logs:
 `/tmp/gradle-plugin-plan08-test-final.log`,
 `/tmp/totalcross-plan08-sdk-compile-final.log`, and
 `/tmp/tooling-plan08-license.log`.
+Plan 08B validation: tooling-java, Gradle, focused Maven/package, live-preview-
+server, SDK compile, VS Code, license checks, and local staging passed. The
+standalone CLI fixture did not produce a first frame on this macOS host; VS Code
+worker input/webview forwarding and the full end-to-end matrix remain open.
 
 ## Deferrals and exclusions
 
