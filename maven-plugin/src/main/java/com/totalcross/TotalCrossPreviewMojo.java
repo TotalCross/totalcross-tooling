@@ -11,7 +11,8 @@ import org.apache.maven.project.MavenProject;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.jar.JarFile;
+import com.totalcross.tooling.cli.ToolingCli;
+import java.io.IOException;
 
 @Mojo(name = "preview", requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class TotalCrossPreviewMojo extends AbstractMojo {
@@ -36,7 +37,7 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
             Files.write(descriptor, new PreviewSessionDescriptor(1, BuildTool.MAVEN, project, descriptor,
                 applicationClass, null).toJson().getBytes("UTF-8"));
             getLog().info("TotalCross preview session ready: " + descriptor);
-            if (!noLaunch) launchDesktopPreview(applicationClass, project);
+            if (!noLaunch) launchSharedPreview(applicationClass, project, descriptor);
         } catch (Exception e) {
             throw new MojoExecutionException("Unable to create TotalCross preview session", e);
         }
@@ -75,29 +76,18 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         }
     }
 
-    private void launchDesktopPreview(String applicationClass, Path project) throws Exception {
+    private void launchSharedPreview(String applicationClass, Path project, Path descriptor) throws Exception {
         List<String> classpath = mavenProject.getRuntimeClasspathElements();
-        if (!containsLauncher(classpath)) {
-            getLog().info("TotalCross SDK launcher not found; descriptor-only preview session");
-            return;
-        }
         String java = Paths.get(System.getProperty("java.home"), "bin",
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
-        Process process = new ProcessBuilder(java, "-cp", String.join(File.pathSeparator, classpath),
-            "totalcross.Launcher", applicationClass).directory(project.toFile()).inheritIO().start();
-        getLog().info("TotalCross preview window started with PID " + process.pid());
-    }
-
-    private static boolean containsLauncher(List<String> entries) {
-        for (String entry : entries) {
-            File file = new File(entry);
-            if (file.isDirectory() && new File(file, "totalcross/Launcher.class").isFile()) return true;
-            if (file.isFile()) {
-                try (JarFile jar = new JarFile(file)) {
-                    if (jar.getEntry("totalcross/Launcher.class") != null) return true;
-                } catch (Exception ignored) { }
-            }
-        }
-        return false;
+        String cli = ToolingCli.runtimeClasspath();
+        Process process = new ProcessBuilder(java, "-cp", cli, ToolingCli.class.getName(), "preview",
+            "--project", project.toString(), "--main", applicationClass, "--classpath",
+            String.join(File.pathSeparator, classpath)).directory(project.toFile()).redirectErrorStream(true).start();
+        String event = process.inputReader().readLine();
+        if (event == null) throw new IOException("TotalCross preview coordinator exited before starting");
+        Files.writeString(descriptor, Files.readString(descriptor).replaceFirst("}$",
+            ",\"pid\":" + process.pid() + "}"));
+        getLog().info("TotalCross preview coordinator started with PID " + process.pid() + ": " + event);
     }
 }

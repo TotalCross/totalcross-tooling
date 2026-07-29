@@ -71,3 +71,33 @@ program. Full command output belongs in `/tmp` or build artifacts.
   was not runnable without its required `-Dtotalcross.artifact.dir` property.
 - 2026-07-28: license/provenance validation passed and its 19 unittest cases
   passed; evidence is `/tmp/tooling-plan08-license.log`.
+
+## Plan 08B stabilization slice
+
+- 2026-07-28: tooling-java full tests passed 14 tests after canonical host/worker
+  handshake, reflective reload/input hooks, CLI `stop`, and staged publication;
+  final output is `/tmp/tooling-plan08b-canonical-test.log` (subsequent focused
+  reruns also passed).
+- 2026-07-28: Gradle plugin functional suite passed 21 tests after preview
+  classpath forking and moving `totalcrossPackage` behind `DeployService`;
+  final output is `/tmp/gradle-plan08b-final-test.log`.
+- 2026-07-28: Maven focused tests and `-DskipTests package` passed after preview,
+  preview-stop, subprocess Java-17 tooling, and shared deploy integration;
+  full Maven tests remain unavailable because concurrent legacy cache tests
+  started large network downloads.
+- 2026-07-28: live-preview-server tests passed 3 tests with SDK 7.2.2 using
+  `-PtotalcrossSdkVersion=7.2.2`; the HTTP server is documented as legacy.
+- 2026-07-28: VS Code compile and integration suite passed 30 tests. The public
+  command set is now `Preview`, `Run`, `Stop Preview`, and `Preview Diagnostics`;
+  old HTTP/Webview commands remain testable but are no longer activated or
+  contributed publicly.
+- 2026-07-28: SDK `compileJava` passed after adding public preview resize,
+  pointer, and key injection hooks; final output is
+  `/tmp/totalcross-plan08b-sdk-compile.log`.
+- 2026-07-28: aggregate `totalcross-sdk` and five narrow SDK Maven publications
+  were written to `totalcross/TotalCrossSDK/build/repo`; tooling protocol,
+  host, worker, core, and CLI publications were written to
+  `/tmp/totalcross-plan08b-staging`.
+- 2026-07-28: direct CLI fixture probe correctly emitted `started` but did not
+  emit a first frame with the empty `PreviewMainWindow.initUI` fixture on this
+  macOS host; the release-level first-frame claim remains open.

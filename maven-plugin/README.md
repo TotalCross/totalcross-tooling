@@ -14,6 +14,12 @@ SPDX-License-Identifier: Apache-2.0
 # TotalCross Maven Plugin
 This is the totalcross maven plugin. It helps building TotalCross applications without download or instaall anything else. You just need to have totalcross-sdk java api set in your dependencies and this plugin takes care of downloading the right TotalCross SDK.
 
+The current preview implementation uses the Java-17 `tooling-java` host/worker
+distribution. Maven and the build that invokes this plugin therefore require a
+Java 17 runtime. `totalcross:preview`, `totalcross:run`, and
+`totalcross:preview-stop` share the authenticated worker lifecycle; packaging
+remains the compatibility deploy path.
+
 ## Tasks
 | Task                   | Description                                                                                  |
 |------------------------|----------------------------------------------------------------------------------------------|

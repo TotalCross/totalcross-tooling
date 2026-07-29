@@ -16,10 +16,21 @@ public final class PreviewHost implements AutoCloseable {
   public PreviewHostSession session() { return session; }
 
   public void launchWorker(List<String> command) throws IOException {
+    launchWorker(command, null);
+  }
+
+  public void launchWorker(List<String> command, String applicationClasspath) throws IOException {
     java.util.ArrayList<String> args = new java.util.ArrayList<>(command);
     args.add(Integer.toString(session.port()));
     args.add(session.token());
+    if (applicationClasspath != null && !applicationClasspath.isBlank()) args.add(applicationClasspath);
     worker = new ProcessBuilder(args).redirectErrorStream(true).start();
+    try {
+      session.accept(15_000);
+    } catch (IOException failure) {
+      worker.destroyForcibly();
+      throw failure;
+    }
   }
 
   public FrameData receiveFrame() throws IOException {
@@ -48,6 +59,12 @@ public final class PreviewHost implements AutoCloseable {
   }
 
   public void prepareReload() throws IOException { session.send(MessageType.RELOAD, 5, new byte[0]); }
+
+  public void reload(String mainClass, String... args) throws IOException {
+    StringBuilder value = new StringBuilder(mainClass);
+    for (String arg : args) value.append('\n').append(arg);
+    session.send(MessageType.RELOAD, 5, value.toString().getBytes(StandardCharsets.UTF_8));
+  }
 
   @Override public void close() throws IOException {
     if (worker != null && worker.isAlive()) { session.stop(); worker.destroy(); }

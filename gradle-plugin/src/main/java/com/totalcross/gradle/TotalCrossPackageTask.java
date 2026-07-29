@@ -5,6 +5,13 @@
 
 package com.totalcross.gradle;
 
+import com.totalcross.tooling.deploy.DeployLogLevel;
+import com.totalcross.tooling.deploy.DeployPlatform;
+import com.totalcross.tooling.deploy.DeployRequest;
+import com.totalcross.tooling.deploy.DeployResult;
+import com.totalcross.tooling.deploy.DeployToolchain;
+import com.totalcross.tooling.deploy.LegacyDeployService;
+import com.totalcross.tooling.store.ExternalToolResolver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,20 +127,32 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
 
         List<Path> packageEntries = collectPackageEntries(output);
         writePackageFile(output, packageEntries);
-        List<String> arguments = buildArguments(stagedJar, output, deployName, library, sdkVersion);
+        List<String> arguments = buildArguments(output, deployName, library, sdkVersion);
         File configuredDeploySdkJar = optionalFile(getDeploySdkJar());
         File deploySdkJar = configuredDeploySdkJar != null
                 ? configuredDeploySdkJar
                 : new File(sdkHome, "dist/totalcross-sdk.jar");
         getLogger().lifecycle("Deploying TotalCross application {} with SDK {} (Java target {})", deployName, sdkVersion, targetVersion);
-        getExecOperations().javaexec(spec -> {
-            spec.setExecutable(java.getAbsolutePath());
-            spec.classpath(getProject().files(deploySdkJar, stagedJar.toFile(), getRuntimeClasspath()));
-            spec.getMainClass().set("tc.Deploy");
-            spec.setWorkingDir(output.toFile());
-            spec.environment("TOTALCROSS3_HOME", sdkHome.getAbsolutePath());
-            spec.args(arguments);
-        });
+        List<Path> deployArtifacts = new ArrayList<>();
+        deployArtifacts.add(deploySdkJar.toPath());
+        deployArtifacts.add(stagedJar);
+        getRuntimeClasspath().getFiles().stream().map(File::toPath).forEach(deployArtifacts::add);
+        DeployToolchain toolchain = new DeployToolchain(deployArtifacts);
+        if (getPlatforms().get().stream().map(TotalCrossPackageTask::platform).anyMatch(DeployPlatform.ANDROID::equals)) {
+            try {
+                toolchain = toolchain.withAndroidTools(
+                        new ExternalToolResolver().resolve("protoc", jdkHome.toPath()),
+                        new ExternalToolResolver().resolve("bundletool", jdkHome.toPath()));
+            } catch (IOException unavailable) {
+                getLogger().warn("Shared Android tools unavailable; selected SDK fallback will be checked: {}", unavailable.getMessage());
+            }
+        }
+        DeployRequest request = new DeployRequest(stagedJar, output, sdkHome.toPath(), jdkHome.toPath(),
+                library ? List.of() : getPlatforms().get().stream().map(TotalCrossPackageTask::platform).toList(), library,
+                deployLogLevel(getLogLevel().getOrNull()), arguments);
+        DeployResult result = new LegacyDeployService(toolchain).deploy(request);
+        result.diagnostics().forEach(diagnostic -> getLogger().lifecycle(diagnostic.message()));
+        if (!result.succeeded()) throw new GradleException("Shared TotalCross deploy failed with exit " + result.exitCode());
 
         if (library) {
             Path tcz = findGeneratedTcz(output, deployName);
@@ -198,15 +217,10 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
         Files.write(allPackage, lines, StandardCharsets.UTF_8);
     }
 
-    private List<String> buildArguments(Path jar, Path output, String applicationName, boolean library, String sdkVersion) {
+    private List<String> buildArguments(Path output, String applicationName, boolean library, String sdkVersion) {
         List<String> arguments = new ArrayList<>();
-        arguments.add(jar.toAbsolutePath().toString());
-        if (!library) {
-            getPlatforms().get().stream().map(TotalCrossPackageTask::platformArgument).forEach(arguments::add);
-        }
         arguments.add("/n");
         arguments.add(applicationName);
-        arguments.add("/p");
         arguments.addAll(logLevelArguments(sdkVersion, getLogLevel().getOrNull()));
         String activationKey = getActivationKey().getOrNull();
         if (activationKey != null && !activationKey.isBlank()) {
@@ -226,6 +240,18 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
 
     private static String platformArgument(String platform) {
         return platform.startsWith("-") ? platform : "-" + platform;
+    }
+
+    private static DeployPlatform platform(String value) {
+        String normalized = value.replaceFirst("^-", "").replace('-', '_').toUpperCase(Locale.ROOT);
+        try { return DeployPlatform.valueOf(normalized); }
+        catch (IllegalArgumentException error) { throw new GradleException("Unsupported TotalCross deploy platform: " + value, error); }
+    }
+
+    private static DeployLogLevel deployLogLevel(String value) {
+        if (value == null || value.isBlank()) return DeployLogLevel.NORMAL;
+        try { return DeployLogLevel.valueOf(value.toUpperCase(Locale.ROOT)); }
+        catch (IllegalArgumentException error) { throw new GradleException("Unsupported TotalCross deploy logLevel: " + value, error); }
     }
 
     static List<String> logLevelArguments(String sdkVersion, String configuredLevel) {

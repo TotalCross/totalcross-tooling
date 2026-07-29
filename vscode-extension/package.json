@@ -28,12 +28,6 @@
 		"onCommand:extension.deploy",
 		"onCommand:extension.deployAndRun",
 		"onCommand:extension.convertMavenProjectToGradle",
-		"onCommand:totalcross.startPreview",
-		"onCommand:totalcross.openLivePreview",
-		"onCommand:totalcross.stopPreview",
-		"onCommand:totalcross.reloadPreview",
-		"onCommand:totalcross.openPreviewConfig",
-		"onWebviewPanel:totalcrossLivePreview",
 		"onCommand:extension.preview",
 		"onCommand:extension.run",
 		"onCommand:extension.previewStop",
@@ -61,26 +55,6 @@
 			{
 				"command": "extension.convertMavenProjectToGradle",
 				"title": "TotalCross: Convert Maven Project to Gradle"
-			},
-			{
-				"command": "totalcross.startPreview",
-				"title": "TotalCross: Start Preview"
-			},
-			{
-				"command": "totalcross.openLivePreview",
-				"title": "TotalCross: Open Live Preview"
-			},
-			{
-				"command": "totalcross.stopPreview",
-				"title": "TotalCross: Stop Preview"
-			},
-			{
-				"command": "totalcross.reloadPreview",
-				"title": "TotalCross: Reload Preview"
-			},
-			{
-				"command": "totalcross.openPreviewConfig",
-				"title": "TotalCross: Open Preview Config"
 			},
 			{
 				"command": "extension.preview",
@@ -119,14 +93,6 @@
 					},
 					"default": [],
 					"description": "Additional JVM arguments for the preview service."
-				},
-				"totalcross.livePreview.extraClasspath": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Additional local SDK or dependency classpath entries. Relative paths are resolved from the workspace folder."
 				},
 				"totalcross.livePreview.port": {
 					"type": "number",

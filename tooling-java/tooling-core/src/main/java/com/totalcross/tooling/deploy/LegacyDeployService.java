@@ -34,13 +34,20 @@ public final class LegacyDeployService implements DeployService {
             try (URLClassLoader loader = new URLClassLoader(urls(), null)) {
                 configureAndroidTools(request, diagnostics);
                 Class<?> deploy = Class.forName("tc.Deploy", true, loader);
-                var constructor = deploy.getConstructor(String[].class);
-                PrintStream previous = System.err;
+                PrintStream previousErr = System.err;
+                PrintStream previousOut = System.out;
                 try (PrintStream output = new PrintStream(captured, true, StandardCharsets.UTF_8)) {
+                    System.setOut(output);
                     System.setErr(output);
-                    constructor.newInstance((Object) arguments.toArray(String[]::new));
+                    String[] deployArguments = arguments.toArray(String[]::new);
+                    try {
+                        deploy.getConstructor(String[].class).newInstance((Object) deployArguments);
+                    } catch (NoSuchMethodException legacyMainOnly) {
+                        deploy.getMethod("main", String[].class).invoke(null, (Object) deployArguments);
+                    }
                 } finally {
-                    System.setErr(previous);
+                    System.setOut(previousOut);
+                    System.setErr(previousErr);
                 }
             } catch (InvocationTargetException failure) {
                 diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.ERROR,

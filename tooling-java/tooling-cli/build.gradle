@@ -4,6 +4,7 @@
 plugins {
     id 'application'
     id 'java'
+    id 'maven-publish'
 }
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
@@ -25,3 +26,12 @@ tasks.register('fatJar', Jar) {
 }
 
 tasks.withType(Test).configureEach { useJUnitPlatform() }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact tasks.named('fatJar')
+        }
+    }
+}

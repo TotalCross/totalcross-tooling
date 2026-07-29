@@ -59,12 +59,22 @@ public final class PreviewWorkerSession implements AutoCloseable {
           String[] values = text(message).split(",");
           runtime.key(Integer.parseInt(values[0]), Boolean.parseBoolean(values[1]), Integer.parseInt(values[2]));
         }
-        case RELOAD -> { runtime.prepareReload(); send(MessageType.RELOAD_READY, message.requestId(), new byte[0]); }
+        case RELOAD -> {
+          String value = text(message);
+          runtime.prepareReload();
+          if (!value.isBlank()) {
+            String[] values = value.split("\\n", -1);
+            runtime.replaceMainWindow(values[0], java.util.Arrays.copyOfRange(values, 1, values.length));
+          }
+          send(MessageType.RELOAD_READY, message.requestId(), new byte[0]);
+        }
         case STOP -> { }
         default -> throw new ProtocolException("unsupported worker command: " + message.type());
       }
-    } catch (RuntimeException e) {
-      send(MessageType.ERROR, message.requestId(), String.valueOf(e.getMessage()).getBytes(StandardCharsets.UTF_8));
+    } catch (Throwable e) {
+      String detail = e.getMessage() == null ? e.getClass().getName() : e.getMessage();
+      send(MessageType.ERROR, message.requestId(), detail.getBytes(StandardCharsets.UTF_8));
+      if (e instanceof Error error) throw error;
       throw new IOException("preview worker command failed", e);
     }
   }

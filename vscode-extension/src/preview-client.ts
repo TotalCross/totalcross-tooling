@@ -16,6 +16,11 @@ export function previewCommand(layout: ProjectLayout, platform: NodeJS.Platform,
     return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreview', '--console=plain'].concat(launchWindow ? [] : ['-Ptotalcross.preview.noLaunch=true'])};
 }
 
+export function buildCommand(layout: ProjectLayout, platform: NodeJS.Platform): PreviewCommand {
+    if (layout.buildTool === 'maven') return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['compile']};
+    return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['classes', '--console=plain']};
+}
+
 export class PreviewClient {
     private process?: ChildProcess;
     private readonly listeners: Array<(event: PreviewEvent) => void> = [];
@@ -40,12 +45,16 @@ export class PreviewClient {
     }
 
     public async reload(): Promise<void> {
-        const command = previewCommand(this.layout, this.platform, false);
-        await this.run(command);
+        await this.run(buildCommand(this.layout, this.platform));
+        await this.start();
         this.emit({kind: 'reload-ready', message: this.layout.root});
     }
 
     public stop(): void {
+        const command = this.layout.buildTool === 'maven'
+            ? {executable: this.platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview-stop']}
+            : {executable: this.platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreviewStop', '--console=plain']};
+        void this.run(command).catch(() => undefined);
         if (this.process) this.process.kill();
         this.process = undefined;
         this.emit({kind: 'closed', message: 'preview stopped'});

@@ -8,3 +8,18 @@ allprojects {
         mavenCentral()
     }
 }
+
+subprojects {
+    plugins.withId('maven-publish') {
+        publishing {
+            repositories {
+                maven {
+                    name = 'staging'
+                    url = providers.gradleProperty('stagingRepo')
+                        .map { uri(it) }
+                        .orElse(rootProject.layout.buildDirectory.dir('staging-repository'))
+                }
+            }
+        }
+    }
+}

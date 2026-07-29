@@ -30,18 +30,18 @@ Do not merge IR, move converter source, tag, or publish publicly.
 
 ## Progress
 
-- [ ] Declare `tooling-java` host/worker as the production preview lifecycle.
-- [ ] Convert the HTTP server into an authenticated presentation adapter or mark it legacy.
+- [x] Declare `tooling-java` host/worker as the production preview lifecycle.
+- [x] Convert the HTTP server into an authenticated presentation adapter or mark it legacy.
 - [ ] Complete CLI project discovery, worker launch, reload, stop, and JSON events.
-- [ ] Implement worker resize, pointer, key, and reload commands.
-- [ ] Make Gradle preview, run, stop, and package use shared tooling.
-- [ ] Make Maven preview, run, stop, and package use shared tooling.
+- [x] Implement worker resize, pointer, key, and reload commands.
+- [x] Make Gradle preview, run, stop, and package use shared tooling.
+- [x] Make Maven preview, run, stop, and package use shared tooling.
 - [ ] Make shared SDK/JDK/Java/Retrolambda policy authoritative.
-- [ ] Resolve Maven JVM versus Java-17 tooling compatibility.
-- [ ] Consolidate VS Code preview commands and companion installation.
+- [x] Resolve Maven JVM versus Java-17 tooling compatibility.
+- [x] Consolidate VS Code preview commands and companion installation.
 - [ ] Add multi-root selection, input forwarding, and build-before-reload.
-- [ ] Preserve wizard and Maven-to-Gradle migration behavior and rollback.
-- [ ] Publish aggregate and narrow artifacts to a local staging repository.
+- [x] Preserve wizard and Maven-to-Gradle migration behavior and rollback.
+- [x] Publish aggregate and narrow artifacts to a local staging repository.
 - [ ] Prove aggregate-SDK compatibility and preview version gating.
 - [ ] Pass the pre-IR end-to-end matrix.
 - [ ] Commit and update state to Plan 08R.
@@ -230,7 +230,11 @@ integration slice is separately revertible.
 
 ## Outcomes & Retrospective
 
-Not started.
+The canonical host/worker path, build-tool adapters, VS Code command surface,
+shared deploy service, narrow Maven publications, and a local staging repository
+are implemented. Release acceptance remains open: a real CLI fixture on this
+macOS host did not produce a first frame, and the VS Code input/webview adapter
+still needs to be wired to the worker protocol before Plan 08B can close.
 
 ## Revision Note
 
@@ -243,44 +247,70 @@ Complete this section only from executed evidence.
 
 ### Editorial Summary
 
-Not completed yet.
+The slice exceeded the original structural checkpoint by making Gradle and Maven
+fork the shared CLI and by moving both package goals behind `DeployService`.
+Artifact staging is proven locally. End-to-end first-frame and editor input
+acceptance are intentionally still pending.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+Implemented canonical worker launch/handshake, CLI stop, reflective reload and
+input hooks, Gradle/Maven preview-stop, shared package execution, VS Code
+multi-root selection/build-before-reload scaffolding, legacy HTTP labeling, and
+aggregate plus narrow SDK publication metadata.
 
 ### What Changed
 
-Not completed yet.
+The Maven plugin remains Java 17 at load time and uses a subprocess for the
+tooling CLI. Existing SDK/JDK download managers remain only for compatibility
+resolution; the actual deploy invocation is isolated through the shared core.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The CLI fixture used a `MainWindow` with an empty `initUI` and exited without a
+first frame on this host, so the release-level first-frame claim is not made.
+The full Maven suite was not run because legacy cache tests concurrently started
+large network downloads; focused Maven tests and packaging passed.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+The Gradle daemon does not expose the plugin dependency classpath as a usable
+`java.class.path`; the fork now collects code-source locations for CLI, host,
+worker, and protocol. Legacy deploy fixtures also use a static `main` rather
+than the production constructor, so the adapter accepts both entry shapes.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+Passed: tooling-java full tests (14 tests), Gradle plugin full tests (21 tests),
+focused Maven tests and package, live-preview-server tests with SDK 7.2.2 (3
+tests), VS Code integration suite (30 tests), SDK `compileJava`, license checks,
+`git diff --check`, SDK aggregate/narrow publication to `TotalCrossSDK/build/repo`,
+and tooling-java publication to `/tmp/totalcross-plan08b-staging`.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+The staging repository contains POM/module metadata for tooling-core,
+tooling-protocol, preview-host, preview-worker, and tooling-cli; the SDK staging
+repository contains `totalcross-sdk` plus `totalcross-api`,
+`totalcross-runtime-java`, `totalcross-converter`, `totalcross-deployer`, and
+`totalcross-preview-runtime`.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+The first-frame CLI acceptance and VS Code worker input/webview path remain open.
+No IR merge, tag, push, or public publication was performed.
 
 ### Possible Article Angles
 
-Not completed yet.
+The release should tell the story of one authenticated lifecycle crossing build
+tools and editors, with legacy HTTP retained only as a compatibility adapter.
 
 ### Suggested Narrative
 
-Not completed yet.
+Start with the host handshake, follow the disposable worker through a verified
+frame, then show Gradle/Maven/VS Code delegating to the same coordinator.
 
 ### Claims Requiring Human Review
 
-Not completed yet.
+Claims about first-frame delivery, input forwarding, SDK version gating, and
+aggregate binary compatibility require the remaining end-to-end evidence.

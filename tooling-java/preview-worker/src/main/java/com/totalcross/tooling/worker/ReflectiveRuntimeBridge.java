@@ -26,7 +26,9 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
           String[].class);
       runtime = start.invoke(null, mainClass, consumer, applicationLoader, args);
     } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException("unable to start TotalCross preview runtime", e);
+      Throwable cause = e instanceof InvocationTargetException && e.getCause() != null ? e.getCause() : e;
+      throw new IllegalStateException("unable to start TotalCross preview runtime: "
+          + (cause.getMessage() == null ? cause.getClass().getName() : cause.getMessage()), cause);
     }
   }
 
@@ -47,10 +49,38 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
   }
 
   public void pump() { invoke("pumpEvents", new Class<?>[0]); }
-  public void resize(int width, int height, double density) { }
-  public void pointer(int x, int y, int button, boolean pressed) { }
-  public void key(int keyCode, boolean pressed, int modifiers) { }
+  public void resize(int width, int height, double density) {
+    invokeOptional("resizePreview", new Class<?>[] { int.class, int.class, double.class }, width, height, density);
+  }
+  public void pointer(int x, int y, int button, boolean pressed) {
+    invokeOptional("injectPreviewPointer", new Class<?>[] { int.class, int.class, int.class, boolean.class },
+        x, y, button, pressed);
+  }
+  public void key(int keyCode, boolean pressed, int modifiers) {
+    invokeOptional("injectPreviewKey", new Class<?>[] { int.class, boolean.class, int.class }, keyCode, pressed, modifiers);
+  }
   public void prepareReload() { invoke("preparePreviewMainWindowReload", new Class<?>[0]); }
-  public void replaceMainWindow(String mainClass, String[] args) { }
+  public void replaceMainWindow(String mainClass, String[] args) {
+    try {
+      Class<?> windowType = Class.forName("totalcross.ui.MainWindow", true, applicationLoader);
+      Method create = runtime.getClass().getMethod("createMainWindow", String.class, ClassLoader.class, boolean.class);
+      Object window = create.invoke(runtime, mainClass, applicationLoader, false);
+      Method replace = runtime.getClass().getMethod("replaceMainWindow", windowType, String.class);
+      replace.invoke(runtime, window, String.join(" ", args));
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException("preview runtime replacement failed", e);
+    }
+  }
   public void close() { invoke("close", new Class<?>[0]); }
+
+  private void invokeOptional(String name, Class<?>[] types, Object... args) {
+    if (runtime == null) return;
+    try {
+      runtime.getClass().getMethod(name, types).invoke(runtime, args);
+    } catch (NoSuchMethodException ignored) {
+      // Older SDKs expose the preview lifecycle but not input injection.
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException("preview runtime command failed", e);
+    }
+  }
 }

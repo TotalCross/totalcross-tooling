@@ -23,7 +23,9 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 /**
- * Minimal HTTP preview server for IDE integrations.
+ * Legacy HTTP/Webview adapter retained for compatibility fixtures.
+ * New integrations must use tooling-java's authenticated host/worker lifecycle;
+ * this server is not a second supported reload owner.
  */
 public class LivePreviewServer {
   private static final String DEFAULT_HOST = "127.0.0.1";

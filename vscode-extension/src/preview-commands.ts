@@ -16,14 +16,15 @@ export class PreviewManager {
     public constructor(private readonly output = vscode.window.createOutputChannel('TotalCross Preview')) {}
 
     public async start(): Promise<void> {
-        const folder = (vscode.workspace.workspaceFolders || [])[0];
+        const folders = vscode.workspace.workspaceFolders || [];
+        const folder = folders.length <= 1 ? folders[0] : await vscode.window.showWorkspaceFolderPick({ placeHolder: 'Select the TotalCross project to preview' });
         if (!folder) throw new Error('TotalCross project not found in this VS Code instance.');
         const layout = asLayout(await detectProjectLayout(folder.uri.fsPath, process.platform));
         if (!layout) throw new Error('Unsupported or mixed TotalCross project.');
         this.client = new PreviewClient(layout);
         this.client.onEvent((event) => this.show(event));
         await this.client.start();
-        this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, '**/*.{java,xml,properties,gradle}'));
+        this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, '**/*.{java,xml,properties,gradle,gradle.kts,pom.xml}'));
         this.watcher.onDidChange(() => this.scheduleReload());
         this.watcher.onDidCreate(() => this.scheduleReload());
         this.watcher.onDidDelete(() => this.scheduleReload());
