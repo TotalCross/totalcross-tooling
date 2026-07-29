@@ -133,3 +133,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   before 7.3 and JDK 17 for newer SDKs. Core policy tests, Gradle plugin tests,
   Maven compilation/package, targeted Retrolambda coverage, and JDK-generation
   selection coverage passed.
+- 2026-07-29: a local VSIX was packaged as
+  `vscode-extension/totalcross-preview-local.vsix` and installed successfully
+  in the real VS Code as `totalcross.vscode-totalcross@0.1.0`. The VS Code
+  integration suite then passed all 30 tests; those tests still load the
+  development extension path, so installed-VSIX activation and the full
+  installed-project flow remain a separate release gate.

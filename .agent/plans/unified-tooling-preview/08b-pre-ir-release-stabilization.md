@@ -302,7 +302,10 @@ non-empty 320x568 preview frame, and stopped through `totalcrossPreview` /
 `/tmp/totalcross-maven-e2e.i20RTr/target/totalcross/preview-frame.png`.
 The shared compatibility policy tests passed in tooling-core; Gradle plugin
 tests, Maven compilation/package, targeted Retrolambda coverage, and JDK 17
-selection coverage also passed.
+selection coverage also passed. A local VSIX was packaged and installed in the
+real VS Code, and the existing integration suite passed 30 tests; the suite
+still loads the development extension path, so installed-VSIX activation remains
+open.
 The clean Maven repository `/tmp/totalcross-clean-m2.Symu0K` resolved SDK,
 preview-runtime, and tooling CLI artifacts from staged repositories without
 `mavenLocal`; the required annotations artifact was added to staging. japicmp

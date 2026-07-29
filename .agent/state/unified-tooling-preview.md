@@ -113,6 +113,8 @@ matrix, installed VSIX acceptance, and public-baseline compatibility review
 remain open. The logical stabilization commits include tooling `612e658`,
 `b9ece39`, `8a2783f`, `3a1bc74` and TotalCross `a020512e4`, `fab77de18`,
 `6e9161739`; the shared Java compatibility policy is tooling `e080c4e`.
+The local VSIX was packaged/installed and the existing VS Code suite passed 30
+tests, but installed-VSIX activation remains an explicit release gate.
 
 ## Deferrals and exclusions
 
