@@ -9,12 +9,12 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 08B, pre-IR release stabilization.
-Active slice: Plan 08 completed; shared external tools and Android deploy
-migration are committed. The next slice consolidates the production preview
-lifecycle and plugin/editor acceptance.
+Active plan: Plan 08R, pre-IR release publication and verification.
+Active slice: Plan 08B is complete. The production preview lifecycle, clean
+Gradle/Maven matrix, accepted compatibility waiver, disabled telemetry path,
+and trusted installed VS Code project flow are recorded.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,300p' .agent/plans/unified-tooling-preview/08b-pre-ir-release-stabilization.md`
+sed -n '1,300p' .agent/plans/unified-tooling-preview/08r-publish-pre-ir-release.md`
 
 ## Repositories
 
@@ -159,8 +159,10 @@ The Maven real-package gate now passes against the official SDK 7.2.2 after
 `dist/totalcross-sdk.jar`; the isolated fixture generated the Linux executable,
 `PreviewMainWindow.tcz`, runtime packages, and `libtcvm.so`. Network checks also
 passed: Gradle `sdkSourceNetworkTest` and Maven's live JDK 11 download test.
-The remaining release gates are the public aggregate compatibility decision,
-the full pre-IR matrix, and manual installed-project E2E.
+The public aggregate compatibility decision is accepted as a documented waiver,
+the full pre-IR matrix passes, and the trusted installed-project E2E passes with
+the rebuilt VSIX. Plan 08R remains responsible for staging and release
+verification; no public publication has been performed.
 The explicitly enabled SDK `AnonymousUserDataTest` reached its configured
 network endpoint, but all three cases failed with HTTP 404 because the Heroku
 application no longer exists; this external service must be replaced or the
@@ -179,8 +181,9 @@ internal converter/deployer utilities, the intentional
 `totalcross.lang.IllegalStateException4D` relocation to `jdkcompat.lang`, and
 the `totalcross.Launcher` construction/argument execution contract. TotalCross
 commit `9a36178ef` disables `AnonymousUserData` in launcher/deploy runtime paths
-and disables its endpoint-dependent test. The remaining Plan 08B gates are the
-complete VS Code matrix and installed-project E2E.
+and disables its endpoint-dependent test. The trusted installed VS Code E2E
+then passed after repackaging the VSIX with production dependencies; Plan 08B
+is complete and Plan 08R is the next active slice.
 
 ## Deferrals and exclusions
 

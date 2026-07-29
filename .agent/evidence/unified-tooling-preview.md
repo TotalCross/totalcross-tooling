@@ -268,3 +268,16 @@ program. Full command output belongs in `/tmp` or build artifacts.
   `/tmp/totalcross-plan08b-sdk-telemetry-disabled-validation-final.log`. The
   accepted compatibility report completes in non-strict mode at
   `/tmp/totalcross-plan08b-aggregate-compatibility-accepted.log`.
+- 2026-07-29: the trusted installed VS Code project E2E passed after the VSIX
+  was rebuilt with production dependencies and force-installed in the local
+  VS Code. `TotalCross: Preview` opened the `TotalCross Preview` Webview,
+  produced `build/totalcross/preview-frame.png` (320x568, 1928 bytes),
+  reloaded after a Java source edit, and `TotalCross: Stop Preview` closed the
+  session with no remaining `ToolingCli` process. The temporary fixture is
+  `/tmp/totalcross-vscode-installed-e2e.Wzu5Er`; its final log is
+  `/tmp/totalcross-vscode-installed-e2e.Wzu5Er/build/totalcross/preview.log`.
+  The first run exposed the old VSIX's missing `fs-extra` dependency; a second
+  run against the public cached SDK 7.2.2 exposed its missing preview contract.
+  The successful run used the locally rebuilt preview-capable SDK 7.2.2
+  repository. The intentionally empty fixture renders a blank white frame.
+  Plan 08B's installed-project gate is closed.

@@ -44,8 +44,8 @@ Do not merge IR, move converter source, tag, or publish publicly.
 - [x] Publish aggregate and narrow artifacts to a local staging repository.
 - [x] Prove preview version gating and its clear older-SDK diagnostic.
 - [x] Review aggregate-SDK compatibility against the public baseline and record the accepted release waiver.
-- [ ] Pass the pre-IR end-to-end matrix.
-- [ ] Commit and update state to Plan 08R.
+- [x] Pass the pre-IR end-to-end matrix.
+- [x] Commit and update state to Plan 08R.
 
 ## Current Architecture and Scope
 
@@ -255,10 +255,15 @@ through their native goals. Clean-cache SDK/tooling resolution and the
 checkpoint-based aggregate compatibility review are documented. Release
 acceptance now has successful real Gradle and Maven packaging paths with the
 official SDK 7.2.2. The public-baseline review is accepted by the user with a
-documented waiver; only the complete VS Code matrix and installed-project E2E
-remain open in this slice.
+documented waiver. The installed VS Code project flow is also proven after
+rebuilding the VSIX with production dependencies: Preview opened the Webview,
+produced a frame, reacted to a source edit, and Stop Preview closed the session.
 
 ## Revision Note
+
+2026-07-29: the trusted installed VS Code E2E passed with the rebuilt VSIX;
+frame generation, source reload, and stop results are recorded in the evidence
+checkpoint. Plan 08B is complete and the resumable state moved to Plan 08R.
 
 2026-07-28: added release stabilization for the real CLI/plugin/editor flow,
 canonical preview architecture, compatibility, and clean staging consumption.
@@ -343,8 +348,18 @@ repository contains `totalcross-sdk` plus `totalcross-api`,
 
 ### Limitations, Remaining Work, and Open Questions
 
-The clean Gradle/Maven/VS Code matrix and the manual installed-project E2E
-remain open; installed-VSIX activation and its 30-test integration suite pass.
+The clean Gradle/Maven/VS Code matrix is complete for this slice; the installed
+VSIX integration suite still passes its 30 tests. The manual installed-project
+E2E initially exposed a packaging defect: the old VSIX omitted production
+`node_modules`, so activation failed with `Cannot find module 'fs-extra'`.
+Repackaging with `npx @vscode/vsce package` included the 484 dependency files;
+after forced installation and a window reload, the trusted fixture opened
+`TotalCross Preview`, generated `build/totalcross/preview-frame.png` (1928
+bytes), reloaded after a Java source edit, and stopped without a remaining
+`ToolingCli` process. The fixture frame is intentionally blank white.
+The first attempt against the public cached 7.2.2 SDK also correctly reported
+the missing preview contract; the final E2E used the locally staged
+preview-capable SDK 7.2.2 repository.
 The manual installed-project attempt against
 `/tmp/totalcross-vscode-installed-e2e.Wzu5Er` was blocked by Restricted Mode:
 `TotalCross: Preview` was absent from the command palette, and a subsequent

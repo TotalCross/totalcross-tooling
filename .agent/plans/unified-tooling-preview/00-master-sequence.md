@@ -55,7 +55,7 @@ user approval at the irreversible step.
 - [x] Plan 06: Gradle and Maven structural integration checkpoint.
 - [x] Plan 07: VS Code workflow preservation checkpoint.
 - [x] Plan 08: complete shared tools and Android deploy migration.
-- [ ] Plan 08B: stabilize one production preview and plugin/editor flow.
+- [x] Plan 08B: stabilize one production preview and plugin/editor flow.
 - [ ] Plan 08R: stage, publish, and verify the pre-IR release.
 - [ ] Plan 09: merge IR and decide physical source ownership.
 - [ ] Plan 10: post-IR slimming and final program closure.
@@ -207,9 +207,15 @@ branches remain available for Plan 09.
 
 Plans 01–07 produced the workspace, shared core, artifact boundaries, launcher
 split, preview modules, plugin scaffolding, and preserved VS Code workflows.
-Plan 08 remains active. Release-level integration is pending.
+Plan 08B completed the release-level integration slice, including the clean
+Gradle/Maven matrix and trusted installed VS Code project E2E. Plan 08R is now
+active for staging and pre-IR release verification; public publication remains
+explicitly out of scope until approved.
 
 ## Revision Note
+
+2026-07-29: closed Plan 08B after the trusted installed VS Code E2E passed with
+the rebuilt production VSIX; transitioned the resumable state to Plan 08R.
 
 2026-07-28: inserted Plan 08B and Plan 08R, defined a pre-IR release boundary,
 and deferred IR integration until the published release is verified.
