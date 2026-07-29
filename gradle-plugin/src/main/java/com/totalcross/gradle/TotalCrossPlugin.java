@@ -63,19 +63,6 @@ public class TotalCrossPlugin implements Plugin<Project> {
             task.getOutputDirectory().convention(project.getLayout().getBuildDirectory().dir("totalcross"));
         });
         project.getTasks().named("assemble").configure(task -> task.dependsOn(packageTask));
-        project.getTasks().register("totalcrossTypedPackage", TypedDeployTask.class, task -> {
-            task.setGroup("build");
-            task.setDescription("Packages through the shared typed deploy contract.");
-            task.dependsOn(jar);
-            task.getApplicationJar().set(jar.flatMap(Jar::getArchiveFile));
-            task.getSdkHome().convention(extension.getTotalcrossHome());
-            task.getJdkHome().convention(extension.getJdkPath());
-            task.getOutputDirectory().convention(project.getLayout().getBuildDirectory().dir("totalcross-typed"));
-            task.getPlatforms().convention(extension.getPlatforms());
-            task.getLibrary().convention(extension.getTotalcrossLib());
-            task.getLogLevel().convention(extension.getLogLevel());
-            task.getToolchain().from(runtimeClasspath);
-        });
         var modelTask = project.getTasks().register("totalcrossProjectModel", ProjectModelTask.class);
         var previewTask = project.getTasks().register("totalcrossPreview", TotalCrossPreviewTask.class, task -> {
             task.dependsOn(modelTask, "classes");

@@ -164,6 +164,18 @@ class TotalCrossPluginFunctionalTest {
         assertTrue(failure.getMessage().contains("require Java 17"));
     }
 
+    @Test
+    void exposesOnlyThePublicPackageTask() throws Exception {
+        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'package-tasks'\n");
+        Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n");
+
+        var result = GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
+                .withArguments("tasks", "--all").build();
+
+        assertTrue(result.getOutput().contains("totalcrossPackage"));
+        assertFalse(result.getOutput().contains("totalcrossTypedPackage"));
+    }
+
     private String buildScript(Path repository, Path sdkHome, String pluginId) {
         return buildScript(repository, sdkHome, pluginId, null);
     }

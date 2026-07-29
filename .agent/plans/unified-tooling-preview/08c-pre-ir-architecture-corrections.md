@@ -70,7 +70,7 @@ converter source, create tags, or publish publicly.
 - [x] Enforce and document Java 17 for loading both pre-IR plugins.
 - [x] Serialize and parse the complete versioned ProjectModel.
 - [x] Include real roots, outputs, dependencies, SDK, targets, and arguments.
-- [ ] Remove or internalize `totalcrossTypedPackage`.
+- [x] Remove or internalize `totalcrossTypedPackage`.
 - [ ] Remove obsolete resolver/download dependencies after equivalence tests.
 - [ ] Clarify internal versus external preview contract documentation.
 

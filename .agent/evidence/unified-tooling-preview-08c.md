@@ -63,3 +63,7 @@ reached the text-file size limit. Full command output remains outside the repo.
   CLI reads the versioned model to obtain those values, so VS Code reaches the
   same path through its Gradle or Maven preview command. Tooling-core and CLI,
   Gradle plugin, and Maven plugin tests passed.
+- 2026-07-29: removed the unused public Gradle `totalcrossTypedPackage` proof
+  task and its implementation. `totalcrossPackage` remains the sole public
+  Gradle packaging path, matching Maven's `totalcross:package`; the Gradle
+  functional suite verifies that the removed task is no longer listed.

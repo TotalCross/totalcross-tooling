@@ -93,6 +93,7 @@ Completed Plan 08C slices:
     Java 17 home and propagate that home to the CLI worker
     Java 17 loading requirement enforced by Gradle and declared by Maven
     versioned complete ProjectModel emitted by Gradle and Maven and consumed by CLI
+    duplicate Gradle typed-package task removed; totalcrossPackage is the public path
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -100,13 +101,11 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    one public package path
     preview versus run presentation semantics
     VS Code build-before-reload and installed-VSIX behavior
 
 Remaining Plan 08C blockers:
 
-    one public package path
     preview versus run semantics
     failed-build preservation in VS Code
     pointer scaling and Webview resize
