@@ -52,3 +52,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   generated plugin descriptor records `requiredJavaVersion` 17. README guidance
   separates this from the application target and catalog-selected deploy JDK.
   Gradle tests and Maven package generation passed.
+- 2026-07-29: `ProjectModelCodec` now serializes and parses schema version 1,
+  roots and outputs, dependencies, main class, SDK and JDK identities, Java and
+  Retrolambda policy, arguments, platforms, and preview session. Gradle emits
+  this model from `totalcrossProjectModel`; Maven emits it beside the preview
+  session descriptor. The shared core, Gradle plugin, and Maven plugin tests
+  passed. CLI and VS Code consumption remain open before the model gate closes.

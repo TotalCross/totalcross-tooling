@@ -14,6 +14,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import com.totalcross.tooling.cli.ToolingCli;
@@ -33,6 +34,10 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
     private boolean noLaunch;
     @Parameter(property = "totalcross.jdkPath")
     private String jdkPath;
+    @Parameter(property = "totalcross.platforms")
+    private String[] platforms;
+    @Parameter(property = "totalcross.deployArguments")
+    private String[] deployArguments;
     @Component
     private MavenProject mavenProject;
 
@@ -43,14 +48,51 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
                 "totalcross", "preview-session.json").toAbsolutePath().normalize();
             Files.createDirectories(descriptor.getParent());
             String applicationClass = resolveApplicationClass(project);
-            Files.write(descriptor, new PreviewSessionDescriptor(1, BuildTool.MAVEN, project, descriptor,
-                applicationClass, null).toJson().getBytes("UTF-8"));
+            PreviewSessionDescriptor preview = new PreviewSessionDescriptor(1, BuildTool.MAVEN, project, descriptor,
+                applicationClass, sdkVersion());
+            writeProjectModel(project, descriptor, applicationClass, preview);
+            Files.writeString(descriptor, preview.toJson(), StandardCharsets.UTF_8);
             getLog().info("TotalCross preview session ready: " + descriptor);
             if (!noLaunch) launchSharedPreview(applicationClass, project, descriptor);
         } catch (Exception e) {
             throw new MojoExecutionException("Unable to create TotalCross preview session", e);
         }
     }
+
+    private void writeProjectModel(Path project, Path descriptor, String applicationClass,
+        PreviewSessionDescriptor preview) throws Exception {
+        org.apache.maven.model.Build build = mavenProject.getBuild();
+        Path classes = Paths.get(build.getOutputDirectory());
+        Path testClasses = Paths.get(build.getTestOutputDirectory());
+        List<Path> dependencies = mavenProject.getRuntimeClasspathElements().stream().map(Paths::get).toList();
+        List<SourceRoot> mainRoots = List.of(new SourceRoot(Paths.get(build.getSourceDirectory())));
+        List<SourceRoot> testRoots = List.of(new SourceRoot(Paths.get(build.getTestSourceDirectory())));
+        List<ResourceRoot> resources = mavenProject.getResources().stream()
+            .map(org.apache.maven.model.Resource::getDirectory).map(Paths::get).map(ResourceRoot::new).toList();
+        String sdkVersion = sdkVersion();
+        String jdk = jdkPath == null || jdkPath.isBlank() ? "catalog:java-17"
+            : "explicit:" + Paths.get(jdkPath).toAbsolutePath().normalize();
+        ProjectModel model = new ProjectModel(BuildTool.MAVEN, project, mainRoots, testRoots, resources,
+            new ClassOutput(classes), new ClassOutput(testClasses), new DependencyClasspath(dependencies), applicationClass,
+            sdkVersion, sdkVersion.isBlank() ? "" : "com.totalcross:totalcross-sdk:" + sdkVersion, jdk,
+            new JavaCompatibilityPolicy(Runtime.version().feature(), 17, targetJava()), new RetrolambdaPlan(false, "preview uses Java 17"),
+            List.of(), values(deployArguments), values(platforms), preview);
+        Files.writeString(descriptor.resolveSibling("project-model.json"), new ProjectModelCodec().toJson(model), StandardCharsets.UTF_8);
+    }
+
+    private String sdkVersion() {
+        return mavenProject.getArtifacts().stream().filter(artifact -> "com.totalcross".equals(artifact.getGroupId())
+            && "totalcross-sdk".equals(artifact.getArtifactId())).map(org.apache.maven.artifact.Artifact::getVersion)
+            .findFirst().orElse("");
+    }
+
+    private int targetJava() {
+        String value = mavenProject.getProperties().getProperty("maven.compiler.release",
+            mavenProject.getProperties().getProperty("maven.compiler.target", "17"));
+        return value.startsWith("1.") ? Integer.parseInt(value.substring(2)) : Integer.parseInt(value);
+    }
+
+    private static List<String> values(String[] source) { return source == null ? List.of() : Arrays.asList(source); }
 
     private String resolveApplicationClass(Path project) throws Exception {
         if (mainClass != null && !mainClass.trim().isEmpty()) return mainClass.trim();

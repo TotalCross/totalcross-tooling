@@ -115,6 +115,7 @@ class TotalCrossPluginFunctionalTest {
         assertTrue(result.getOutput().contains("TotalCross preview session ready"));
         assertTrue(Files.isRegularFile(projectDirectory.resolve("build/totalcross/project-model.json")));
         assertTrue(Files.isRegularFile(projectDirectory.resolve("build/totalcross/preview-session.json")));
+        assertTrue(Files.readString(projectDirectory.resolve("build/totalcross/project-model.json")).contains("\"schemaVersion\":1"));
         assertTrue(Files.readString(projectDirectory.resolve("build/totalcross/preview-session.json")).contains("GRADLE"));
     }
 
