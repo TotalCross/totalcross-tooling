@@ -281,8 +281,8 @@ The first CLI probe exposed missing SDK runtime dependencies and a symlinked
 temporary-directory edge case; the worker diagnostics and frame writer now
 report both cases clearly. The SDK also emits an initial frame for headless
 consumers, independent of application-specific repaint calls.
-The full Maven suite was not run because legacy cache tests concurrently started
-large network downloads; focused Maven tests and packaging passed.
+The full Maven suite was subsequently run with the stable network and passed;
+its cache tests completed the live JDK 11 download in roughly 31 seconds.
 
 ### Unexpected Problems and Discoveries
 
@@ -336,23 +336,23 @@ The manual installed-project attempt against
 Java language-server warning made the VS Code window unavailable to AX control.
 No preview frame or stop result is claimed from that attempt.
 The published Gradle plugin also resolved from isolated staging and reached
-`totalcrossPackage`, but its real deploy smoke used a synthetic SDK home and was
-stopped because that home lacked the complete distribution required by
-`tc.Deploy`; the typed contract is covered by the functional suite, while a
-release-grade real packaging run still requires a complete SDK home.
+`totalcrossPackage`, but that particular smoke used a synthetic SDK home and was
+stopped because it lacked the complete distribution required by `tc.Deploy`.
+Separate real packaging runs with the complete official SDK 7.2.2 now pass for
+both Gradle and Maven. The Maven mojo was aligned with Gradle to put the selected
+installation's `dist/totalcross-sdk.jar` first in the isolated deploy classpath.
 With the official 7.2.2 SDK archive, the adapter now isolates legacy non-daemon
 threads and honors the requested SDK home (`e8c79a4`). Deterministic core,
 Gradle, and Maven validations pass. A fresh Gradle real-packaging smoke with
 target 8, the complete SDK, and the current plugin generated the Linux
 installation outputs successfully; the plugin now selects the Java-17 SDK
-dependency variant independently of the application bytecode target. Maven
-real packaging remains open after the previous external `Connection reset`
-run used the incompatible target-17 setup. The successful Gradle log retains a
+dependency variant independently of the application bytecode target. The
+successful Gradle and Maven logs retain a
 non-fatal `NoClassDefFoundError` from the SDK's asynchronous telemetry after
-deployment; generated outputs and the task result are successful. A Maven
-real-package attempt reached the deploy goal but its clean repository lacked
-JDK 11 and began a 300 MB first-use download, so Maven packaging remains open
-for a controlled run with JDK 11 pre-provisioned.
+deployment; generated outputs and both task results are successful. The
+successful Maven log is `/tmp/totalcross-maven-real-package-final-success.log`,
+and its full plugin test log is `/tmp/totalcross-maven-plugin-test-current.log`.
+The network source lookup log is `/tmp/gradle-plugin-sdk-source-network.log`.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.

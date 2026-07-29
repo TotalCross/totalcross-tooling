@@ -148,7 +148,7 @@ public class TotalCrossMojo extends AbstractMojo {
         Artifact sdk = mavenProject.getArtifactMap().get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
         if (sdk == null || sdk.getFile() == null) throw new MojoExecutionException("TotalCross SDK artifact is not resolved");
         List<Path> artifacts = new ArrayList<>();
-        artifacts.add(sdk.getFile().toPath());
+        artifacts.add(deploySdkJar(sdk));
         mavenProject.getArtifacts().stream().map(Artifact::getFile).filter(file -> file != null)
                 .map(File::toPath).forEach(artifacts::add);
         DeployToolchain toolchain = new DeployToolchain(artifacts);
@@ -173,6 +173,11 @@ public class TotalCrossMojo extends AbstractMojo {
         DeployResult result = new LegacyDeployService(toolchain).deploy(request);
         result.diagnostics().forEach(diagnostic -> getLog().info(diagnostic.message()));
         if (!result.succeeded()) throw new MojoExecutionException("Shared TotalCross deploy failed with exit " + result.exitCode());
+    }
+
+    private Path deploySdkJar(Artifact sdk) {
+        Path installedJar = Paths.get(totalcrossHome, "dist", "totalcross-sdk.jar");
+        return java.nio.file.Files.isRegularFile(installedJar) ? installedJar : sdk.getFile().toPath();
     }
 
     private List<DeployPlatform> selectedPlatforms() throws MojoExecutionException {

@@ -213,9 +213,19 @@ program. Full command output belongs in `/tmp` or build artifacts.
   compiler JVM while preserving the independent SDK bytecode policy. The task
   succeeds, although the legacy SDK's asynchronous telemetry emits a
   non-fatal `NoClassDefFoundError` after the deployer returns.
-- 2026-07-29: the Maven real-package attempt used target 8, the official SDK
-  home, and the clean repository `/tmp/totalcross-maven-home4.cb3WCM`. It
-  reached `totalcross-maven-plugin:2.0.3:package`, but the isolated home lacked
-  JDK 11 and triggered a 300 MB first-use download; the attempt was stopped
-  before package generation. The Maven real-packaging gate remains open for a
-  controlled run with JDK 11 pre-provisioned.
+- 2026-07-29: the Maven real-package retry downloaded the 300,034,744-byte
+  JDK 11 archive successfully after moving a corrupt 59 MB cache artifact to
+  `/tmp/totalcross-corrupt-zulu_jdk_11.zip`. The Maven mojo now selects
+  `dist/totalcross-sdk.jar` from the configured SDK installation, matching the
+  Gradle deploy classpath; this fixed SDK-home discovery for package mode. The
+  official SDK 7.2.2 fixture passed `totalcross:package` and generated
+  `target/install/linux/PreviewMainWindow`, `PreviewMainWindow.tcz`, the
+  `TCBase/TCFont/TCUI` and Material Icons packages, and `libtcvm.so`.
+  Logs: `/tmp/totalcross-maven-real-package-final-success.log` and
+  `/tmp/totalcross-maven-plugin-test-current.log`.
+- 2026-07-29: network-dependent checks passed: Gradle
+  `sdkSourceNetworkTest` passed in `/tmp/gradle-plugin-sdk-source-network.log`,
+  and Maven `mvn test` passed 8 tests including the live JDK 11 download test.
+  The legacy SDK still emits a non-fatal asynchronous telemetry
+  `NoClassDefFoundError` after successful deploy; generated outputs and the
+  Maven result are successful.

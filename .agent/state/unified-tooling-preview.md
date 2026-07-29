@@ -154,6 +154,13 @@ The aggregate check records concrete removals/modifications against 7.2.0;
 public publication therefore remains blocked pending an explicit versioning or
 compatibility decision. The current preview-capable floor proven locally is
 SDK 7.2.2.
+The Maven real-package gate now passes against the official SDK 7.2.2 after
+`TotalCrossMojo` was aligned with Gradle to use the selected installation's
+`dist/totalcross-sdk.jar`; the isolated fixture generated the Linux executable,
+`PreviewMainWindow.tcz`, runtime packages, and `libtcvm.so`. Network checks also
+passed: Gradle `sdkSourceNetworkTest` and Maven's live JDK 11 download test.
+The remaining release gates are the public aggregate compatibility decision,
+the full pre-IR matrix, and manual installed-project E2E.
 
 ## Deferrals and exclusions
 
