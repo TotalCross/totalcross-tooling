@@ -42,7 +42,8 @@ Do not merge IR, move converter source, tag, or publish publicly.
 - [x] Add multi-root selection, input forwarding, and build-before-reload.
 - [x] Preserve wizard and Maven-to-Gradle migration behavior and rollback.
 - [x] Publish aggregate and narrow artifacts to a local staging repository.
-- [ ] Prove aggregate-SDK compatibility and preview version gating.
+- [x] Prove preview version gating and its clear older-SDK diagnostic.
+- [ ] Prove aggregate-SDK compatibility against the public baseline.
 - [ ] Pass the pre-IR end-to-end matrix.
 - [ ] Commit and update state to Plan 08R.
 
