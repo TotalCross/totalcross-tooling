@@ -56,7 +56,7 @@ converter source, create tags, or publish publicly.
 
 - [ ] Make shared SDK/JDK/store services authoritative in Gradle, Maven, and CLI.
 - [ ] Remove the Maven Zulu-only, latest, x86 JDK download path.
-- [ ] Run capability probes before using a tooling JDK.
+- [x] Run capability probes before using a tooling JDK.
 - [ ] Enforce and document Java 17 for loading both pre-IR plugins.
 - [ ] Serialize and parse the complete versioned ProjectModel.
 - [ ] Include real roots, outputs, dependencies, SDK, targets, and arguments.

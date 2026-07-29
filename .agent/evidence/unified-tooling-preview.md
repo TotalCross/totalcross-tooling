@@ -294,3 +294,6 @@ program. Full command output belongs in `/tmp` or build artifacts.
   preserved the active worker after a failed candidate. The CLI created a frame,
   replaced worker PID 8985 with 8994 on reload, and stopped cleanly. Tooling
   Java tests passed in `/tmp/totalcross-plan08c-process-milestone-test.log`.
+- 2026-07-29: Gradle and Maven now validate the shared tooling environment and
+  capability-probe the selected JDK before deploy. Their suites passed; Maven
+  reported 8 tests with no failures.

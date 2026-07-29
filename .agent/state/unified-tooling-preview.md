@@ -95,9 +95,10 @@ Completed Plan 08C milestones:
     reconciliation of remote heads, resume commands, and audit evidence
     process-backed worker promotion through the production CLI
     twenty real-worker replacements with failed-candidate preservation
+    shared environment facade adopted by Gradle and Maven with JDK probes
 
-Next milestone: make shared SDK/JDK/store resolution authoritative before
-changing the Gradle and Maven adapters.
+Next milestone: materialize JDKs through the shared store, then remove Maven's
+Zulu-only downloader after equivalence tests.
 
 Plan 08D after 08C:
 
