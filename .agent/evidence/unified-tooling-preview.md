@@ -265,4 +265,6 @@ program. Full command output belongs in `/tmp` or build artifacts.
   surface. TotalCross commit `9a36178ef` also disables `AnonymousUserData` in
   launcher/deploy runtime paths and disables its endpoint-dependent test. SDK
   `test` plus `artifactContentTest` pass after this change in
-  `/tmp/totalcross-plan08b-sdk-telemetry-disabled-validation-final.log`.
+  `/tmp/totalcross-plan08b-sdk-telemetry-disabled-validation-final.log`. The
+  accepted compatibility report completes in non-strict mode at
+  `/tmp/totalcross-plan08b-aggregate-compatibility-accepted.log`.
