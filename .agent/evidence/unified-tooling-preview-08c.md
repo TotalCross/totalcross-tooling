@@ -25,3 +25,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   `b5b46eb84aa2f301e739178aef0209c6843d6ad45b33f19dd39df4decdd29e9e`,
   contained its declared `Contents/Home/bin/java` and `javac`, passed the
   catalog installer probes in a clean store, and reused without network.
+- 2026-07-29: the shared catalog resolver now probes an explicit `jdkPath`
+  before consulting the catalog, selects only entries matching the requested
+  Java major and normalized host, and reports an actionable `jdkPath` fallback
+  when no offline or catalog installation can be used. Focused tooling-core
+  tests passed; Gradle, Maven, CLI, and companion migration remains the next
+  slice.

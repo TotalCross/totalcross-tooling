@@ -54,9 +54,9 @@ Tooling:
 Fetch both remotes and record exact local and remote heads before the next
 implementation commit. Do not copy stale SHAs from historical state entries.
 
-Verified 2026-07-29 before the JDK-11 catalog slice:
+Verified 2026-07-29 before the catalog-resolver slice:
 
-    totalcross-tooling local: 37e5f6c35749948e8bb8fa88c7beb44b8c226c14
+    totalcross-tooling local: dae0f5cf6ec7680f3b9111e5434f89ccac5be0be
     totalcross-tooling origin/feature/unify-tooling-and-preview: 718eb450ca5e05099dafb1b59d0ccde5378642b2
     totalcross local and origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d
 
@@ -84,6 +84,7 @@ Completed Plan 08C slices:
     versioned immutable JDK catalog with bundled, file, and test sources
     concrete Java 11 and 17 catalog entries for the minimum release host matrix
     atomic catalog installation, real macOS ARM64 probes, and offline reuse
+    catalog resolver with probed jdkPath precedence and actionable fallback
 
 Plan 08B remains evidence, not the final release gate.
 
