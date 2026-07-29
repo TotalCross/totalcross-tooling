@@ -234,10 +234,11 @@ The canonical host/worker path, build-tool adapters, VS Code command surface,
 shared deploy service, narrow Maven publications, and a local staging repository
 are implemented. The CLI now produces a real fixture PNG and accepts control-file
 resize, pointer, key, and stop commands; VS Code polls that frame and forwards
-the same events. Clean-cache SDK/tooling resolution and a checkpoint-based
-aggregate compatibility gate now pass. Release acceptance remains open for the
-public-baseline compatibility decision and the complete Gradle/Maven/VS Code
-matrix.
+the same events. Gradle and Maven temporary projects also pass compile,
+first-frame preview, and stop through their native goals. Clean-cache SDK/tooling
+resolution and a checkpoint-based aggregate compatibility gate now pass. Release
+acceptance remains open for the public-baseline compatibility decision, the
+complete Gradle/Maven/VS Code matrix, and installed-VSIX acceptance.
 
 ## Revision Note
 
@@ -252,9 +253,9 @@ Complete this section only from executed evidence.
 
 The slice exceeded the original structural checkpoint by making Gradle and Maven
 fork the shared CLI and by moving both package goals behind `DeployService`.
-Artifact staging and the canonical CLI first-frame/control path are proven
-locally. Release-level compatibility and clean-environment acceptance remain
-pending.
+Artifact staging, the canonical CLI first-frame/control path, and native Gradle
+and Maven first-frame/stop flows are proven locally. Release-level compatibility
+and complete clean-environment acceptance remain pending.
 
 ### Original Plan versus Actual Outcome
 
@@ -294,6 +295,10 @@ tests), VS Code integration suite (30 tests), SDK `compileJava`, license checks,
 and tooling-java publication to `/tmp/totalcross-plan08b-staging`. The direct
 CLI fixture produced `/tmp/totalcross-cli-frame.png` as a 320x568 PNG; a second
 control-file run accepted resize, pointer, key, and stop commands.
+Temporary Gradle and Maven projects compiled the same fixture, produced a
+non-empty 320x568 preview frame, and stopped through `totalcrossPreview` /
+`totalcross:preview`; the Maven frame was
+`/tmp/totalcross-maven-e2e.i20RTr/target/totalcross/preview-frame.png`.
 The clean Maven repository `/tmp/totalcross-clean-m2.Symu0K` resolved SDK,
 preview-runtime, and tooling CLI artifacts from staged repositories without
 `mavenLocal`; the required annotations artifact was added to staging. japicmp

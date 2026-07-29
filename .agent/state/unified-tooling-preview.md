@@ -107,8 +107,12 @@ probe passed resize, pointer, key, and stop commands. VS Code now polls the
 coordinator-owned frame and forwards those events; aggregate compatibility,
 clean-cache staged consumption now resolves SDK, preview-runtime, and tooling
 CLI artifacts without `mavenLocal` after staging the required annotations
-artifact. The full Gradle/Maven/VS Code matrix and public-baseline compatibility
-review remain open.
+artifact. Temporary Gradle and Maven projects now also pass compile, first-frame
+preview, and stop through their native goals. The full Gradle/Maven/VS Code
+matrix, installed VSIX acceptance, and public-baseline compatibility review
+remain open. The logical stabilization commits include tooling `612e658`,
+`b9ece39`, `8a2783f`, `3a1bc74` and TotalCross `a020512e4`, `fab77de18`,
+`6e9161739`.
 
 ## Deferrals and exclusions
 

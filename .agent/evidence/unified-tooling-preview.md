@@ -115,3 +115,15 @@ program. Full command output belongs in `/tmp` or build artifacts.
   tooling CLI resolution from `/tmp/totalcross-plan08b-staging` also resolved
   all internal host/worker/protocol dependencies. The clean repository was
   `/tmp/totalcross-clean-m2.Symu0K`.
+- 2026-07-29: real temporary Gradle and Maven projects compiled the fixture,
+  started the shared coordinator, received a non-empty `320x568` PNG, and
+  stopped through their build-tool goals. Gradle logs are
+  `/tmp/totalcross-gradle-e2e-preview4.log` and
+  `/tmp/totalcross-gradle-e2e-stop4.log`; Maven produced
+  `/tmp/totalcross-maven-e2e.i20RTr/target/totalcross/preview-frame.png` and
+  its stop goal removed the session descriptor.
+- 2026-07-29: Gradle and Maven preview tasks now delete stale frames, wait for
+  the first non-empty frame before reporting success or recording the PID, and
+  persist coordinator output in `preview.log`; a missing frame fails clearly
+  with the log path. The temporary e2e run also exposed stale SNAPSHOT metadata,
+  which was corrected by republishing the current tooling chain to staging.
