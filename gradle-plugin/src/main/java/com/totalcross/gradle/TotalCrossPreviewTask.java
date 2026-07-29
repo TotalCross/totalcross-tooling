@@ -86,16 +86,28 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
         Path frame = session.resolveSibling("preview-frame.png");
         Path control = session.resolveSibling("preview-control.txt");
+        Path log = session.resolveSibling("preview.log");
+        Files.deleteIfExists(frame);
         Process process = new ProcessBuilder(java, "-cp", ToolingCli.runtimeClasspath(),
             ToolingCli.class.getName(), "preview", "--project", projectDirectory().getAbsolutePath(),
             "--main", resolvedApplicationClass, "--classpath", value, "--frame-file", frame.toString(),
             "--control-file", control.toString())
-            .directory(projectDirectory()).redirectErrorStream(true).start();
-        String firstEvent = process.inputReader().readLine();
-        if (firstEvent == null) throw new IOException("TotalCross preview coordinator exited before starting");
+            .directory(projectDirectory()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
+        if (!awaitFirstFrame(process, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(session, Files.readString(session).replaceFirst("}$",
             ",\"pid\":" + process.pid() + "}"));
-        getLogger().lifecycle("TotalCross preview coordinator started with PID {}: {}", process.pid(), firstEvent);
+        getLogger().lifecycle("TotalCross preview coordinator started with PID {} after first frame", process.pid());
+    }
+
+    private boolean awaitFirstFrame(Process process, Path frame) throws InterruptedException, IOException {
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(15);
+        while (System.nanoTime() < deadline) {
+            if (Files.isRegularFile(frame) && Files.size(frame) > 0) return true;
+            if (!process.isAlive()) return false;
+            Thread.sleep(100);
+        }
+        process.destroyForcibly();
+        return false;
     }
 
     private java.io.File projectDirectory() { return getProject().getProjectDir(); }

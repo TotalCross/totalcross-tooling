@@ -83,14 +83,26 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         String cli = ToolingCli.runtimeClasspath();
         Path frame = descriptor.resolveSibling("preview-frame.png");
         Path control = descriptor.resolveSibling("preview-control.txt");
+        Path log = descriptor.resolveSibling("preview.log");
+        Files.deleteIfExists(frame);
         Process process = new ProcessBuilder(java, "-cp", cli, ToolingCli.class.getName(), "preview",
             "--project", project.toString(), "--main", applicationClass, "--classpath",
             String.join(File.pathSeparator, classpath), "--frame-file", frame.toString(), "--control-file", control.toString())
-            .directory(project.toFile()).redirectErrorStream(true).start();
-        String event = process.inputReader().readLine();
-        if (event == null) throw new IOException("TotalCross preview coordinator exited before starting");
+            .directory(project.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
+        if (!awaitFirstFrame(process, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(descriptor, Files.readString(descriptor).replaceFirst("}$",
             ",\"pid\":" + process.pid() + "}"));
-        getLog().info("TotalCross preview coordinator started with PID " + process.pid() + ": " + event);
+        getLog().info("TotalCross preview coordinator started with PID " + process.pid() + " after first frame");
+    }
+
+    private boolean awaitFirstFrame(Process process, Path frame) throws InterruptedException, IOException {
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(15);
+        while (System.nanoTime() < deadline) {
+            if (Files.isRegularFile(frame) && Files.size(frame) > 0) return true;
+            if (!process.isAlive()) return false;
+            Thread.sleep(100);
+        }
+        process.destroyForcibly();
+        return false;
     }
 }
