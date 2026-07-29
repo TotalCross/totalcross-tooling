@@ -327,6 +327,11 @@ repository contains `totalcross-sdk` plus `totalcross-api`,
 ### Limitations, Remaining Work, and Open Questions
 
 The clean Gradle/Maven/VS Code matrix and installed-VSIX acceptance remain open.
+The published Gradle plugin also resolved from isolated staging and reached
+`totalcrossPackage`, but its real deploy smoke used a synthetic SDK home and was
+stopped because that home lacked the complete distribution required by
+`tc.Deploy`; the typed contract is covered by the functional suite, while a
+release-grade real packaging run still requires a complete SDK home.
 The older cached 7.2.0 comparison still reports historical Launcher/deployer
 incompatibilities and requires a release-owner compatibility decision; the
 preceding checkpoint comparison is green. No IR merge, tag, push, or public

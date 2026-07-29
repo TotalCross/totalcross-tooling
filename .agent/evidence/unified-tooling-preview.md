@@ -161,3 +161,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   detached POSIX session on macOS/Linux-compatible hosts so a failed Maven
   compile does not terminate the active coordinator. Fixes are TotalCross
   `405275156` and tooling `0a0e04c`.
+- 2026-07-29: a published Gradle plugin was resolved from the isolated staging
+  repository without `mavenLocal` and reached `totalcrossPackage`; the smoke
+  was stopped because the synthetic SDK home contained only the deploy JAR and
+  lacked the complete distribution layout required by real `tc.Deploy`. The
+  shared typed `DeployService` contract remains covered by the Gradle functional
+  suite; release-grade real packaging remains open.

@@ -120,6 +120,11 @@ deploy packaging, installed-VSIX activation, and public-baseline review remain
 open.
 The local VSIX was packaged/installed and the existing VS Code suite passed 30
 tests, but installed-VSIX activation remains an explicit release gate.
+An isolated published-Gradle-plugin packaging smoke resolved from staging and
+reached `totalcrossPackage`, but was stopped because its synthetic SDK home did
+not contain the complete distribution required by real `tc.Deploy`; the typed
+contract is covered by the plugin functional suite, while release-grade real
+packaging remains open.
 
 ## Deferrals and exclusions
 
