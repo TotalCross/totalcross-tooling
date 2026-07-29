@@ -3,6 +3,8 @@
 package com.totalcross;
 
 import com.totalcross.tooling.build.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.*;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -13,6 +15,8 @@ import java.util.List;
 import java.util.stream.Stream;
 import com.totalcross.tooling.cli.ToolingCli;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @Mojo(name = "preview", requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class TotalCrossPreviewMojo extends AbstractMojo {
@@ -85,24 +89,61 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         Path control = descriptor.resolveSibling("preview-control.txt");
         Path log = descriptor.resolveSibling("preview.log");
         Files.deleteIfExists(frame);
-        Process process = new ProcessBuilder(java, "-cp", cli, ToolingCli.class.getName(), "preview",
+        List<String> command = List.of(java, "-cp", cli, ToolingCli.class.getName(), "preview",
             "--project", project.toString(), "--main", applicationClass, "--classpath",
-            String.join(File.pathSeparator, classpath), "--frame-file", frame.toString(), "--control-file", control.toString())
-            .directory(project.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
-        if (!awaitFirstFrame(process, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
+            String.join(File.pathSeparator, classpath), "--frame-file", frame.toString(), "--control-file", control.toString());
+        long pid = launchCoordinator(command, project, log);
+        if (!awaitFirstFrame(pid, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(descriptor, Files.readString(descriptor).replaceFirst("}$",
-            ",\"pid\":" + process.pid() + "}"));
-        getLog().info("TotalCross preview coordinator started with PID " + process.pid() + " after first frame");
+            ",\"pid\":" + pid + "}"));
+        getLog().info("TotalCross preview coordinator started with PID " + pid + " after first frame");
     }
 
-    private boolean awaitFirstFrame(Process process, Path frame) throws InterruptedException, IOException {
+    private long launchCoordinator(List<String> command, Path project, Path log) throws Exception {
+        if (System.getProperty("os.name", "").toLowerCase().startsWith("windows")) {
+            Process process = new ProcessBuilder(command).directory(project.toFile())
+                .redirectErrorStream(true).redirectOutput(log.toFile()).start();
+            return process.pid();
+        }
+        int logIndex = command.size();
+        StringBuilder script = new StringBuilder("nohup \"$0\"");
+        for (int index = 1; index < logIndex; index++) script.append(" \"${").append(index).append("}\"");
+        script.append(" </dev/null >\"${").append(logIndex).append("}\" 2>&1 & echo $!");
+        List<String> shell = new java.util.ArrayList<>();
+        shell.add("sh");
+        shell.add("-c");
+        shell.add(sessionDetachScript(script));
+        shell.addAll(command);
+        shell.add(log.toString());
+        Process launcher = new ProcessBuilder(shell).directory(project.toFile()).redirectErrorStream(true).start();
+        try (BufferedReader output = new BufferedReader(new InputStreamReader(launcher.getInputStream(), StandardCharsets.UTF_8))) {
+            String value = output.readLine();
+            if (!launcher.waitFor(5, TimeUnit.SECONDS)) throw new IOException("Unable to detach TotalCross preview coordinator");
+            if (value == null || value.isBlank()) throw new IOException("Detached TotalCross preview coordinator did not return a PID");
+            return Long.parseLong(value.trim());
+        }
+    }
+
+    private static String sessionDetachScript(StringBuilder command) {
+        String launcher = System.getProperty("os.name", "").toLowerCase().startsWith("mac")
+            && Files.isExecutable(Path.of("/usr/bin/perl"))
+            ? "/usr/bin/perl -MPOSIX -e 'POSIX::setsid(); exec @ARGV'"
+            : "setsid";
+        String value = command.toString();
+        return value.replaceFirst("nohup ", "nohup " + launcher + " ");
+    }
+
+    private boolean awaitFirstFrame(long pid, Path frame) throws InterruptedException, IOException {
         long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(15);
         while (System.nanoTime() < deadline) {
             if (Files.isRegularFile(frame) && Files.size(frame) > 0) return true;
-            if (!process.isAlive()) return false;
+            if (!ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false)) return false;
             Thread.sleep(100);
         }
-        process.destroyForcibly();
+        ProcessHandle.of(pid).ifPresent(process -> {
+            process.descendants().forEach(ProcessHandle::destroyForcibly);
+            process.destroyForcibly();
+        });
         return false;
     }
 }

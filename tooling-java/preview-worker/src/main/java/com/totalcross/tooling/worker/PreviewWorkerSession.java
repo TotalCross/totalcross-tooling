@@ -14,6 +14,8 @@ public final class PreviewWorkerSession implements AutoCloseable {
   private final WorkerRuntime runtime;
   private final DataInputStream input;
   private final DataOutputStream output;
+  private final Object frameMonitor = new Object();
+  private long frameCount;
 
   public PreviewWorkerSession(Socket socket, String token, WorkerRuntime runtime) throws IOException {
     this.socket = socket;
@@ -61,11 +63,13 @@ public final class PreviewWorkerSession implements AutoCloseable {
         }
         case RELOAD -> {
           String value = text(message);
+          long previousFrames = frameCount();
           runtime.prepareReload();
           if (!value.isBlank()) {
             String[] values = value.split("\\n", -1);
             runtime.replaceMainWindow(values[0], java.util.Arrays.copyOfRange(values, 1, values.length));
           }
+          awaitFrameAfterReload(previousFrames);
           send(MessageType.RELOAD_READY, message.requestId(), new byte[0]);
         }
         case STOP -> { }
@@ -80,8 +84,33 @@ public final class PreviewWorkerSession implements AutoCloseable {
   }
 
   private void sendFrame(FrameData frame) {
-    try { send(MessageType.FRAME, 0, frame.encode()); }
-    catch (IOException e) { throw new UncheckedIOException(e); }
+    try {
+      send(MessageType.FRAME, 0, frame.encode());
+      synchronized (frameMonitor) {
+        frameCount++;
+        frameMonitor.notifyAll();
+      }
+    } catch (IOException e) { throw new UncheckedIOException(e); }
+  }
+
+  private long frameCount() {
+    synchronized (frameMonitor) { return frameCount; }
+  }
+
+  private void awaitFrameAfterReload(long previousFrames) throws IOException {
+    long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(15);
+    synchronized (frameMonitor) {
+      while (frameCount <= previousFrames) {
+        long remaining = deadline - System.nanoTime();
+        if (remaining <= 0) throw new IOException("preview reload did not produce a first frame");
+        try {
+          java.util.concurrent.TimeUnit.NANOSECONDS.timedWait(frameMonitor, remaining);
+        } catch (InterruptedException interrupted) {
+          Thread.currentThread().interrupt();
+          throw new IOException("preview reload was interrupted", interrupted);
+        }
+      }
+    }
   }
 
   private void send(MessageType type, long requestId, byte[] payload) throws IOException {

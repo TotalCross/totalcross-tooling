@@ -45,7 +45,7 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
   private void invoke(String name, Class<?>[] types, Object... args) {
     if (runtime == null) return;
     try { runtime.getClass().getMethod(name, types).invoke(runtime, args); }
-    catch (ReflectiveOperationException e) { throw new IllegalStateException("preview runtime command failed", e); }
+    catch (ReflectiveOperationException e) { throw commandFailure("preview runtime command failed", e); }
   }
 
   public void pump() { invoke("pumpEvents", new Class<?>[0]); }
@@ -68,7 +68,7 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
       Method replace = runtime.getClass().getMethod("replaceMainWindow", windowType, String.class);
       replace.invoke(runtime, window, String.join(" ", args));
     } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException("preview runtime replacement failed", e);
+      throw commandFailure("preview runtime replacement failed", e);
     }
   }
   public void close() { invoke("close", new Class<?>[0]); }
@@ -80,7 +80,14 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
     } catch (NoSuchMethodException ignored) {
       // Older SDKs expose the preview lifecycle but not input injection.
     } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException("preview runtime command failed", e);
+      throw commandFailure("preview runtime command failed", e);
     }
+  }
+
+  private static IllegalStateException commandFailure(String message, ReflectiveOperationException error) {
+    Throwable cause = error instanceof InvocationTargetException && error.getCause() != null
+        ? error.getCause() : error;
+    String detail = cause.getMessage();
+    return new IllegalStateException(message + (detail == null || detail.isBlank() ? "" : ": " + detail), cause);
   }
 }
