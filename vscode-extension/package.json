@@ -118,6 +118,12 @@
 					"default": "portrait",
 					"description": "Initial preview orientation."
 				},
+				"totalcross.livePreview.density": {
+					"type": "number",
+					"minimum": 0.1,
+					"default": 1,
+					"description": "Preview device pixel density sent to the worker."
+				},
 				"totalcross.livePreview.deviceProfile": {
 					"type": "string",
 					"default": "android",

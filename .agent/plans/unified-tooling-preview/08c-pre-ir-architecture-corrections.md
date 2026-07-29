@@ -79,8 +79,8 @@ converter source, create tags, or publish publicly.
 - [ ] Build successfully before requesting a candidate reload.
 - [ ] Keep the displayed frame and session after a failed build.
 - [x] Prefer Maven Wrapper when present.
-- [ ] Scale pointer coordinates to intrinsic frame pixels.
-- [ ] Send resize and apply device size, density, and orientation.
+- [x] Scale pointer coordinates to intrinsic frame pixels.
+- [x] Send resize and apply device size, density, and orientation.
 - [ ] Bundle production dependencies deterministically into the VSIX.
 - [ ] Remove SNAPSHOT and `publishToMavenLocal` from release defaults.
 - [ ] Pass focused and installed-VSIX E2E tests.

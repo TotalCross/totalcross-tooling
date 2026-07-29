@@ -37,6 +37,7 @@ export class PreviewManager {
         this.client = new PreviewClient(layout);
         this.client.onEvent((event) => this.show(event));
         await this.client.start();
+        await this.applyDeviceProfile(layout.root, layout.buildTool);
         this.startFramePolling(previewRoot);
         this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, '**/*.{java,xml,properties,gradle,gradle.kts,pom.xml}'));
         this.watcher.onDidChange(() => this.scheduleReload());
@@ -78,6 +79,18 @@ export class PreviewManager {
         }, interval);
     }
 
+    private async applyDeviceProfile(root: string, buildTool: string): Promise<void> {
+        const configuration = vscode.workspace.getConfiguration('totalcross.livePreview');
+        const orientation = configuration.get<string>('orientation', 'portrait');
+        const density = configuration.get<number>('density', 1);
+        let width = configuration.get<number>('width', 360);
+        let height = configuration.get<number>('height', 592);
+        if (orientation === 'landscape' && width < height) [width, height] = [height, width];
+        if (orientation === 'portrait' && width > height) [width, height] = [height, width];
+        await this.sendControl(root, buildTool, {command: 'resize', values: [width, height, density]});
+        await this.panel?.webview.postMessage({type: 'device', width, height, density, orientation});
+    }
+
     private stopFramePolling(): void { if (this.frameTimer) clearInterval(this.frameTimer); this.frameTimer = undefined; }
 
     private async sendControl(root: string, buildTool: string, message: any): Promise<void> {
@@ -98,9 +111,13 @@ function previewHtml(webview: vscode.Webview): string {
 <img id="frame" alt="TotalCross preview" tabindex="0" style="display:block;max-width:100%;image-rendering:auto">
 <script nonce="${nonce}">
 const vscode = acquireVsCodeApi(); const frame = document.getElementById('frame');
-window.addEventListener('message', event => { if (event.data.type === 'frame') frame.src = event.data.data; });
-frame.addEventListener('pointerdown', event => vscode.postMessage({command:'pointer', values:[Math.round(event.offsetX),Math.round(event.offsetY),event.button,true]}));
-frame.addEventListener('pointerup', event => vscode.postMessage({command:'pointer', values:[Math.round(event.offsetX),Math.round(event.offsetY),event.button,false]}));
+let device = {width:360,height:592,density:1,orientation:'portrait'};
+function intrinsicPointer(event) { const rect = frame.getBoundingClientRect(); return [Math.round((event.clientX - rect.left) * frame.naturalWidth / rect.width), Math.round((event.clientY - rect.top) * frame.naturalHeight / rect.height)]; }
+function sendResize() { vscode.postMessage({command:'resize', values:[device.width,device.height,device.density]}); }
+window.addEventListener('message', event => { if (event.data.type === 'frame') frame.src = event.data.data; if (event.data.type === 'device') { device = event.data; frame.style.width = device.width + 'px'; frame.style.height = device.height + 'px'; sendResize(); } });
+new ResizeObserver(sendResize).observe(frame);
+frame.addEventListener('pointerdown', event => { const point = intrinsicPointer(event); vscode.postMessage({command:'pointer', values:[point[0],point[1],event.button,true]}); });
+frame.addEventListener('pointerup', event => { const point = intrinsicPointer(event); vscode.postMessage({command:'pointer', values:[point[0],point[1],event.button,false]}); });
 frame.addEventListener('keydown', event => vscode.postMessage({command:'key', values:[event.keyCode,true,event.getModifierState('Shift') ? 1 : 0]}));
 frame.addEventListener('keyup', event => vscode.postMessage({command:'key', values:[event.keyCode,false,event.getModifierState('Shift') ? 1 : 0]}));
 </script></body></html>`;

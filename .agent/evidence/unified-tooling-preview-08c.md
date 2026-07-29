@@ -81,3 +81,8 @@ reached the text-file size limit. Full command output remains outside the repo.
 - 2026-07-29: VS Code preview, build, and stop commands now prefer `mvnw` or
   `mvnw.cmd` when the Maven Wrapper exists, falling back to the system Maven
   executable only when it does not. The focused TypeScript compile passed.
+- 2026-07-29: the preview Webview converts pointer input from displayed to
+  intrinsic frame pixels. It sends resize requests with configured device width,
+  height, density, and orientation (applied by ordering the dimensions), and
+  observes Webview layout changes to reapply the device profile. TypeScript
+  compilation passed.
