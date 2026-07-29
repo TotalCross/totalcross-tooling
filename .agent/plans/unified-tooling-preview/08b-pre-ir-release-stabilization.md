@@ -36,7 +36,7 @@ Do not merge IR, move converter source, tag, or publish publicly.
 - [x] Implement worker resize, pointer, key, and reload commands.
 - [x] Make Gradle preview, run, stop, and package use shared tooling.
 - [x] Make Maven preview, run, stop, and package use shared tooling.
-- [ ] Make shared SDK/JDK/Java/Retrolambda policy authoritative.
+- [x] Make shared SDK/JDK/Java/Retrolambda policy authoritative.
 - [x] Resolve Maven JVM versus Java-17 tooling compatibility.
 - [x] Consolidate VS Code preview commands and companion installation.
 - [x] Add multi-root selection, input forwarding, and build-before-reload.
@@ -260,7 +260,8 @@ and complete clean-environment acceptance remain pending.
 ### Original Plan versus Actual Outcome
 
 Implemented canonical worker launch/handshake, CLI stop, reflective reload and
-input hooks, Gradle/Maven preview-stop, shared package execution, VS Code
+input hooks, Gradle/Maven preview-stop, shared package execution, shared
+SDK/JDK/Java/Retrolambda compatibility policy, VS Code
 multi-root selection/build-before-reload scaffolding, legacy HTTP labeling, and
 aggregate plus narrow SDK publication metadata.
 
@@ -299,6 +300,9 @@ Temporary Gradle and Maven projects compiled the same fixture, produced a
 non-empty 320x568 preview frame, and stopped through `totalcrossPreview` /
 `totalcross:preview`; the Maven frame was
 `/tmp/totalcross-maven-e2e.i20RTr/target/totalcross/preview-frame.png`.
+The shared compatibility policy tests passed in tooling-core; Gradle plugin
+tests, Maven compilation/package, targeted Retrolambda coverage, and JDK 17
+selection coverage also passed.
 The clean Maven repository `/tmp/totalcross-clean-m2.Symu0K` resolved SDK,
 preview-runtime, and tooling CLI artifacts from staged repositories without
 `mavenLocal`; the required annotations artifact was added to staging. japicmp

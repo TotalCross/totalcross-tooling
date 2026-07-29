@@ -112,7 +112,7 @@ preview, and stop through their native goals. The full Gradle/Maven/VS Code
 matrix, installed VSIX acceptance, and public-baseline compatibility review
 remain open. The logical stabilization commits include tooling `612e658`,
 `b9ece39`, `8a2783f`, `3a1bc74` and TotalCross `a020512e4`, `fab77de18`,
-`6e9161739`.
+`6e9161739`; the shared Java compatibility policy is tooling `e080c4e`.
 
 ## Deferrals and exclusions
 

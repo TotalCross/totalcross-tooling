@@ -127,3 +127,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   persist coordinator output in `preview.log`; a missing frame fails clearly
   with the log path. The temporary e2e run also exposed stale SNAPSHOT metadata,
   which was corrected by republishing the current tooling chain to staging.
+- 2026-07-29: SDK/JDK/Java/Retrolambda compatibility policy was centralized in
+  `tooling-core`. Gradle package validation and Maven package/Retrolambda paths
+  now consume the same SDK-generation rules; Maven selects JDK 11 for SDKs
+  before 7.3 and JDK 17 for newer SDKs. Core policy tests, Gradle plugin tests,
+  Maven compilation/package, targeted Retrolambda coverage, and JDK-generation
+  selection coverage passed.
