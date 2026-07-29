@@ -11,14 +11,18 @@ class JdkCatalogTest {
   void bundledCatalogCoversTheMinimumReleaseHostsWithConcreteEntries() throws Exception {
     JdkCatalog catalog = new JdkCatalogParser().parse(new BundledJdkCatalogSource());
     assertEquals(JdkCatalog.SCHEMA_VERSION, catalog.schemaVersion());
-    assertEquals(4, catalog.entries().size());
-    assertTrue(catalog.entries().stream().allMatch(entry -> entry.javaMajor() == 17
+    assertEquals(8, catalog.entries().size());
+    assertTrue(catalog.entries().stream().allMatch(entry -> (entry.javaMajor() == 11 || entry.javaMajor() == 17)
         && entry.url().getScheme().equals("https") && !entry.url().toString().contains("latest")
         && entry.sha256().matches("[0-9a-f]{64}")));
     assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Mac OS X", "aarch64"), 17).size());
     assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Mac OS X", "amd64"), 17).size());
     assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Linux", "amd64"), 17).size());
     assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Windows 11", "amd64"), 17).size());
+    assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Mac OS X", "aarch64"), 11).size());
+    assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Mac OS X", "amd64"), 11).size());
+    assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Linux", "amd64"), 11).size());
+    assertEquals(1, catalog.candidates(com.totalcross.tooling.platform.HostPlatform.from("Windows 11", "amd64"), 11).size());
   }
 
   @Test

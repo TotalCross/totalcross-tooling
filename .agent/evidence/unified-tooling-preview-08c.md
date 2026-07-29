@@ -18,3 +18,10 @@ reached the text-file size limit. Full command output remains outside the repo.
   `f9845abc8403f1d489402201064e7b9f2c57605d8717b85a95a15d94f882eeb7`,
   contained the declared `Contents/Home/bin/java` and `javac`, installed into a
   clean temporary store, passed capability probes, and then reused offline.
+- 2026-07-29: SDKs before 7.3 keep the shared JDK-11 deploy and Retrolambda
+  policy, so the catalog also gained Temurin 11.0.28+6 entries for the same
+  macOS ARM64/x64, Linux x64, and Windows x64 matrix. On macOS ARM64, the
+  176 MB archive matched
+  `b5b46eb84aa2f301e739178aef0209c6843d6ad45b33f19dd39df4decdd29e9e`,
+  contained its declared `Contents/Home/bin/java` and `javac`, passed the
+  catalog installer probes in a clean store, and reused without network.
