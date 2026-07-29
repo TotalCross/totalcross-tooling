@@ -4,40 +4,39 @@ SPDX-License-Identifier: Apache-2.0
 -->
 # Publish and verify the pre-IR release
 
-This ExecPlan is Plan 08R. Start only after Plan 08B acceptance. Publication is
-an explicit user-approved action.
+This ExecPlan is Plan 08R. Start only after Plans 08C and 08D are accepted.
+Publication is an explicit user-approved action.
 
 ## Purpose / Big Picture
 
 Freeze, stage, publish, and verify a supported TotalCross release before the IR
-merge. Produce a reproducible rollback point and a compatibility matrix for the
-subsequent branch-422 integration.
+merge. Produce a reproducible rollback point and compatibility matrix for branch
+422 integration.
 
 ## Working Set and Resume Protocol
 
-Read state, this plan, release metadata, and only the publication files for:
+Read state, this plan, the Plan-08C and Plan-08D outcomes, and only publication
+files for SDK artifacts, tooling modules, plugins, companion, VS Code extension,
+release workflows, POMs, changelogs, and documentation.
 
-    TotalCross SDK and narrow Java artifacts
-    tooling Java modules and companion distribution
-    Maven plugin
-    Gradle plugin
-    VS Code extension
-    release workflows, POMs, changelogs, and documentation
-
-Do not merge IR or perform source ownership movement.
+Do not merge IR or move source ownership.
 
 ## Progress
 
+- [ ] Verify every Plan-08C and Plan-08D gate against exact feature commits.
 - [ ] Choose coordinated non-SNAPSHOT beta versions.
 - [ ] Create release branches from accepted feature commits.
 - [ ] Freeze scope and allow only release fixes.
-- [ ] Configure Java artifact metadata, sources, Javadocs, signing, and staging.
+- [ ] Create one release manifest.
+- [ ] Configure Java metadata, sources, Javadocs, signing, and staging.
 - [ ] Configure Maven plugin Central publication and Invoker tests.
 - [ ] Configure Gradle Plugin Portal metadata and validation.
-- [ ] Configure companion archive checksums and release.
-- [ ] Consolidate and bundle the VS Code extension.
-- [ ] Publish all components to a non-public staging repository.
-- [ ] Consume staging from empty caches on supported hosts.
+- [ ] Configure companion archive checksums and release metadata.
+- [ ] Bundle and inspect the VS Code extension.
+- [ ] Replace extension defaults with released plugin coordinates.
+- [ ] Publish the dependency chain to non-public staging.
+- [ ] Consume staging from empty caches and a fresh store.
+- [ ] Repeat preview, package, reminder, and conversion E2E.
 - [ ] Obtain explicit approval for public publication.
 - [ ] Publish in dependency order.
 - [ ] Verify public clean-room consumption.
@@ -46,18 +45,10 @@ Do not merge IR or perform source ownership movement.
 
 ## Current Architecture and Scope
 
-Use a beta unless equivalent external pre-release testing already justifies an
-RC. Example coordinated versions:
-
-    SDK: <next-sdk-version>-beta.1
-    tooling modules: 0.1.0-beta.1
-    Gradle plugin: <next-gradle-plugin-version>-beta.1
-    Maven plugin: <next-maven-plugin-version>-beta.1
-    VS Code extension: <next-extension-version>
-
-Do not reuse an already published SDK version. Do not publish any public artifact
-that references `-SNAPSHOT`, `mavenLocal`, a local file path, or an unpublished
-dependency.
+Use a beta unless equivalent external testing justifies an RC. Do not reuse an
+already published SDK version. No public artifact may reference a SNAPSHOT,
+`mavenLocal`, local file path, unpublished dependency, or development extension
+directory.
 
 Release branches:
 
@@ -67,20 +58,20 @@ Release branches:
     totalcross-tooling:
       release/<tooling-release-version>
 
-The feature branches remain unchanged for Plan 09 after release completion.
+Feature branches remain available for Plan 09.
 
 
 ## Cross-plan safety and size policy
 
-Run one plan at a time. Preserve unrelated work. Never use `git reset --hard`,
+Run one plan at a time and preserve unrelated work. Never use `git reset --hard`,
 `git clean -fd`, force-push, history rewriting, tag deletion, or repository
 archival unless the user explicitly requests that exact operation.
 
-Every created or modified text file must remain at or below 20 KiB and at or
-below approximately 600 lines. Run the staged size-policy checker before every
-commit. If an existing non-protected file exceeds either limit, split it by
-responsibility before the functional change. Do not split a protected IR-related
-file merely to satisfy this rule.
+Every implementation text file created or modified in the TotalCross repositories
+must remain at or below 20 KiB and approximately 600 lines. Run the staged
+size-policy checker before every commit. Split an oversized non-protected file by
+responsibility before changing its behavior. Do not split a protected IR file
+merely to satisfy this rule.
 
 Protected paths:
 
@@ -92,130 +83,115 @@ Protected paths:
     TotalCrossVM/src/tests/ir/**
     docs/architecture/bytecode/**
 
-Generated files, third-party code, caches, and build output must not be committed.
+A project-conversion operation may relocate a pre-existing user file without
+rewriting or splitting its contents, even when that file is larger. Newly
+generated build files, reports, journals, and implementation files remain
+subject to the limit. Split a large migration journal into numbered chunks.
 
-Use token-efficient execution. Read the state file first, then the active plan.
-Inspect only named paths. Store verbose output in `/tmp` or build artifacts and
-record only concise results, commit IDs, and log paths. Do not repeatedly print
-large plans, logs, generated files, or full repository diffs.
+Generated build output, caches, downloaded tools, credentials, and third-party
+content must not be committed.
+
+Use token-efficient execution. Read the state file and active plan first. Inspect
+only named paths. Save verbose logs under `/tmp` or build artifacts and record
+only concise outcomes, commit IDs, and log paths. Do not repeatedly print full
+plans, diffs, generated projects, dependency trees, or test logs.
 
 ## Plan of Work
 
-### Version and metadata
+Create a release manifest mapping component, version, commit, license, coordinate,
+minimum Java/Maven/Gradle/VS Code versions, SDK range, protocol and conversion-plan
+schema versions, checksums, and publication status.
 
-Create one release manifest mapping every component version, Git commit, license,
-minimum Java/Maven/Gradle/VS Code version, SDK compatibility range, and public
-coordinate. Keep module licenses accurate; do not relicense LGPL-derived code as
-Apache-2.0.
+Provide complete POM metadata, sources, Javadocs, signatures, SCM, developers,
+licenses, and reproducible checksums where applicable. Disclose the Java-17
+plugin requirement and accepted aggregate compatibility waiver.
 
-For Maven-published artifacts provide complete POM metadata, sources JAR,
-Javadoc JAR, signatures, SCM, developers, licenses, and reproducible checksums.
-Publish aggregate and narrow SDK artifacts plus required tooling modules in
-dependency order.
+Run Maven Invoker tests on the supported matrix. Configure Gradle Plugin Portal
+metadata and run `publishPlugins --validate-only`. Confirm one public package task
+and that conversion task documentation clearly distinguishes existing Gradle
+projects from CLI bootstrap conversion.
 
-### Maven plugin
+Build a versioned companion archive or documented store install. Bundle
+JavaScript and runtime dependencies. No manual `extraClasspath` or source checkout
+is permitted.
 
-Resolve its final minimum JVM from Plan 08B. Run Maven Invoker tests against the
-staging repository. Generate help documentation and list goals, parameters,
-defaults, compatibility, and preview lifecycle.
+The published extension default references the released Gradle plugin. The latest
+SDK fallback remains dynamic through the shared catalog, not hardcoded in
+TypeScript.
 
-### Gradle plugin
+Use empty temporary locations for Gradle cache, Maven repository, shared store,
+VS Code profile, and project-conversion fixtures. Test online resolution, then
+offline reuse.
 
-Apply and configure the Gradle Plugin Publish plugin. Add website, VCS URL, tags,
-description, implementation artifact, compatibility declaration, and a
-non-SNAPSHOT version. Run:
+Repeat:
 
-    publishPlugins --validate-only
+    process replacement and failed-candidate preservation
+    Gradle and Maven preview, run, stop, and package
+    wrapper preference
+    installed VSIX activation
+    reminder suppression and reset
+    Maven conversion and rollback
+    arbitrary-folder analysis, apply, validate, and rollback
+    Gradle-task and CLI plan equivalence
+    dynamic SDK and Java fallback
+    pointer scaling, resize, orientation, and device profile
 
-Then test a clean consumer using the same coordinates planned for publication.
+Present exact versions, checksums, commits, limitations, and skipped hosts. Do not
+publish publicly without explicit approval.
 
-### Companion and VS Code
-
-Build a versioned companion archive or define the checksummed store installation
-metadata. The VSIX must not require manual `extraClasspath`.
-
-Bundle TypeScript/JavaScript, exclude development dependencies and build
-intermediates, update CHANGELOG and release notes, inspect VSIX contents, and
-install the generated VSIX on test hosts. Keep wizard and conversion commands.
-
-### Staging and clean-room validation
-
-Publish all Java artifacts and plugins to a private or local HTTP staging
-repository. Use temporary empty directories for:
-
-    GRADLE_USER_HOME
-    Maven local repository
-    TotalCross shared store
-    VS Code extension profile
-
-Run the Plan-08B end-to-end matrix using only staged coordinates. Test offline
-reuse only after one successful online resolution.
-
-After successful staging, present exact versions, checksums, commits, known
-limitations, and skipped hosts to the user. Do not perform public publication
-until explicit approval is received.
-
-### Public publication
-
-Publish in this order:
+Publish in order:
 
 1. SDK aggregate and narrow artifacts;
-2. tooling-core and protocol;
-3. preview host, worker, CLI, and companion;
+2. tooling core, protocol, and conversion module;
+3. host, worker, CLI, and companion;
 4. Maven plugin;
 5. Gradle plugin;
 6. VS Code extension.
 
-Verify each public artifact before publishing its dependents. Then repeat clean
-consumption without staging or local repositories. Create annotated tags and
-GitHub releases only after public verification.
+Verify each component before publishing dependents. Repeat clean public
+consumption, then create annotated tags and releases.
 
 ## Decision Log
 
-- Decision: release branches are cut after stabilization, not before.
-  Rationale: feature work remains flexible until the end-to-end contract passes.
-  Date/Author: 2026-07-28 / OpenAI.
-
-- Decision: stage the complete dependency chain before public publication.
-  Rationale: plugin and extension failures often appear only outside local caches.
-  Date/Author: 2026-07-28 / OpenAI.
+- Decision: Plans 08C and 08D are hard prerequisites.
+  Rationale: release packaging must not hide lifecycle or migration defects.
+  Date/Author: 2026-07-29 / User and OpenAI.
 
 - Decision: public publication requires explicit approval.
-  Rationale: artifact publication and tags are durable external actions.
+  Rationale: publication and tags are durable external actions.
   Date/Author: 2026-07-28 / OpenAI.
 
 ## Validation and Acceptance
 
 Acceptance requires:
 
-    no SNAPSHOT or mavenLocal references
+    no SNAPSHOT, mavenLocal, or local paths in release artifacts
     full release manifest
-    all staged artifacts resolve from empty caches
-    Gradle plugin validation passes
-    Maven Invoker tests pass
-    installed VSIX passes wizard, conversion, preview, reload, stop
-    aggregate SDK compatibility smoke tests pass
-    published checksums match downloaded bytes
-    public consumers resolve after approval
-    exact release commits are tagged
-    release notes document preview minimum SDK and known limitations
-
-Record every published coordinate, URL through repository metadata rather than raw
-secrets, checksum, tag, and verification log.
+    staged artifacts resolve from empty caches
+    Gradle Plugin Portal validation passes
+    Maven Invoker matrix passes
+    installed bundled VSIX passes all workflows
+    failed build and candidate preserve active preview
+    worker process replacement is observed
+    reminder suppression is project-scoped and resettable
+    Gradle task and CLI share the conversion engine and schema
+    legacy conversion rolls back safely
+    aggregate SDK smoke tests pass
+    public checksums match the manifest
+    exact release commits are tagged after approval
 
 ## Risks and Open Questions
 
-Marketplace, Plugin Portal, or Maven Central review may delay public visibility.
-Record pending status and do not claim publication until public resolution works.
+Marketplace, Plugin Portal, or Maven Central review may delay visibility. Record
+pending status and do not claim publication until public resolution works.
 
-Credential configuration must stay outside committed files. A failed dependent
-publication must not cause version reuse; increment the affected pre-release.
+Credentials stay outside committed files. Failed immutable publication uses a
+new pre-release version.
 
 ## Idempotence and Recovery
 
-Staging versions may be replaced only when the staging repository permits it.
-Public versions are immutable. Failed public publication uses a new version.
-Release branches accept only focused release fixes.
+Staging versions are replaced only where permitted. Public versions are
+immutable. Release branches accept only focused fixes.
 
 ## Outcomes & Retrospective
 
@@ -223,8 +199,9 @@ Not started.
 
 ## Revision Note
 
-2026-07-28: added a separate user-approved publication plan with staging,
-clean-cache consumption, dependency ordering, and release branches.
+2026-07-29: added Plans 08C and 08D as release prerequisites and included the
+shared conversion engine in staging and clean-room validation.
+
 
 ## Editorial Report
 

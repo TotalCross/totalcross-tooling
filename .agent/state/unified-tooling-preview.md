@@ -1,200 +1,125 @@
 <!--
-Copyright (C) 2026 Amalgam Solucoes em TI Ltda.
+SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
 SPDX-License-Identifier: Apache-2.0
 -->
 # Unified tooling and preview state
 
-This file is the resumable checkpoint for the sequential plans in
-`.agent/plans/unified-tooling-preview/`. Read it before the active numbered plan.
+This is the concise resumable checkpoint for
+`.agent/plans/unified-tooling-preview/`. Detailed history belongs in
+`.agent/evidence/unified-tooling-preview.md`.
 
 ## Checkpoint
 
-Active plan: Plan 08R, pre-IR release publication and verification.
-Active slice: Plan 08B is complete. The production preview lifecycle, clean
-Gradle/Maven matrix, accepted compatibility waiver, disabled telemetry path,
-and trusted installed VS Code project flow are recorded.
-Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,300p' .agent/plans/unified-tooling-preview/08r-publish-pre-ir-release.md`
+Active plan:
+
+    Plan 08C — correct pre-IR preview and plugin architecture
+
+Reason:
+
+    Plan 08B produced a useful E2E checkpoint, but a later audit found that
+    production reload reused one worker and that resolver, model, VS Code input,
+    and release details remained incomplete.
+
+Next command:
+
+    sed -n '1,260p'       .agent/plans/unified-tooling-preview/08c-pre-ir-architecture-corrections.md
 
 ## Repositories
 
-Workspace root: `/Users/flsobral/repos/totalcross-unified`
+Expected workspace:
 
-TotalCross repository: `totalcross`
-Branch: `feature/392-feature-request-live-ui-preview-for-ides`
-Remote branch baseline: `21a3d17e8cde3d3d2c45afc527448ffbee22e792`
-Current rebased local commit: `0716e10af` (artifact boundary checkpoint)
-Origin: `https://github.com/TotalCross/totalcross.git`
+    <workspace>/totalcross
+    <workspace>/totalcross-tooling
 
-Tooling repository: `totalcross-tooling`
-Branch: `feature/unify-tooling-and-preview`
-Baseline commit: `caaa01b0b1d26c1112491d298f5b29a81be8d313`
-Origin: `https://github.com/TotalCross/totalcross-tooling.git`
+TotalCross:
+
+    branch:
+      feature/392-feature-request-live-ui-preview-for-ides
+    remote head observed during 2026-07-29 audit:
+      9a36178ef185cc3986a446e7cdefdcb0451c402d
+    default branch:
+      master
+
+Tooling:
+
+    branch:
+      feature/unify-tooling-and-preview
+    remote head observed during 2026-07-29 audit:
+      7c2baaa6ef3cd6ecb06e1510514ae5741c183881
+    default branch:
+      main
+
+Before implementation, fetch both remotes and replace observed values with exact
+current `git rev-parse` results.
+
+## Completed checkpoints
+
+Plans 01–08B recorded:
+
+    bootstrap and workspace
+    shared store and JDK providers
+    logical SDK artifacts and typed deploy
+    Launcher decomposition and preview contract
+    protocol, host, worker, and CLI modules
+    Gradle and Maven adapters
+    VS Code wizard, Maven conversion, and preview commands
+    shared Android tool migration
+    first complete installed-project E2E
+
+Plan 08B remains evidence, not the final release gate.
+
+## Active blockers
+
+Plan 08C:
+
+    process-backed candidate promotion
+    failed-build preservation
+    authoritative shared environment resolution
+    complete project model
+    one public package path
+    preview versus run semantics
+    pointer scaling and Webview resize
+    Maven Wrapper preference
+    deterministic VSIX bundling
+    removal of release-facing SNAPSHOT defaults
+
+Plan 08D after 08C:
+
+    project-scoped Maven reminder suppression and reset
+    shared Java legacy-conversion engine
+    Gradle conversion task for existing builds
+    CLI bootstrap conversion for non-Gradle folders
+    dynamic SDK and Java inference
+    transactional apply, validation, and rollback
+    installed-VSIX migration E2E
 
 ## IR merge gate
 
-Fetched IR branch commit: `ff81ab91a3ca08045198855ddb26874bd20e7b9a`.
-The TotalCross remote default branch is `master` (`origin/HEAD` points to it),
-not `main`; its commit is `b7c25d7762aa326bf0c3a9bd384c173efad006da`.
-The reviewed live-preview integration base is
-`origin/feature/392-feature-request-live-ui-preview-for-ides` at
-`21a3d17e8cde3d3d2c45afc527448ffbee22e792`. The IR branch is not an ancestor
-of that base. No merge was attempted.
-The local branch was explicitly rebased onto `origin/master` at
-`b7c25d7762aa326bf0c3a9bd384c173efad006da`; the rebase completed without
-conflicts and `git diff --check` passed. The remote branch was not pushed.
+Previously recorded IR checkpoint:
 
-## Logical commits
+    feature/422-create-ir-for-jniaot
+    ff81ab91a3ca08045198855ddb26874bd20e7b9a
 
-TotalCross: rebase result `d20214f87d8f936d851f3d77b37603625b838b99`; artifact
-boundary commit `0716e10af`; Plan 04 launcher/preview commit `e1d080e48`.
-Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
-commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
-Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 commit
-`ce22dc9`; Plan 07 commit `a776258`; Plan 08 commit `27d3e18`.
-TotalCross Plan 08 Android migration commit: `fac934fa3`.
-Plan 08B stabilization slice: tooling `612e658`, frame/control continuation
-`b9ece39`; TotalCross SDK `a020512e4`, headless-frame continuation
-`fab77de18`, aggregate compatibility gate `6e9161739`.
+Verify its current head during Plan 09. Do not merge or modify it in Plans 08C,
+08D, or 08R.
 
-## Active paths
+## Release status
 
-`.agent/plans/unified-tooling-preview/`, `.agent/state/`, `.agent/evidence/`,
-`.agent/archive/`, `.agent/reports/`, `scripts/check-file-size-policy.py`,
-`tests/file_size_policy/test_check_file_size_policy.py`,
-`totalcross-unified.code-workspace`, and `tooling-java/`.
-Plan 03 also changed `TotalCrossSDK/build.gradle`, added
-`TotalCrossSDK/gradle/artifact-boundaries.gradle`, its artifact contract test,
-and the typed deploy proof paths in `gradle-plugin/`.
+No release branch, public publication, public tag, or IR merge is authorized by
+this state. Plan 08R starts only after Plans 08C and 08D complete.
 
-## Validation and evidence
+## Resume rules
 
-Baseline command log: `/tmp/totalcross-bootstrap-baseline.log`.
-Plan 01 validation: `python3 -m unittest discover -s tests/file_size_policy -v`
-passed 5 tests; `git diff --cached --check` and the staged size-policy checker
-passed before both commits.
-Plan 02 validation: `./tooling-java/gradlew -p tooling-java
-:tooling-core:test --console=plain` passed 8 tests, and
-`:tooling-core:publishToMavenLocal` passed. Full logs are in
-`/tmp/tooling-core-test.log` and `/tmp/tooling-core-publish.log`.
-Plan 03 validation: SDK `artifactContentTest`, tooling core tests, and
-`gradle-plugin/./gradlew test` passed. Logs are in
-`/tmp/totalcross-artifact-boundaries.log`,
-`/tmp/tooling-core-plan03-test.log`, and
-`/tmp/gradle-plugin-plan03-test.log`.
-Plan 04 validation: focused launcher/parser/runtime/preview tests passed 5
-tests. Log is `/tmp/totalcross-plan04-preview-test.log`; the full SDK agent log
-is `totalcross/TotalCrossSDK/agent-logs/20260726-190501-test-full.log`.
-Plan 05 validation: tooling Java tests passed across all modules, including
-protocol and host↔worker integration. Logs are `/tmp/tooling-plan05-test.log`
-and `/tmp/tooling-plan05-package.log`.
-Plan 06 validation: tooling-core and Gradle plugin tests passed, Maven package
-passed, and the focused Maven manager test passed. Logs are
-`/tmp/tooling-plan06-core-test.log`, `/tmp/gradle-plugin-plan06-test.log`, and
-`/tmp/maven-plugin-plan06-package.log`.
-Plan 07 validation: VS Code compile and the integration suite passed 21 tests;
-full output is `/tmp/vscode-plan07-test.log`.
-Plan 08 validation: tooling core passed 13 tests, the Gradle plugin suite passed,
-the SDK compiled, and official Protobuf/Bundletool version probes passed. Logs:
-`/tmp/tooling-plan08-core-test-final.log`,
-`/tmp/gradle-plugin-plan08-test-final.log`,
-`/tmp/totalcross-plan08-sdk-compile-final.log`, and
-`/tmp/tooling-plan08-license.log`.
-Plan 08B validation: tooling-java, Gradle, focused Maven/package, live-preview-
-server, SDK compile, VS Code, license checks, and local staging passed. The
-standalone CLI now produces a real fixture PNG (320x568) and the control-file
-probe passed resize, pointer, key, and stop commands. VS Code now polls the
-coordinator-owned frame and forwards those events; aggregate compatibility,
-clean-cache staged consumption now resolves SDK, preview-runtime, and tooling
-CLI artifacts without `mavenLocal` after staging the required annotations
-artifact. Temporary Gradle and Maven projects now also pass compile, first-frame
-preview, and stop through their native goals. The full Gradle/Maven/VS Code
-matrix, installed VSIX acceptance, and public-baseline compatibility review
-remain open. The logical stabilization commits include tooling `612e658`,
-`b9ece39`, `8a2783f`, `3a1bc74` and TotalCross `a020512e4`, `fab77de18`,
-`6e9161739`, `405275156`; the shared Java compatibility policy is tooling
-`e080c4e`, and reload/session stabilization is tooling `0a0e04c`. The isolated
-Gradle and Maven matrices now preserve the active worker through failed compile,
-reload repaired classes, process controls/resources, and stop cleanly. Typed
-deploy packaging, installed-VSIX activation, and public-baseline review remain
-open.
-The local VSIX was packaged/installed and the installed extension passed all 30
-integration tests under the local VS Code executable; manual installed-project
-E2E remains an explicit release gate.
-An additional manual attempt opened the installed VS Code against
-`/tmp/totalcross-vscode-installed-e2e.Wzu5Er`, but the workspace was in
-Restricted Mode and `TotalCross: Preview` was not discoverable in the command
-palette. A subsequent Java language-server warning left the VS Code window
-unresponsive to AX control; no preview success is claimed from this attempt.
-An isolated published-Gradle-plugin packaging smoke resolved from staging and
-reached `totalcrossPackage`, but was stopped because its synthetic SDK home did
-not contain the complete distribution required by real `tc.Deploy`; the typed
-contract is covered by the plugin functional suite, while release-grade real
-packaging remains open.
-The legacy deploy adapter was hardened in tooling `e8c79a4` to isolate
-non-daemon deploy threads and honor the requested SDK home. Core/tooling and
-plugin tests passed. A fresh Gradle packaging run using target 8, the current
-plugin, and the complete SDK generated the Linux installation outputs
-successfully; the plugin now selects the Java-17 SDK variant independently of
-the application bytecode target. The previous external `Connection reset` run
-used the incompatible target-17 setup. Maven real packaging and the complete
-release matrix remain open. The successful log still contains a non-fatal
-legacy SDK telemetry `NoClassDefFoundError` emitted after deployment; it does
-not change the generated outputs or task result. A Maven real-package attempt
-with the same SDK/target policy reached the deploy goal but the clean Maven
-home lacked JDK 11; the plugin began a 300 MB download and the attempt was
-stopped before packaging. No Maven deploy process remains.
-Failure output is now retained by tooling `d0c6e1e`; tooling-core validation
-passed. The successful Gradle output is logged at
-`/tmp/totalcross-gradle-typed-deploy-real-success.log`.
-Preview version gating is proven against cached SDK 7.2.0: the CLI returns a
-structured compatibility error and exit 1 when the required preview contract is
-absent. Aggregate binary compatibility with that public baseline remains open.
-The aggregate check records concrete removals/modifications against 7.2.0;
-public publication therefore remains blocked pending an explicit versioning or
-compatibility decision. The current preview-capable floor proven locally is
-SDK 7.2.2.
-The Maven real-package gate now passes against the official SDK 7.2.2 after
-`TotalCrossMojo` was aligned with Gradle to use the selected installation's
-`dist/totalcross-sdk.jar`; the isolated fixture generated the Linux executable,
-`PreviewMainWindow.tcz`, runtime packages, and `libtcvm.so`. Network checks also
-passed: Gradle `sdkSourceNetworkTest` and Maven's live JDK 11 download test.
-The public aggregate compatibility decision is accepted as a documented waiver,
-the full pre-IR matrix passes, and the trusted installed-project E2E passes with
-the rebuilt VSIX. Plan 08R remains responsible for staging and release
-verification; no public publication has been performed.
-The explicitly enabled SDK `AnonymousUserDataTest` reached its configured
-network endpoint, but all three cases failed with HTTP 404 because the Heroku
-application no longer exists; this external service must be replaced or the
-test contract revised before it can be a release gate. A strict compatibility
-rerun against public SDK 7.2.0 also still fails on concrete Launcher, nested
-stream/font, exception, deploy, and converter API removals.
-The SDK standard suite and dedicated artifact-boundary task passed after
-injecting the test-only `totalcross.artifact.dir` property into the Gradle Test
-worker; the initial plain-suite failures were only missing-environment failures.
-TotalCross commit `62a4df7b5` now excludes the `artifact-boundary` tag from the
-ordinary SDK test task, so both the standard suite and dedicated boundary task
-pass without temporary initialization.
-User decision update: the strict aggregate comparison differences are accepted
-as a documented pre-IR compatibility waiver. The accepted exceptions are
-internal converter/deployer utilities, the intentional
-`totalcross.lang.IllegalStateException4D` relocation to `jdkcompat.lang`, and
-the `totalcross.Launcher` construction/argument execution contract. TotalCross
-commit `9a36178ef` disables `AnonymousUserData` in launcher/deploy runtime paths
-and disables its endpoint-dependent test. The trusted installed VS Code E2E
-then passed after repackaging the VSIX with production dependencies; Plan 08B
-is complete and Plan 08R is the next active slice.
+1. Verify repository, branch, origin, head, and working-tree scope.
+2. Read only the active plan and current milestone paths.
+3. Run focused tests and save verbose logs outside plan files.
+4. Commit one accepted milestone at a time.
+5. Update this state after each milestone.
+6. Do not accept Plan 08C from coordinator unit tests alone.
+7. Do not accept Plan 08D from TypeScript-only tests.
+8. Run installed bundled VSIX E2E before Plan 08R.
 
 ## Deferrals and exclusions
 
-Do not merge or modify the IR branch in Plan 01. Do not move converter or
-deployer sources. Do not push, open pull requests, tag, release, rewrite
-history, or remove either repository. Generated files, caches, and build output
-remain excluded.
-
-## Blockers
-
-The IR merge gate is intentionally unsatisfied and is a Plan 09 prerequisite.
-Use branch 392 as the reviewed integration base when Plan 09 evaluates ancestry;
-`origin/master` is only the remote default branch. Plan 08B must complete before
-release branches or publication are considered.
+Do not merge IR, move converter/deployer source, rewrite history, push, create
+release branches, tag, publish, or delete caches unless separately authorized.
