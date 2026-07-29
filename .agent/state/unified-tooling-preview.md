@@ -131,6 +131,9 @@ plugin tests passed; a real SDK packaging smoke remains open after an external
 `Connection reset`.
 Failure output is now retained by tooling `d0c6e1e`; tooling-core validation
 passed, but the real packaging smoke has not been rerun to completion.
+Preview version gating is proven against cached SDK 7.2.0: the CLI returns a
+structured compatibility error and exit 1 when the required preview contract is
+absent. Aggregate binary compatibility with that public baseline remains open.
 
 ## Deferrals and exclusions
 

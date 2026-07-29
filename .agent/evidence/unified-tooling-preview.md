@@ -180,3 +180,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   when the reflective invocation fails, making future packaging failures
   diagnosable without changing the typed result contract. The tooling-core
   deploy test passed in `/tmp/tooling-core-deploy-diagnostics.log`.
+- 2026-07-29: preview version gating was verified with the cached public SDK
+  7.2.0. A minimal application compiled against that aggregate JAR caused the
+  CLI to emit a structured `error` requiring
+  `LauncherRuntime.startPreviewFrames`/`PreviewFrameConsumer`, return exit 1,
+  and leave no coordinator process. Log:
+  `/tmp/totalcross-preview-old-sdk-gating.log`.
