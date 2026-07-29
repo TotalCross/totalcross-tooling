@@ -41,7 +41,7 @@ Do not merge IR, move converter source, or perform publication.
 - [x] (2026-07-28) Add read-only legacy SDK fallback with one deprecation diagnostic.
 - [x] (2026-07-28) Prove checksum failure, offline reuse, and concurrent installation safety.
 - [x] (2026-07-28) Remove obsolete SDK-local download code after focused compile and resolver tests.
-- [ ] Commit, update evidence, and set active plan to Plan 08B.
+- [x] (2026-07-28) Commit, update evidence, and set active plan to Plan 08B.
 
 ## Surprises & Discoveries
 

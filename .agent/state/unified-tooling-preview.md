@@ -9,11 +9,12 @@ This file is the resumable checkpoint for the sequential plans in
 
 ## Checkpoint
 
-Active plan: Plan 08, hot reload and tool cache.
-Active slice: Plan 08 implementation checkpoint; shared reload/session state and
-catalog exist, but Android deploy migration remains before Plan 09.
+Active plan: Plan 08B, pre-IR release stabilization.
+Active slice: Plan 08 completed; shared external tools and Android deploy
+migration are committed. The next slice consolidates the production preview
+lifecycle and plugin/editor acceptance.
 Next command: `cd /Users/flsobral/repos/totalcross-unified/totalcross-tooling &&
-sed -n '1,240p' .agent/plans/unified-tooling-preview/08-hot-reload-and-tool-cache.md`
+sed -n '1,300p' .agent/plans/unified-tooling-preview/08b-pre-ir-release-stabilization.md`
 
 ## Repositories
 
@@ -50,8 +51,8 @@ boundary commit `0716e10af`; Plan 04 launcher/preview commit `e1d080e48`.
 Tooling: bootstrap commit `3487465`; workspace commit `c27a313`; base correction
 commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
 Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 commit
-`ce22dc9`; Plan 07 commit `a776258`; Plan 08 implementation is uncommitted
-at this checkpoint.
+`ce22dc9`; Plan 07 commit `a776258`; Plan 08 commit `27d3e18`.
+TotalCross Plan 08 Android migration commit: `fac934fa3`.
 
 ## Active paths
 
@@ -90,8 +91,12 @@ passed, and the focused Maven manager test passed. Logs are
 `/tmp/maven-plugin-plan06-package.log`.
 Plan 07 validation: VS Code compile and the integration suite passed 21 tests;
 full output is `/tmp/vscode-plan07-test.log`.
-Plan 08 validation: tooling Java tests passed, including the twenty-reload
-candidate promotion test. Full output is `/tmp/tooling-plan08-test.log`.
+Plan 08 validation: tooling core passed 13 tests, the Gradle plugin suite passed,
+the SDK compiled, and official Protobuf/Bundletool version probes passed. Logs:
+`/tmp/tooling-plan08-core-test-final.log`,
+`/tmp/gradle-plugin-plan08-test-final.log`,
+`/tmp/totalcross-plan08-sdk-compile-final.log`, and
+`/tmp/tooling-plan08-license.log`.
 
 ## Deferrals and exclusions
 
@@ -104,4 +109,5 @@ remain excluded.
 
 The IR merge gate is intentionally unsatisfied and is a Plan 09 prerequisite.
 Use branch 392 as the reviewed integration base when Plan 09 evaluates ancestry;
-`origin/master` is only the remote default branch.
+`origin/master` is only the remote default branch. Plan 08B must complete before
+release branches or publication are considered.

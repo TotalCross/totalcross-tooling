@@ -54,7 +54,7 @@ user approval at the irreversible step.
 - [x] Plan 05: protocol, host, worker, and CLI structural checkpoint.
 - [x] Plan 06: Gradle and Maven structural integration checkpoint.
 - [x] Plan 07: VS Code workflow preservation checkpoint.
-- [ ] Plan 08: complete shared tools and Android deploy migration.
+- [x] Plan 08: complete shared tools and Android deploy migration.
 - [ ] Plan 08B: stabilize one production preview and plugin/editor flow.
 - [ ] Plan 08R: stage, publish, and verify the pre-IR release.
 - [ ] Plan 09: merge IR and decide physical source ownership.
