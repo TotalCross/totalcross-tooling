@@ -53,7 +53,9 @@ commit `1b7cc3e`; shared core commit `e8488ef`; typed deploy commit `d2b646f`;
 Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 commit
 `ce22dc9`; Plan 07 commit `a776258`; Plan 08 commit `27d3e18`.
 TotalCross Plan 08 Android migration commit: `fac934fa3`.
-Plan 08B stabilization slice: tooling `612e658`; TotalCross SDK `a020512e4`.
+Plan 08B stabilization slice: tooling `612e658`, frame/control continuation
+`b9ece39`; TotalCross SDK `a020512e4`, headless-frame continuation
+`fab77de18`.
 
 ## Active paths
 
