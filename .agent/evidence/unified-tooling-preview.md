@@ -197,3 +197,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   including command activation, preview client, project generation, migration,
   and rollback behavior. Output is `/tmp/vscode-installed-vsix-local-test.log`;
   the manual installed-project E2E remains open.
+- 2026-07-29: a manual installed-project attempt opened the VSIX host against
+  `/tmp/totalcross-vscode-installed-e2e.Wzu5Er`. The workspace opened in
+  Restricted Mode and `TotalCross: Preview` was absent from the command
+  palette; a Java language-server warning then made the window unavailable to
+  accessibility control. No preview frame or stop result was recorded, so the
+  installed-project E2E gate remains open.

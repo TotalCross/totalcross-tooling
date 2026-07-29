@@ -121,6 +121,11 @@ open.
 The local VSIX was packaged/installed and the installed extension passed all 30
 integration tests under the local VS Code executable; manual installed-project
 E2E remains an explicit release gate.
+An additional manual attempt opened the installed VS Code against
+`/tmp/totalcross-vscode-installed-e2e.Wzu5Er`, but the workspace was in
+Restricted Mode and `TotalCross: Preview` was not discoverable in the command
+palette. A subsequent Java language-server warning left the VS Code window
+unresponsive to AX control; no preview success is claimed from this attempt.
 An isolated published-Gradle-plugin packaging smoke resolved from staging and
 reached `totalcrossPackage`, but was stopped because its synthetic SDK home did
 not contain the complete distribution required by real `tc.Deploy`; the typed

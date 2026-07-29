@@ -329,6 +329,11 @@ repository contains `totalcross-sdk` plus `totalcross-api`,
 
 The clean Gradle/Maven/VS Code matrix and the manual installed-project E2E
 remain open; installed-VSIX activation and its 30-test integration suite pass.
+The manual installed-project attempt against
+`/tmp/totalcross-vscode-installed-e2e.Wzu5Er` was blocked by Restricted Mode:
+`TotalCross: Preview` was absent from the command palette, and a subsequent
+Java language-server warning made the VS Code window unavailable to AX control.
+No preview frame or stop result is claimed from that attempt.
 The published Gradle plugin also resolved from isolated staging and reached
 `totalcrossPackage`, but its real deploy smoke used a synthetic SDK home and was
 stopped because that home lacked the complete distribution required by
