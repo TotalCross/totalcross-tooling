@@ -7,6 +7,8 @@ package com.totalcross.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.GradleException;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.attributes.java.TargetJvmVersion;
@@ -16,6 +18,7 @@ import org.gradle.api.tasks.bundling.Jar;
 public class TotalCrossPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
+        requireJava17(JavaVersion.current());
         boolean library = isLibraryPlugin();
         project.getPluginManager().apply(JavaPlugin.class);
         TotalCrossExtension extension = new TotalCrossExtension(project, project.getObjects());
@@ -85,5 +88,12 @@ public class TotalCrossPlugin implements Plugin<Project> {
 
     protected boolean isLibraryPlugin() {
         return false;
+    }
+
+    static void requireJava17(JavaVersion runtime) {
+        if (!runtime.isCompatibleWith(JavaVersion.toVersion(17))) {
+            throw new GradleException("TotalCross Gradle plugins require Java 17 or newer to load; "
+                    + "run Gradle with a Java 17 runtime. Application bytecode targets remain independent.");
+        }
     }
 }

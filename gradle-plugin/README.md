@@ -16,11 +16,18 @@ The `com.totalcross.application` and `com.totalcross.library` plugins package Ja
 TotalCross applications and libraries with `tc.Deploy`.
 It finds the `totalcross-sdk` runtime dependency, first looks for the matching SDK
 archive in the `TotalCross/totalcross` GitHub release, and falls back to the historic
-S3 release URL when GitHub does not have it or is unavailable. It then chooses the
-required Zulu runtime automatically. SDK 7.3.0 and newer use JDK 17; earlier SDKs use
-JDK 11, matching the historic Maven-plugin behavior.
+S3 release URL when GitHub does not have it or is unavailable. It resolves the
+required tooling JDK from the reviewed immutable catalog, respecting an explicit
+`jdkPath`. SDK 7.3.0 and newer use JDK 17; earlier SDKs use JDK 11, matching the
+historic Maven-plugin behavior.
 Retrolambda 2.5.7 is used only for an earlier SDK with Java 8 bytecode, where it
 converts the application to Java 7 before deployment.
+
+## Runtime requirement
+
+Gradle must run on Java 17 or newer to load either TotalCross plugin. This is
+separate from the application's bytecode target and from the catalog-selected
+JDK used by `tc.Deploy`; legacy SDK packaging can still select JDK 11.
 
 ## Local development and the example
 
@@ -141,11 +148,10 @@ When a full SDK is supplied instead of the Maven-resolved distribution, set `sdk
 The SDK resolver first queries the GitHub release tag `v<version>` and uses its
 `TotalCross-<version>.zip` asset. If that release or asset is unavailable, it keeps
 the Maven-plugin-compatible S3 URL as fallback. The SDK cache lives in
-`<GRADLE_USER_HOME>/caches/totalcross/sdk/<version>`. The plugin maintains
-`zulu_jdk_11` and `zulu_jdk_17` independently under
-`<GRADLE_USER_HOME>/caches/totalcross/jdk`. Delete only the affected directory and
-rerun the task to recover from a failed download. The Zulu resolver excludes CRaC
-builds, which are unable to start child processes on current macOS releases.
+`<GRADLE_USER_HOME>/caches/totalcross/sdk/<version>`. Tooling JDKs are concrete,
+checksum-verified catalog installations in the shared store. Supply `jdkPath`
+when a supported catalog entry is unavailable; that path is capability-probed
+before use.
 
 The normal test suite is offline and deterministic. To verify the external source
 selection without downloading an SDK archive, run:

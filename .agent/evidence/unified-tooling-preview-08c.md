@@ -47,3 +47,8 @@ reached the text-file size limit. Full command output remains outside the repo.
   equivalent `totalcross.jdkPath` parameter. Both commands start the CLI from
   the selected JDK and pass `--jdk-path` onward to its worker. Gradle tests
   (including seven functional tests) and Maven tests passed with no failures.
+- 2026-07-29: both pre-IR plugins now state Java 17 as their loading runtime.
+  Gradle rejects an older runtime with an actionable diagnostic, while Maven's
+  generated plugin descriptor records `requiredJavaVersion` 17. README guidance
+  separates this from the application target and catalog-selected deploy JDK.
+  Gradle tests and Maven package generation passed.

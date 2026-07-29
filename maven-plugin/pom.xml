@@ -117,6 +117,9 @@
                         <goals>
                             <goal>descriptor</goal>
                         </goals>
+                        <configuration>
+                            <requiredJavaVersion>17</requiredJavaVersion>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

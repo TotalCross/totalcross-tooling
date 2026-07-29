@@ -7,6 +7,7 @@ package com.totalcross.gradle;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.util.zip.ZipFile;
 import javax.tools.ToolProvider;
 
 import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.api.GradleException;
+import org.gradle.api.JavaVersion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -149,6 +152,14 @@ class TotalCrossPluginFunctionalTest {
         String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
         assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
+    }
+
+    @Test
+    void rejectsGradleRuntimesOlderThanJava17() {
+        GradleException failure = assertThrows(GradleException.class,
+                () -> TotalCrossPlugin.requireJava17(JavaVersion.toVersion(11)));
+
+        assertTrue(failure.getMessage().contains("require Java 17"));
     }
 
     private String buildScript(Path repository, Path sdkHome, String pluginId) {

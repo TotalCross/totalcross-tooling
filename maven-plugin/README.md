@@ -18,7 +18,11 @@ The current preview implementation uses the Java-17 `tooling-java` host/worker
 distribution. Maven and the build that invokes this plugin therefore require a
 Java 17 runtime. `totalcross:preview`, `totalcross:run`, and
 `totalcross:preview-stop` share the authenticated worker lifecycle; packaging
-remains the compatibility deploy path.
+remains the compatibility deploy path. This loading requirement is independent
+from the catalog-selected JDK used to package an application: SDK 7.3.0 and
+newer use JDK 17, while earlier SDKs can use JDK 11. Configure
+`totalcross.jdkPath` only to override or provide a compatible JDK when the
+catalog does not support the host.
 
 ## Tasks
 | Task                   | Description                                                                                  |

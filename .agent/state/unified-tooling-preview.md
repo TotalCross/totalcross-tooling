@@ -91,6 +91,7 @@ Completed Plan 08C slices:
     CLI worker launched with the catalog-selected Java 17 home
     Gradle and Maven preview coordinators launched with the catalog-selected
     Java 17 home and propagate that home to the CLI worker
+    Java 17 loading requirement enforced by Gradle and declared by Maven
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -98,14 +99,12 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    Java-17 plugin loading documentation and enforcement
     complete ProjectModel and one public package path
     preview versus run presentation semantics
     VS Code build-before-reload and installed-VSIX behavior
 
 Remaining Plan 08C blockers:
 
-    Java-17 plugin loading documentation and enforcement
     complete ProjectModel
     one public package path
     preview versus run semantics
