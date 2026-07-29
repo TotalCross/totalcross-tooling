@@ -353,6 +353,9 @@ deployment; generated outputs and both task results are successful. The
 successful Maven log is `/tmp/totalcross-maven-real-package-final-success.log`,
 and its full plugin test log is `/tmp/totalcross-maven-plugin-test-current.log`.
 The network source lookup log is `/tmp/gradle-plugin-sdk-source-network.log`.
+The explicitly enabled SDK `AnonymousUserDataTest` reached its configured
+external service but all three cases received HTTP 404 / `No such app`; the
+service is unavailable and the test remains an external infrastructure blocker.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.

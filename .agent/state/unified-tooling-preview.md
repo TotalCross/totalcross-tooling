@@ -161,6 +161,12 @@ The Maven real-package gate now passes against the official SDK 7.2.2 after
 passed: Gradle `sdkSourceNetworkTest` and Maven's live JDK 11 download test.
 The remaining release gates are the public aggregate compatibility decision,
 the full pre-IR matrix, and manual installed-project E2E.
+The explicitly enabled SDK `AnonymousUserDataTest` reached its configured
+network endpoint, but all three cases failed with HTTP 404 because the Heroku
+application no longer exists; this external service must be replaced or the
+test contract revised before it can be a release gate. A strict compatibility
+rerun against public SDK 7.2.0 also still fails on concrete Launcher, nested
+stream/font, exception, deploy, and converter API removals.
 
 ## Deferrals and exclusions
 

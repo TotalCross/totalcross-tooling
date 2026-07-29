@@ -229,3 +229,17 @@ program. Full command output belongs in `/tmp` or build artifacts.
   The legacy SDK still emits a non-fatal asynchronous telemetry
   `NoClassDefFoundError` after successful deploy; generated outputs and the
   Maven result are successful.
+- 2026-07-29: the excluded SDK `AnonymousUserDataTest` was run explicitly with
+  a temporary Gradle init script that removed only the test exclusion. All
+  three network cases reached the configured Heroku endpoint but failed with
+  HTTP 404 / `No such app`; direct `curl` confirmed the same response from
+  `aqueous-plateau-93003.herokuapp.com`. This is an unavailable external test
+  service, not a local network failure. Logs:
+  `/tmp/totalcross-plan08b-anonymous-user-data-network-real.log` and
+  `/tmp/totalcross-anonymous-user-data-endpoint.body`.
+- 2026-07-29: the public aggregate compatibility check was rerun strictly
+  against cached public `totalcross-sdk-7.2.0.jar` and failed as expected. The
+  report still contains concrete public API removals in `totalcross.Launcher`,
+  nested stream/font classes, `IllegalStateException4D`, and deploy/converter
+  classes; the gate remains a release-owner compatibility/versioning decision.
+  Log: `/tmp/totalcross-plan08b-aggregate-compatibility-rerun.log`.
