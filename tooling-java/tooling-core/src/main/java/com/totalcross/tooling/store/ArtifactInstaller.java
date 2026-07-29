@@ -29,7 +29,22 @@ public final class ArtifactInstaller {
     }
 
     public InstalledArtifact install(InstallRequest request) throws IOException {
-        Path target = layout.installationRoot(request.coordinate().kind(), request.coordinate().id());
+        return install(request, (staging, ignored) -> extractor.extract(request.archive(), staging));
+    }
+
+    /** Installs a single-file artifact, such as bundletool's executable JAR. */
+    public InstalledArtifact installFile(InstallRequest request, String fileName) throws IOException {
+        if (fileName == null || fileName.isBlank() || fileName.contains("/") || fileName.contains("\\")) {
+            throw new IllegalArgumentException("The installed file name must be a single path component");
+        }
+        return install(request, (staging, ignored) -> {
+            Files.createDirectories(staging);
+            Files.copy(request.archive(), staging.resolve(fileName));
+        });
+    }
+
+    private InstalledArtifact install(InstallRequest request, Installer installer) throws IOException {
+        Path target = target(request.coordinate());
         Path lockPath = target.resolveSibling(target.getFileName() + ".lock");
         try (FileLockManager.Lock ignored = locks.acquire(lockPath)) {
             if (Files.isRegularFile(target.resolve(COMPLETE))) {
@@ -41,7 +56,7 @@ public final class ArtifactInstaller {
             Files.createDirectories(stagingParent);
             Path staging = stagingParent.resolve(request.coordinate().id() + "-" + UUID.randomUUID());
             try {
-                extractor.extract(request.archive(), staging);
+                installer.install(staging, request);
                 writeMetadata(staging, request);
                 Files.createDirectories(target.getParent());
                 moveAtomically(staging, target);
@@ -50,6 +65,11 @@ public final class ArtifactInstaller {
                 if (Files.exists(staging)) deleteTree(staging);
             }
         }
+    }
+
+    @FunctionalInterface
+    private interface Installer {
+        void install(Path staging, InstallRequest request) throws IOException;
     }
 
     private static void writeMetadata(Path root, InstallRequest request) throws IOException {
@@ -65,6 +85,12 @@ public final class ArtifactInstaller {
             metadata.store(output, "TotalCross immutable installation");
         }
         Files.writeString(root.resolve(COMPLETE), "complete\n");
+    }
+
+    private Path target(ArtifactCoordinate coordinate) {
+        return coordinate.kind().equals("tools")
+                ? layout.externalToolRoot(coordinate.name(), coordinate.version(), coordinate.build())
+                : layout.installationRoot(coordinate.kind(), coordinate.id());
     }
 
     private static void moveAtomically(Path source, Path target) throws IOException {

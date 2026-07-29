@@ -43,6 +43,14 @@ public record StoreLayout(HostPlatform platform, Path dataRoot, Path cacheRoot) 
         return dataRoot.resolve(kind).resolve(coordinate);
     }
 
+    public Path externalToolRoot(String name, String version, String build) {
+        if (name.isBlank() || version.isBlank() || build.isBlank()
+                || name.contains("/") || version.contains("/") || build.contains("/")) {
+            throw new IllegalArgumentException("External tool coordinates must be safe path components");
+        }
+        return dataRoot.resolve("tools").resolve(name).resolve(version).resolve(build);
+    }
+
     public Path stagingRoot() {
         return cacheRoot.resolve("staging");
     }

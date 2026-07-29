@@ -55,3 +55,19 @@ program. Full command output belongs in `/tmp` or build artifacts.
   including twenty successful candidate reloads and one failed candidate that
   did not replace the active preview. Android local-download migration remains
   open pending typed deploy integration.
+- 2026-07-28: Plan 08 concrete external-tool validation passed. Official Protobuf
+  21.0 assets were hashed for Linux x86_64/ARM64, macOS x86_64/ARM64, and
+  Windows x86_64/ARM64 reuse; Bundletool 1.15.6 was hashed from the complete
+  29,105,379-byte JAR. The probes returned `libprotoc 3.21.0` and `1.15.6`.
+- 2026-07-28: `./gradlew :tooling-core:test --console=plain` passed 13 tests in
+  `/tmp/tooling-plan08-core-test-final.log`, covering catalog metadata,
+  checksum rejection, version-probe rejection, atomic installation, offline
+  reuse, and concurrent installation.
+- 2026-07-28: `./gradlew test --console=plain` passed in the Gradle plugin;
+  evidence is `/tmp/gradle-plugin-plan08-test-final.log`.
+- 2026-07-28: `./gradlew compileJava --console=plain` passed in
+  `totalcross/TotalCrossSDK`; evidence is
+  `/tmp/totalcross-plan08-sdk-compile-final.log`. The artifact-boundary test
+  was not runnable without its required `-Dtotalcross.artifact.dir` property.
+- 2026-07-28: license/provenance validation passed and its 19 unittest cases
+  passed; evidence is `/tmp/tooling-plan08-license.log`.

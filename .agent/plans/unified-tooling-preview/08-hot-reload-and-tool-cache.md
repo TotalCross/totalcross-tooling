@@ -33,15 +33,35 @@ Do not merge IR, move converter source, or perform publication.
 - [x] Add resource/class handling and stale-session cleanup.
 - [x] Add repeated-reload failure and leak smoke tests.
 - [x] Add versioned tool catalog structures.
-- [ ] Replace placeholder tool metadata with concrete versions, URLs, and hashes.
-- [ ] Install and verify `protoc` on supported host platforms.
-- [ ] Install and verify `bundletool`.
-- [ ] Pass resolved tools through `DeployToolchain`.
-- [ ] Migrate Android deploy resolution to the shared store.
-- [ ] Add read-only legacy SDK fallback with one deprecation diagnostic.
-- [ ] Prove checksum failure, offline reuse, and concurrent installation safety.
-- [ ] Remove obsolete SDK-local download code only after focused equivalence tests.
+- [x] (2026-07-28) Replace placeholder tool metadata with concrete versions, URLs, and hashes.
+- [x] (2026-07-28) Install and verify `protoc` on supported host platforms.
+- [x] (2026-07-28) Install and verify `bundletool`.
+- [x] (2026-07-28) Pass resolved tools through `DeployToolchain`.
+- [x] (2026-07-28) Migrate Android deploy resolution to the shared store.
+- [x] (2026-07-28) Add read-only legacy SDK fallback with one deprecation diagnostic.
+- [x] (2026-07-28) Prove checksum failure, offline reuse, and concurrent installation safety.
+- [x] (2026-07-28) Remove obsolete SDK-local download code after focused compile and resolver tests.
 - [ ] Commit, update evidence, and set active plan to Plan 08B.
+
+## Surprises & Discoveries
+
+- Observation: the macOS ARM Protobuf asset reports `libprotoc 3.21.0` even though
+  the catalog coordinate is the upstream release line `21.0`.
+  Evidence: the official asset probe returned `libprotoc 3.21.0`; the resolver
+  therefore validates the release-line substring rather than assuming the binary
+  prints the archive coordinate verbatim.
+
+- Observation: the Bundletool download was larger than the first partial transfer
+  suggested, so the final SHA-256 had to be calculated only after a resumed,
+  complete download.
+  Evidence: the complete 29,105,379-byte JAR passed `java -jar ... version` with
+  output `1.15.6` and has SHA-256
+  `38ae8a10bcdacef07ecce8211188c5c92b376be96da38ff3ee1f2cf4895b2cb8`.
+
+- Observation: `Deployer4Android.java` already exceeded the file-size policy.
+  Evidence: the Android tool lookup and embedded-package writer were extracted
+  into `AndroidToolLocator.java` and `AndroidPackageFiles.java`; the remaining
+  deployer is 19,609 bytes and 469 lines.
 
 ## Current Architecture and Scope
 
@@ -169,8 +189,12 @@ restores the prior resolver without deleting shared-store content.
 
 ## Outcomes & Retrospective
 
-Reload coordination is implemented and tested. External-tool consumption by the
-Android deployer remains the completion gate.
+Reload coordination is implemented and tested. Plan 08 now provides concrete,
+checksum-verified shared installations for Protobuf 21.0 and Bundletool 1.15.6,
+passes their version probes, and gives Android deploy a typed pair of paths. The
+old SDK-local download code is gone; a selected SDK can only supply existing,
+verified files as a deprecated read-only fallback. The remaining work is the
+release-level preview and plugin stabilization in Plan 08B.
 
 ## Revision Note
 
@@ -183,44 +207,91 @@ Complete this section only from executed evidence.
 
 ### Editorial Summary
 
-Not completed yet.
+Android deployment previously owned mutable downloads inside each SDK. Plan 08
+moves `protoc` and Bundletool into the shared TotalCross store, verifies each
+archive by SHA-256, and passes the resulting paths through the typed deploy
+boundary. Existing SDKs remain usable through a read-only fallback when their
+tool files pass version probes.
 
 ### Original Plan versus Actual Outcome
 
-Not completed yet.
+The plan retained the existing tool versions but replaced placeholder metadata
+with direct GitHub release assets and measured hashes. Bundletool is installed as
+an immutable JAR rather than extracted as a ZIP directory. The Android SDK
+deployer was split to stay within the repository's file-size policy, and its
+legacy downloads were removed rather than retained as a second mutable path.
 
 ### What Changed
 
-Not completed yet.
+`tooling-java/tooling-core` gained host-aware `ExternalToolCatalog`,
+`ExternalToolResolver`, single-file installation support in `ArtifactInstaller`,
+and `LegacyAndroidToolFallback`. `DeployToolchain` now exposes `protoc` and
+`bundletool`; `LegacyDeployService` temporarily supplies those paths through
+properties understood by `TotalCrossSDK/src/main/java/tc/tools/deployer/`.
+`gradle-plugin/src/main/java/com/totalcross/gradle/TypedDeployTask.java` resolves
+shared tools for Android tasks and reports fallback use. The SDK gained
+`AndroidToolLocator.java` and `AndroidPackageFiles.java`.
 
 ### Decisions and Trade-offs
 
-Not completed yet.
+The shared store is preferred because it is immutable, checksum-verified, and
+independent of a particular SDK installation. The compatibility fallback is
+explicitly read-only and emits one warning per typed deploy execution. Windows
+ARM reuses the upstream `win64` asset because that is the existing deploy
+behavior; unsupported tool names or hosts fail with a clear error.
 
 ### Unexpected Problems and Discoveries
 
-Not completed yet.
+The macOS ARM asset's binary version text differs from its release coordinate,
+and the first Bundletool transfer was incomplete. Both findings were handled by
+probing the actual binaries and calculating hashes from complete downloaded
+bytes. An existing SDK test also requires `-Dtotalcross.artifact.dir`; running
+that test without the property failed during test initialization, so SDK
+artifact-boundary assertions remain unverified in this environment.
 
 ### Validation and Measurable Results
 
-Not completed yet.
+`./gradlew :tooling-core:test --console=plain` passed 13 tests, including
+catalog coverage, checksum rejection, failed version probes, offline reuse,
+staging cleanup, and concurrent installation. The Gradle plugin test suite
+passed. `./gradlew compileJava --console=plain` passed in `TotalCrossSDK`.
+Official probes returned `libprotoc 3.21.0` and `1.15.6`; the resolver installed
+them under `tools/protoc/21.0/macos-arm64/` and `tools/bundletool/1.15.6/all/`.
+The license validator and its 19 unittest cases passed.
 
 ### Useful Evidence and Examples
 
-Not completed yet.
+Evidence is in `/tmp/tooling-plan08-core-test-final.log`,
+`/tmp/gradle-plugin-plan08-test-final.log`,
+`/tmp/totalcross-plan08-sdk-compile-final.log`, and
+`/tmp/tooling-plan08-license.log`. The focused resolver test is
+`tooling-java/tooling-core/src/test/java/com/totalcross/tooling/ExternalToolResolverTest.java`.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Not completed yet.
+Plan 08 does not prove a full signed Android package in this environment and
+does not yet prove CLI, Maven, VS Code, or clean-cache end-to-end release flows.
+Those are Plan 08B and Plan 08R responsibilities. The SDK artifact-boundary
+test needs its artifact directory property supplied by the artifact build.
 
 ### Possible Article Angles
 
-Not completed yet.
+An article for tooling maintainers could explain how to move mutable SDK-owned
+downloads into an immutable shared store. A second angle could cover typed
+boundaries for adapting legacy Java deployers without putting tooling classes on
+the SDK classpath. A third could focus on checksum, atomic staging, offline
+reuse, and concurrent installation as practical guarantees for IDE tooling.
 
 ### Suggested Narrative
 
-Not completed yet.
+Begin with the per-SDK download problem and the compatibility constraint. Show
+the catalog and store layout, then the typed path handoff into the isolated
+legacy deployer. Explain the partial-download/hash discovery and the file-size
+driven split. Close with the passing resolver tests and binary probes, then make
+clear that signed Android packaging and release staging remain future work.
 
 ### Claims Requiring Human Review
 
-Not completed yet.
+Claims about support for every host, the security value of checksum verification,
+and the compatibility of all legacy SDK layouts require normal technical review
+before publication. The full signed Android-package result is not claimed here.

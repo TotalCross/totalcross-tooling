@@ -10,6 +10,7 @@ import com.totalcross.tooling.deploy.DeployResult;
 import com.totalcross.tooling.deploy.DeployService;
 import com.totalcross.tooling.deploy.DeployToolchain;
 import com.totalcross.tooling.deploy.LegacyDeployService;
+import com.totalcross.tooling.store.ExternalToolResolver;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
@@ -53,8 +54,21 @@ public abstract class TypedDeployTask extends DefaultTask {
 
     @TaskAction
     public void deploy() {
-        DeployService service = new LegacyDeployService(new DeployToolchain(getToolchain().getFiles().stream()
-                .map(File::toPath).toList()));
+        DeployToolchain toolchain = new DeployToolchain(getToolchain().getFiles().stream()
+                .map(File::toPath).toList());
+        if (getPlatforms().get().stream().map(TypedDeployTask::platform)
+                .anyMatch(DeployPlatform.ANDROID::equals)) {
+            try {
+                ExternalToolResolver resolver = new ExternalToolResolver();
+                toolchain = toolchain.withAndroidTools(
+                        resolver.resolve("protoc", getJdkHome().get().getAsFile().toPath()),
+                        resolver.resolve("bundletool", getJdkHome().get().getAsFile().toPath()));
+            } catch (java.io.IOException unavailable) {
+                getLogger().warn("Shared Android tools unavailable; checking the selected SDK's read-only legacy fallback: "
+                        + unavailable.getMessage());
+            }
+        }
+        DeployService service = new LegacyDeployService(toolchain);
         DeployRequest request = new DeployRequest(getApplicationJar().get().getAsFile().toPath(),
                 getOutputDirectory().get().getAsFile().toPath(), getSdkHome().get().getAsFile().toPath(),
                 getJdkHome().get().getAsFile().toPath(), getPlatforms().get().stream()

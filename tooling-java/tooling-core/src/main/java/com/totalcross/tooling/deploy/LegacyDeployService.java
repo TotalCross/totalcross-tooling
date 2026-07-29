@@ -29,7 +29,10 @@ public final class LegacyDeployService implements DeployService {
         List<String> arguments = arguments(request);
         ByteArrayOutputStream captured = new ByteArrayOutputStream();
         synchronized (INVOCATION_LOCK) {
+            String previousProtoc = System.getProperty(DeployToolchain.PROTOC_PROPERTY);
+            String previousBundletool = System.getProperty(DeployToolchain.BUNDLETOOL_PROPERTY);
             try (URLClassLoader loader = new URLClassLoader(urls(), null)) {
+                configureAndroidTools(request, diagnostics);
                 Class<?> deploy = Class.forName("tc.Deploy", true, loader);
                 var constructor = deploy.getConstructor(String[].class);
                 PrintStream previous = System.err;
@@ -46,10 +49,42 @@ public final class LegacyDeployService implements DeployService {
             } catch (Exception failure) {
                 diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.ERROR, message(failure)));
                 return result(1, before, request, diagnostics, captured);
+            } finally {
+                restore(DeployToolchain.PROTOC_PROPERTY, previousProtoc);
+                restore(DeployToolchain.BUNDLETOOL_PROPERTY, previousBundletool);
             }
         }
         if (captured.size() > 0) diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.INFO, captured.toString(StandardCharsets.UTF_8)));
         return result(0, before, request, diagnostics, captured);
+    }
+
+    private void configureAndroidTools(DeployRequest request, List<DeployDiagnostic> diagnostics) throws java.io.IOException {
+        if (!request.platforms().contains(DeployPlatform.ANDROID)) return;
+        if ((toolchain.protoc() == null) != (toolchain.bundletool() == null)) {
+            throw new java.io.IOException("Both shared Android deploy tools must be resolved together");
+        }
+        Path protoc = toolchain.protoc();
+        Path bundletool = toolchain.bundletool();
+        if (protoc == null) {
+            var fallback = new LegacyAndroidToolFallback().find(request.sdkInstallation(), request.toolingJdk());
+            if (fallback.isEmpty()) {
+                throw new java.io.IOException("No verified shared Android tools are available and the explicit SDK has no valid legacy fallback");
+            }
+            protoc = fallback.get().protoc();
+            bundletool = fallback.get().bundletool();
+            diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.WARNING,
+                    "Using Android tools from the selected SDK; this read-only fallback is deprecated. Install the shared tool store.") );
+        }
+        if (!Files.isRegularFile(protoc) || !Files.isRegularFile(bundletool)) {
+            throw new java.io.IOException("Resolved Android deploy tools are missing");
+        }
+        System.setProperty(DeployToolchain.PROTOC_PROPERTY, protoc.toAbsolutePath().toString());
+        System.setProperty(DeployToolchain.BUNDLETOOL_PROPERTY, bundletool.toAbsolutePath().toString());
+    }
+
+    private static void restore(String key, String value) {
+        if (value == null) System.clearProperty(key);
+        else System.setProperty(key, value);
     }
 
     private static List<String> arguments(DeployRequest request) {
