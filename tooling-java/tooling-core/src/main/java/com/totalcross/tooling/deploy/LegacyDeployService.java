@@ -73,17 +73,26 @@ public final class LegacyDeployService implements DeployService {
             } catch (InvocationTargetException failure) {
                 diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.ERROR,
                         message(failure.getCause())));
+                addCaptured(diagnostics, captured);
                 return result(1, before, request, diagnostics, captured);
             } catch (Exception failure) {
                 diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.ERROR, message(failure)));
+                addCaptured(diagnostics, captured);
                 return result(1, before, request, diagnostics, captured);
             } finally {
                 restore(DeployToolchain.PROTOC_PROPERTY, previousProtoc);
                 restore(DeployToolchain.BUNDLETOOL_PROPERTY, previousBundletool);
             }
         }
-        if (captured.size() > 0) diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.INFO, captured.toString(StandardCharsets.UTF_8)));
+        addCaptured(diagnostics, captured);
         return result(0, before, request, diagnostics, captured);
+    }
+
+    private static void addCaptured(List<DeployDiagnostic> diagnostics, ByteArrayOutputStream captured) {
+        if (captured.size() > 0) {
+            diagnostics.add(new DeployDiagnostic(DeployDiagnostic.Severity.INFO,
+                    captured.toString(StandardCharsets.UTF_8)));
+        }
     }
 
     private void configureAndroidTools(DeployRequest request, List<DeployDiagnostic> diagnostics) throws java.io.IOException {
