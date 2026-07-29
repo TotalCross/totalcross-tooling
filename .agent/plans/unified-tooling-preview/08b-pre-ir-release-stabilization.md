@@ -356,6 +356,9 @@ The network source lookup log is `/tmp/gradle-plugin-sdk-source-network.log`.
 The explicitly enabled SDK `AnonymousUserDataTest` reached its configured
 external service but all three cases received HTTP 404 / `No such app`; the
 service is unavailable and the test remains an external infrastructure blocker.
+The SDK standard suite and `artifactContentTest` passed after injecting the
+test-only artifact directory into the Gradle Test worker; a plain suite run
+without that property produced only setup failures in `ArtifactBoundariesTest`.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.

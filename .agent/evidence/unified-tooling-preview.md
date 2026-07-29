@@ -243,3 +243,10 @@ program. Full command output belongs in `/tmp` or build artifacts.
   nested stream/font classes, `IllegalStateException4D`, and deploy/converter
   classes; the gate remains a release-owner compatibility/versioning decision.
   Log: `/tmp/totalcross-plan08b-aggregate-compatibility-rerun.log`.
+- 2026-07-29: the SDK standard suite was rerun with its required
+  `totalcross.artifact.dir` test property injected into the Gradle Test worker;
+  it passed, and the dedicated `artifactContentTest` also passed. The first
+  plain `test` invocation's three failures were environment setup errors from
+  the missing property, not SDK assertions. Logs:
+  `/tmp/totalcross-plan08b-sdk-standard-test-fixed-env.log` and
+  `/tmp/totalcross-plan08b-artifact-boundaries-rerun.log`.

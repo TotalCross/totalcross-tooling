@@ -167,6 +167,9 @@ application no longer exists; this external service must be replaced or the
 test contract revised before it can be a release gate. A strict compatibility
 rerun against public SDK 7.2.0 also still fails on concrete Launcher, nested
 stream/font, exception, deploy, and converter API removals.
+The SDK standard suite and dedicated artifact-boundary task passed after
+injecting the test-only `totalcross.artifact.dir` property into the Gradle Test
+worker; the initial plain-suite failures were only missing-environment failures.
 
 ## Deferrals and exclusions
 
