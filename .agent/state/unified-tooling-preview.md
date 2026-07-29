@@ -24,6 +24,9 @@ Next command:
 
     sed -n '1,260p'       .agent/plans/unified-tooling-preview/08c-pre-ir-architecture-corrections.md
 
+Resume commands are repository-relative. Historical `/tmp` locations remain in
+the append-only evidence file only, where they identify prior validation logs.
+
 ## Repositories
 
 Expected workspace:
@@ -35,7 +38,9 @@ TotalCross:
 
     branch:
       feature/392-feature-request-live-ui-preview-for-ides
-    remote head observed during 2026-07-29 audit:
+    local head verified on 2026-07-29:
+      9a36178ef185cc3986a446e7cdefdcb0451c402d
+    remote head verified on 2026-07-29:
       9a36178ef185cc3986a446e7cdefdcb0451c402d
     default branch:
       master
@@ -44,13 +49,16 @@ Tooling:
 
     branch:
       feature/unify-tooling-and-preview
-    remote head observed during 2026-07-29 audit:
+    local head verified on 2026-07-29:
+      1ac618317681fb9b93add4aeb02e5dfd5c51668d
+    remote head verified on 2026-07-29:
       7c2baaa6ef3cd6ecb06e1510514ae5741c183881
     default branch:
       main
 
-Before implementation, fetch both remotes and replace observed values with exact
-current `git rev-parse` results.
+Both remotes were fetched with pruning on 2026-07-29 before Plan 08C work.
+Tooling is one local documentation commit ahead of its feature remote; TotalCross
+is aligned with its feature remote. No remote write was performed.
 
 ## Completed checkpoints
 

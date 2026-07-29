@@ -281,3 +281,12 @@ program. Full command output belongs in `/tmp` or build artifacts.
   The successful run used the locally rebuilt preview-capable SDK 7.2.2
   repository. The intentionally empty fixture renders a blank white frame.
   Plan 08B's installed-project gate is closed.
+- 2026-07-29: the post-08B audit begins Plan 08C. It found that production
+  reload reuses one worker rather than promoting a process-backed candidate;
+  VS Code requests reload before a successful build; Gradle and Maven retain
+  duplicate resolver paths; Maven's JDK path is Zulu-only and x86-biased; and
+  the serialized project model is only a preview descriptor. It also found a
+  duplicate public typed-package task, incomplete Webview input scaling and
+  resize, incomplete wrapper preference, VSIX dependency packaging that was
+  not deterministic, and release-facing SNAPSHOT or `mavenLocal` defaults.
+  These are release blockers, not a retraction of the Plan 08B evidence.

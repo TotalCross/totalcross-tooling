@@ -36,9 +36,9 @@ converter source, create tags, or publish publicly.
 
 ### Reconciliation
 
-- [ ] Record current remote heads and remove stale local-only SHAs from state.
-- [ ] Replace absolute machine paths with repository-relative resume commands.
-- [ ] Record the post-08B audit findings in evidence.
+- [x] Record current remote heads and remove stale local-only SHAs from state.
+- [x] Replace absolute machine paths with repository-relative resume commands.
+- [x] Record the post-08B audit findings in evidence.
 
 ### Process-isolated preview
 
