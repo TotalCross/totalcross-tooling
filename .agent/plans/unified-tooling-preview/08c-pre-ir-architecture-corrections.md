@@ -15,14 +15,16 @@ coordinator promotes disposable worker processes only after a valid first frame,
 and failed builds or candidates preserve the previous application.
 
 Make Gradle, Maven, CLI, and VS Code consume the same project model, store, JDK
-selection, compatibility policy, and public tasks. Correct extension reload,
-input, resize, wrapper, and packaging behavior before adding new migration UX.
+selection, compatibility policy, and public tasks. Automatic tooling-JDK
+installation must consume a reviewed immutable catalog; explicit `jdkPath`
+remains supported and is required only when the host is not covered.
 
 ## Working Set and Resume Protocol
 
 Read state and this plan. Inspect only:
 
     tooling-java host, worker, coordinator, CLI, codecs, and resolvers
+    tooling-core JDK providers, selector, store, download, and process packages
     Gradle preview, run, stop, model, package, extension, and build metadata
     Maven preview, run, stop, package, JDK/SDK managers, POM, and tests
     VS Code preview client, Webview, project layout, settings, and packaging
@@ -52,11 +54,19 @@ converter source, create tags, or publish publicly.
 - [x] Prove repeated reload leaves no old worker processes.
 - [ ] Define distinct preview and run presentation modes.
 
-### Shared resolution and model
+### Shared resolution and immutable JDK catalog
 
+- [x] Run capability probes before using a tooling JDK.
+- [ ] Define and parse a versioned immutable JDK catalog.
+- [ ] Add bundled, file, and test catalog sources behind one interface.
+- [ ] Add concrete JDK versions, URLs, SHA-256 values, and archive layouts.
+- [ ] Cover the minimum pre-IR release host matrix.
+- [ ] Install catalog JDKs through the immutable shared store.
+- [ ] Make `jdkPath` the probed highest-priority override.
+- [ ] Add actionable `jdkPath` fallback for unsupported hosts.
+- [ ] Restrict dynamic providers to catalog-maintenance workflows.
 - [ ] Make shared SDK/JDK/store services authoritative in Gradle, Maven, and CLI.
 - [ ] Remove the Maven Zulu-only, latest, x86 JDK download path.
-- [x] Run capability probes before using a tooling JDK.
 - [ ] Enforce and document Java 17 for loading both pre-IR plugins.
 - [ ] Serialize and parse the complete versioned ProjectModel.
 - [ ] Include real roots, outputs, dependencies, SDK, targets, and arguments.
@@ -110,7 +120,7 @@ content must not be committed.
 Use token-efficient execution. Read the state file and active plan first. Inspect
 only named paths. Save verbose logs under `/tmp` or build artifacts and record
 only concise outcomes, commit IDs, and log paths. Do not repeatedly print full
-plans, diffs, generated projects, dependency trees, or test logs.
+plans, diffs, generated projects, dependency trees, catalogs, or test logs.
 
 ## Plan of Work
 
@@ -119,40 +129,13 @@ implementation paths for the next.
 
 ### Milestone 1: reconcile state and evidence
 
-Update state with current refs, active blockers, and a relative next command.
-Preserve Plan 08B evidence. Record:
-
-    production reload reuses one worker
-    VS Code stops before build
-    Gradle and Maven still own duplicate resolver paths
-    Maven JDK manager is Zulu-only and x86-biased
-    project model writes only the preview descriptor
-    duplicate typed package task remains public
-    Webview input scaling and resize are incomplete
-    release files still use SNAPSHOT or mavenLocal
+This milestone is complete. Preserve Plan 08B evidence and the recorded audit
+findings. Do not rewrite historical outcomes.
 
 ### Milestone 2: process-backed candidate promotion
 
-Introduce focused classes, for example:
-
-    PreviewCoordinator
-    ProcessWorkerCandidate
-    ActivePreviewSession
-    PresentationMode
-    WorkerProcessFactory
-
-Do not grow `ToolingCli` into the coordinator implementation.
-
-A process candidate owns one authenticated worker and transport. It starts,
-awaits authentication, awaits ready, validates the first frame, exposes
-diagnostics, and closes its complete process tree.
-
-The persistent coordinator keeps the active candidate visible and controllable
-while a new candidate starts with the new compiled classpath. It promotes only
-after a valid frame, then closes the previous process. Failed candidates emit a
-structured diagnostic and never replace the active process.
-
-Use two presentation modes:
+The process-backed promotion slice is complete. Preserve its tests and evidence.
+Finish only the remaining presentation-mode distinction:
 
     preview:
       frame stream, frame file, or IDE adapter
@@ -160,63 +143,152 @@ Use two presentation modes:
     run:
       native AWT window owned by the coordinator
 
-Both modes use the same worker lifecycle.
+Both modes use the same worker lifecycle and promotion rules.
 
-Replace the append-only comma control format with a versioned escaped message
-format or authenticated local socket. Keep a compatibility reader only when
-needed for current tests.
+### Milestone 3: immutable JDK catalog and authoritative resolution
 
-### Milestone 3: authoritative environment resolution
+Create one versioned catalog model. A catalog entry contains at least:
 
-Create one `tooling-core` facade, for example
-`ToolingEnvironmentResolver`, returning:
+    schemaVersion
+    entryId
+    vendor
+    javaMajor
+    version
+    build
+    operatingSystem
+    architecture
+    archiveType
+    url
+    sha256
+    javaHomeRelativePath
+    archiveSize when known
+    releaseDate when known
 
-    SDK installation and version
-    tooling JDK installation
-    application Java target
-    Retrolambda decision
-    external tools
-    diagnostic provenance
+The representation may be JSON or another small versioned format. The parser
+must not be coupled to a classpath resource. Define a source interface, for
+example:
 
-Use the immutable store, JDK providers, checksum metadata, and capability probes.
-An explicit local path is the first candidate but must pass the same probes.
+    JdkCatalogSource
+      BundledJdkCatalogSource
+      FileJdkCatalogSource
+      CompositeJdkCatalogSource
 
-Gradle, Maven, and CLI call this facade. Remove the Maven `JavaJDKManager`
-download path and Gradle-local JDK downloader only after focused equivalence
-tests. Remove unused AWS, appdirs, zip, and download dependencies.
+Tests use an in-memory or fixture source. Future remotely updated metadata is out
+of scope unless it is separately signed, versioned, cached, and verified.
+
+Catalog entries use concrete versions and final archive URLs. Reject:
+
+    latest or floating release URLs
+    missing or placeholder SHA-256 values
+    unsupported CRaC or specialized builds
+    unknown operating systems or architectures
+    archive layouts without a declared JAVA_HOME path
+
+Selection precedence:
+
+1. explicit `jdkPath`;
+2. explicitly permitted compatible `JAVA_HOME`;
+3. an existing verified shared-store installation;
+4. bundled immutable catalog candidates;
+5. future verified catalog updates, when implemented;
+6. a clear failure requesting `jdkPath`.
+
+Every selected candidate, including local paths, must pass:
+
+    java -version
+    javac -version
+    ProcessBuilder child with stdout and stderr
+    timeout and process-tree cleanup
+    xattr execution on macOS
+    protoc --version when protoc is available
+
+An absent quarantine attribute is not a failure. Inability to create or wait for
+the process is a failure.
+
+Install catalog candidates through the existing store:
+
+    download to unique staging
+    verify SHA-256 before extraction
+    reject archive traversal
+    extract and locate declared JAVA_HOME
+    run capability probes
+    write immutable metadata and completion marker
+    atomically promote to the final concrete-version directory
+
+Installation metadata records catalog schema, entry ID, vendor, version, host,
+URL, SHA-256, and selected JAVA_HOME.
+
+Minimum release matrix:
+
+    Java 17 / macOS ARM64
+    Java 17 / macOS x64
+    Java 17 / Linux x64
+    Java 17 / Windows x64
+
+Add Linux ARM64 when a verified supported archive is available. One primary and
+one fallback vendor may be cataloged, but vendor name never bypasses probes.
+
+Dynamic `CorrettoProvider`, `TemurinProvider`, and `ZuluProvider` implementations
+may remain only as catalog-maintenance utilities:
+
+    discover concrete release
+    download candidate bytes
+    calculate SHA-256
+    emit a candidate catalog entry
+    require human or CI review before commit
+
+Production resolution must not install directly from provider responses.
+
+Create or complete `ToolingEnvironmentResolver` so Gradle, Maven, CLI, and the VS
+Code companion use this policy. Remove Maven `JavaJDKManager` and Gradle-local
+JDK download paths only after focused equivalence tests. Remove unused AWS,
+appdirs, zip, and downloader dependencies.
 
 Both plugins load on Java 17 for this release. Add startup diagnostics, README
 matrices, Gradle tests, Maven prerequisite metadata where supported, and failure
 tests for older JVMs. Application bytecode target remains independent.
+
+Catalog tests must cover:
+
+    schema version and malformed entries
+    unsupported host and architecture
+    concrete candidate selection
+    explicit jdkPath precedence and invalid path
+    capability-probe failure
+    checksum mismatch and archive traversal
+    interrupted and concurrent installation
+    incorrect javaHomeRelativePath
+    offline reuse
+    candidate fallback
+    missing entry with actionable jdkPath message
+    floating URL or placeholder hash rejection
+    unsupported CRaC rejection
 
 ### Milestone 4: complete project model and tasks
 
 Add a versioned `ProjectModelCodec`. Serialize the entire model:
 
     schema version
-    build tool
-    project root
+    build tool and project root
     main and test source roots
-    resource roots
-    class and resource outputs
+    resource roots and outputs
     dependency classpath
     MainWindow class
     SDK version and coordinate
-    tooling JDK identity
+    tooling JDK catalog entry or explicit-path identity
     application Java target
     Retrolambda plan
-    Launcher arguments
-    Deploy arguments and platforms
-    preview descriptor
+    Launcher and Deploy arguments
+    platforms and preview descriptor
 
-Do not store credentials or unnecessary absolute cache paths.
+Do not store credentials or unnecessary cache paths.
 
 Gradle and Maven must produce semantically equivalent models. CLI and VS Code
 consume the model rather than rediscovering values differently.
 
 Keep only `totalcrossPackage` and `totalcross:package` as public package entry
-points. Remove or internalize `totalcrossTypedPackage`. Document `preview`,
-`run`, and `stop` semantics consistently.
+points. Remove or internalize `totalcrossTypedPackage`. Document preview, run,
+and stop semantics consistently.
 
 Document SDK in-process preview types as internal compatibility surfaces. The
 cross-process frame and command protocol is the stable external boundary.
@@ -237,11 +309,14 @@ Prefer wrappers:
     Maven: mvnw or mvnw.cmd
     system executable only when no wrapper exists
 
-Track intrinsic frame dimensions and displayed dimensions. Scale pointer
-coordinates before sending. Use `ResizeObserver` and device-profile settings to
-send width, height, density, and orientation. Remove or deprecate unused settings.
+Track intrinsic and displayed frame dimensions. Scale pointer coordinates before
+sending. Use `ResizeObserver` and device-profile settings to send width, height,
+density, and orientation.
 
-Bundle the extension with a supported bundler or a deterministic dependency
+The companion obtains its JDK through the shared resolver or an explicit
+configured `jdkPath`; it must not assume `java` on PATH is compatible.
+
+Bundle the extension with a supported bundler or deterministic dependency
 package. Inspect and install the VSIX without source checkout or development
 `node_modules`.
 
@@ -257,7 +332,12 @@ Acceptance requires:
 6. no public plugin path uses legacy JDK/SDK downloaders;
 7. only one public package task exists per build tool;
 8. installed bundled VSIX passes preview, reload, failed build, recovery, stop;
-9. no SNAPSHOT or `mavenLocal` remains in release-facing defaults.
+9. no SNAPSHOT or `mavenLocal` remains in release-facing defaults;
+10. every downloaded JDK uses a committed concrete URL and SHA-256;
+11. clean-cache installation and offline reuse pass on the release matrix;
+12. an unsupported host produces an actionable `jdkPath` diagnostic;
+13. no production path uses `latest`, forces `arch=x86`, or accepts CRaC
+    implicitly.
 
 Run focused tests per milestone, then the justified full matrix. Run
 `git diff --check`, license checks, dependency analysis, and staged size checks.
@@ -267,6 +347,18 @@ Run focused tests per milestone, then the justified full matrix. Run
 - Decision: worker replacement is a release gate.
   Rationale: MainWindow replacement does not guarantee application state
   isolation.
+  Date/Author: 2026-07-29 / OpenAI.
+
+- Decision: introduce a versioned immutable JDK catalog and retain `jdkPath` as
+  an explicit override and unsupported-platform fallback.
+  Rationale: automatic installation must be reproducible and checksum-verified.
+  A globally mandatory `jdkPath` would regress tooling usability, while dynamic
+  provider URLs cannot define immutable installations safely.
+  Date/Author: 2026-07-29 / User and OpenAI.
+
+- Decision: dynamic vendor providers are catalog-maintenance tools only.
+  Rationale: runtime selection must consume reviewed bytes and committed hashes,
+  not mutable provider responses.
   Date/Author: 2026-07-29 / OpenAI.
 
 - Decision: plugin loading requires Java 17 for the pre-IR release.
@@ -280,28 +372,43 @@ Run focused tests per milestone, then the justified full matrix. Run
 
 ## Validation and Acceptance
 
-Plan 08C completes only when every progress item and Milestone-6 acceptance item
-passes. Coordinator unit tests alone are insufficient; the real CLI, plugins,
-and installed extension must use process-backed promotion.
+Plan 08C completes only when every open progress item and Milestone-6 acceptance
+item passes. Coordinator unit tests or catalog parser tests alone are
+insufficient; real CLI, plugins, installed extension, store installation, and
+offline reuse must use the completed policy.
 
-Record unavailable platform tests honestly.
+Record unavailable platform tests honestly. A host omitted from the catalog is
+unsupported for automatic installation, not silently accepted through a floating
+URL.
 
 ## Risks and Open Questions
 
-Changing process ownership may expose existing assumptions in detached Maven or
-Gradle sessions. Prefer one shared session record and authenticated control
-channel over PID parsing.
+Vendor archives and URLs may be removed. Catalog maintenance must verify the
+actual downloaded bytes before updating a committed entry. A future remotely
+updated catalog requires a separate signed-update design.
+
+Changing process and JDK ownership may expose assumptions in detached Maven or
+Gradle sessions. Prefer a shared session record and authenticated control channel
+over PID parsing.
 
 ## Idempotence and Recovery
 
 Each milestone is separately commit-ready and revertible. Candidate failure does
-not change active preview ownership. Plan 08R remains blocked.
+not change active preview ownership. JDK installation never replaces a completed
+version until staging, checksum, extraction, and probes pass. Plan 08R remains
+blocked.
 
 ## Outcomes & Retrospective
 
-Not started.
+In progress. Reconciliation, process-backed promotion, failed-candidate
+preservation, repeated real-worker replacement, and initial capability-probe
+integration are complete. Immutable catalog materialization and remaining
+plugin/editor corrections are pending.
 
 ## Revision Note
+
+2026-07-29: added immutable JDK catalog schema, runtime/maintenance separation,
+minimum host matrix, tests, and `jdkPath` fallback decision.
 
 2026-07-29: created from the post-Plan-08B audit.
 

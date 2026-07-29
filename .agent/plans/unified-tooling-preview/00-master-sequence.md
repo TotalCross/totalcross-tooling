@@ -16,12 +16,16 @@ Deliver a publishable TotalCross release before merging
 unchanged; and ships one process-isolated preview lifecycle through CLI, Gradle,
 Maven, and VS Code.
 
+The release also provides reproducible automatic tooling-JDK installation from a
+versioned immutable catalog. Explicit `jdkPath` remains the highest-priority
+override and the required fallback only when the catalog does not support the
+requested platform.
+
 The VS Code extension preserves its Gradle wizard and Maven migration, supports
 per-project reminder suppression, and can request conversion of an unstructured
 legacy Java/TotalCross folder into a validated Gradle Java project. Conversion
-analysis and mutation are implemented by shared Java tooling used by the Gradle
-plugin and CLI; VS Code owns only selection, confirmation, progress, and result
-presentation.
+analysis and mutation are implemented by shared Java tooling; VS Code owns only
+selection, confirmation, progress, and result presentation.
 
 ## Working Set and Resume Protocol
 
@@ -71,6 +75,10 @@ The release includes:
     aggregate totalcross-sdk.jar and additive narrow artifacts
     Launcher and Deploy compatibility facades
     shared SDK, JDK, and external-tool store
+    versioned immutable tooling-JDK catalog
+    concrete JDK URLs and SHA-256 values per supported host
+    jdkPath override and unsupported-platform fallback
+    capability probing for every selected tooling JDK
     typed deploy as the only public plugin package path
     authenticated protocol and disposable worker candidates
     promotion only after ready plus first valid frame
@@ -80,8 +88,7 @@ The release includes:
     Maven-to-Gradle conversion with rollback
     per-project Maven reminder suppression
     shared Convert to TotalCross Project engine
-    Gradle task for conversion in existing Gradle builds
-    CLI conversion for folders that are not yet Gradle projects
+    Gradle conversion task and CLI bootstrap conversion
     bundled or checksummed companion delivery
 
 The release excludes:
@@ -127,36 +134,35 @@ content must not be committed.
 Use token-efficient execution. Read the state file and active plan first. Inspect
 only named paths. Save verbose logs under `/tmp` or build artifacts and record
 only concise outcomes, commit IDs, and log paths. Do not repeatedly print full
-plans, diffs, generated projects, dependency trees, or test logs.
+plans, diffs, generated projects, dependency trees, catalogs, or test logs.
 
 ## Plan of Work
 
 Plan 08C connects the promotion coordinator to real worker processes, preserves
-the active application after failed builds or candidates, makes shared store/JDK
-selection authoritative, serializes the complete project model, removes
-duplicate public package paths, and corrects VS Code reload, input, resize,
-wrapper, and packaging behavior.
+the active application after failed builds or candidates, serializes the complete
+project model, removes duplicate public package paths, and corrects VS Code
+reload, input, resize, wrapper, and packaging behavior.
+
+Plan 08C also makes shared environment resolution authoritative. It adds a
+versioned immutable JDK catalog with concrete release metadata, SHA-256
+verification, atomic installation, capability probes, minimum release-platform
+coverage, and actionable `jdkPath` fallback. Dynamic vendor providers remain
+catalog-maintenance helpers and are not production installation sources.
 
 Plan 08D creates a shared Java conversion module. The Gradle plugin exposes that
-engine as `totalcrossConvertProject` when a Gradle build already exists. The
-tooling CLI exposes the same engine for arbitrary folders that cannot load a
-Gradle plugin yet. VS Code calls the CLI and displays its structured plan and
-results; it does not implement source classification, script parsing, version
-selection, file movement, validation, or rollback.
-
-Plan 08D also adds “Don't Ask Again for This Project” to the automatic Maven
-conversion reminder and a command that re-enables the reminder for one selected
-project.
+engine when a Gradle build exists. The CLI exposes the same engine for folders
+that cannot load a Gradle plugin yet. VS Code calls the CLI and displays its
+structured plan and results.
 
 Plan 08R starts only after Plan 08D passes. It chooses non-SNAPSHOT versions,
 creates release branches, publishes to staging, consumes from empty caches and a
 fresh shared store, and, after explicit approval, publishes SDK artifacts,
 tooling modules, Maven plugin, Gradle plugin, companion, and VSIX in dependency
-order.
+order. Its release manifest records the exact JDK catalog shipped.
 
 Plan 09 starts only after Plan 08R records a verified pre-IR release. It merges
-the reviewed IR branch, revalidates converter/native fixtures, and decides
-whether physical converter or deployer movement is safe.
+the reviewed IR branch and decides whether physical converter or deployer
+movement is safe.
 
 Plan 10 removes only post-IR payload proven obsolete, completes cache migration,
 measures artifact changes, and closes the program.
@@ -164,8 +170,8 @@ measures artifact changes, and closes the program.
 ## Decision Log
 
 - Decision: add Plans 08C and 08D instead of reopening historical plans.
-  Rationale: prior tests remain useful evidence, while the audit findings require
-  explicit new release gates.
+  Rationale: prior tests remain useful evidence, while audit findings require
+  explicit release gates.
   Date/Author: 2026-07-29 / User and OpenAI.
 
 - Decision: a reload replaces the worker process, not only the MainWindow.
@@ -173,10 +179,17 @@ measures artifact changes, and closes the program.
   native resources, timers, and application classloaders.
   Date/Author: 2026-07-29 / OpenAI.
 
+- Decision: introduce a versioned immutable JDK catalog and retain `jdkPath` as
+  an explicit override and unsupported-platform fallback.
+  Rationale: automatic JDK installation must be reproducible and
+  checksum-verified. Requiring `jdkPath` globally would regress the shared
+  tooling experience, while dynamic provider URLs cannot safely define immutable
+  installations.
+  Date/Author: 2026-07-29 / User and OpenAI.
+
 - Decision: the conversion engine belongs to shared Java tooling.
   Rationale: the Gradle plugin can expose it after a build exists, while a CLI is
-  required to convert a folder that cannot load the plugin yet. VS Code remains
-  a thin consumer in both cases.
+  required to convert a folder that cannot load the plugin yet.
   Date/Author: 2026-07-29 / User and OpenAI.
 
 - Decision: legacy conversion is dry-run-first and transactional.
@@ -184,56 +197,58 @@ measures artifact changes, and closes the program.
   never silently destroy a working project.
   Date/Author: 2026-07-29 / User and OpenAI.
 
-- Decision: SDK and Java fallbacks use shared dynamic policies.
-  Rationale: latest available SDK and highest accepted Java target change over
-  time and must not be hardcoded in the extension.
-  Date/Author: 2026-07-29 / User and OpenAI.
-
 ## Validation and Acceptance
 
 The pre-IR release is accepted when a clean environment resolves all staged
-artifacts without `mavenLocal`, starts preview from CLI, Gradle, Maven, and VS
-Code, preserves the old worker after failed compilation or candidate startup,
-promotes a valid new process after its first frame, stops all owned processes,
-packages through typed deploy, and reuses installed tools offline.
+artifacts without `mavenLocal`, automatically installs a catalog-backed JDK,
+starts preview from CLI, Gradle, Maven, and VS Code, preserves the old worker
+after failed compilation or candidate startup, promotes a valid new process after
+its first frame, stops all owned processes, packages through typed deploy, and
+reuses the verified JDK and external tools offline.
+
+An unsupported host must receive a clear diagnostic requesting a compatible
+`jdkPath`. An explicit JDK path must pass the same capability probes as a
+downloaded installation.
 
 An installed VSIX must create a project, convert Maven to Gradle, suppress the
 automatic reminder for one project without suppressing another, invoke the
-shared converter for representative legacy folders, preserve detected Launcher
-and Deploy arguments, and report rollback after forced validation failure.
+shared converter for representative legacy folders, and report rollback after
+forced validation failure.
 
 An existing project depending only on `com.totalcross:totalcross-sdk` must still
 compile and pass focused Launcher and deploy smoke tests.
 
 ## Risks and Open Questions
 
-A folder without `settings.gradle` or `build.gradle` cannot apply a Gradle plugin
-normally. Do not use a fragile generated init script as the primary conversion
-path. The CLI is the bootstrap entry point; the Gradle task is the native entry
-point after Gradle exists.
+Catalog coverage may initially omit a host. Missing coverage is an explicit
+unsupported-platform result, not permission to use a floating provider URL.
+Catalog updates require review of concrete bytes and hashes.
 
-Inference from scripts is conservative. Ambiguous roots, multiple MainWindow
-candidates, or conflicting versions require user selection rather than a guess.
+A folder without Gradle files cannot apply a Gradle plugin normally. The CLI is
+the bootstrap entry point; the Gradle task is the native entry point afterward.
 
 ## Idempotence and Recovery
 
 Each plan verifies branch, origin, working-tree scope, last checkpoint, and state.
-Failed conversion or staging does not alter public repositories. Conversion
-maintains a hash-verified journal and rollback backup. Release branches receive
-only release fixes and remain separate from Plan 09.
+JDK installations use unique staging paths and atomic promotion. Failed
+conversion or staging does not alter public repositories. Release branches
+receive only release fixes and remain separate from Plan 09.
 
 ## Outcomes & Retrospective
 
 Plans 01–08B produced the workspace, shared core, artifact boundaries, launcher
 split, tooling modules, build-tool adapters, VS Code workflows, Android tool
-migration, and an installed-project E2E. The audit found that production reload
-still reused one worker and that resolver, model, extension, and release details
-remained incomplete. Plan 08C is active.
+migration, and an installed-project E2E. Plan 08C is active; process-backed
+candidate promotion and capability probes are complete, while immutable JDK
+materialization and remaining plugin/editor corrections are pending.
 
 ## Revision Note
 
+2026-07-29: added the immutable versioned JDK catalog decision, `jdkPath`
+fallback policy, and release verification gates.
+
 2026-07-29: inserted Plan 08C for architectural corrections and Plan 08D for a
-shared Gradle/CLI conversion engine plus project-scoped reminder suppression.
+shared conversion engine.
 
 
 ## Editorial Report
