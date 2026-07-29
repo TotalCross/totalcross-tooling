@@ -140,7 +140,10 @@ the application bytecode target. The previous external `Connection reset` run
 used the incompatible target-17 setup. Maven real packaging and the complete
 release matrix remain open. The successful log still contains a non-fatal
 legacy SDK telemetry `NoClassDefFoundError` emitted after deployment; it does
-not change the generated outputs or task result.
+not change the generated outputs or task result. A Maven real-package attempt
+with the same SDK/target policy reached the deploy goal but the clean Maven
+home lacked JDK 11; the plugin began a 300 MB download and the attempt was
+stopped before packaging. No Maven deploy process remains.
 Failure output is now retained by tooling `d0c6e1e`; tooling-core validation
 passed. The successful Gradle output is logged at
 `/tmp/totalcross-gradle-typed-deploy-real-success.log`.

@@ -349,7 +349,10 @@ dependency variant independently of the application bytecode target. Maven
 real packaging remains open after the previous external `Connection reset`
 run used the incompatible target-17 setup. The successful Gradle log retains a
 non-fatal `NoClassDefFoundError` from the SDK's asynchronous telemetry after
-deployment; generated outputs and the task result are successful.
+deployment; generated outputs and the task result are successful. A Maven
+real-package attempt reached the deploy goal but its clean repository lacked
+JDK 11 and began a 300 MB first-use download, so Maven packaging remains open
+for a controlled run with JDK 11 pre-provisioned.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.

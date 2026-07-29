@@ -213,3 +213,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   compiler JVM while preserving the independent SDK bytecode policy. The task
   succeeds, although the legacy SDK's asynchronous telemetry emits a
   non-fatal `NoClassDefFoundError` after the deployer returns.
+- 2026-07-29: the Maven real-package attempt used target 8, the official SDK
+  home, and the clean repository `/tmp/totalcross-maven-home4.cb3WCM`. It
+  reached `totalcross-maven-plugin:2.0.3:package`, but the isolated home lacked
+  JDK 11 and triggered a 300 MB first-use download; the attempt was stopped
+  before package generation. The Maven real-packaging gate remains open for a
+  controlled run with JDK 11 pre-provisioned.
