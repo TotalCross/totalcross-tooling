@@ -2,22 +2,28 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 import {ChildProcess, spawn} from 'child_process';
-import {promises as fs} from 'fs';
+import {existsSync, promises as fs} from 'fs';
 import * as path from 'path';
 import {BuildTool, ProjectLayout} from './project-layout';
 
 export interface PreviewEvent { kind: string; message?: string; [key: string]: any; }
 export interface PreviewCommand { executable: string; args: string[]; }
 
+export function mavenExecutable(root: string, platform: NodeJS.Platform, exists: (file: string) => boolean = existsSync): string {
+    const wrapper = platform === 'win32' ? 'mvnw.cmd' : 'mvnw';
+    if (exists(path.join(root, wrapper))) return platform === 'win32' ? '.\\mvnw.cmd' : './mvnw';
+    return platform === 'win32' ? 'mvn.cmd' : 'mvn';
+}
+
 export function previewCommand(layout: ProjectLayout, platform: NodeJS.Platform, launchWindow = true): PreviewCommand {
     if (layout.buildTool === 'maven') {
-        return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['compile', 'totalcross:preview'].concat(launchWindow ? [] : ['-Dtotalcross.preview.noLaunch=true'])};
+        return {executable: mavenExecutable(layout.root, platform), args: ['compile', 'totalcross:preview'].concat(launchWindow ? [] : ['-Dtotalcross.preview.noLaunch=true'])};
     }
     return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreview', '--console=plain'].concat(launchWindow ? [] : ['-Ptotalcross.preview.noLaunch=true'])};
 }
 
 export function buildCommand(layout: ProjectLayout, platform: NodeJS.Platform): PreviewCommand {
-    if (layout.buildTool === 'maven') return {executable: platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['compile']};
+    if (layout.buildTool === 'maven') return {executable: mavenExecutable(layout.root, platform), args: ['compile']};
     return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['classes', '--console=plain']};
 }
 
@@ -88,7 +94,7 @@ export class PreviewClient {
 
     private stopCommand(): PreviewCommand {
         return this.layout.buildTool === 'maven'
-            ? {executable: this.platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview-stop']}
+            ? {executable: mavenExecutable(this.layout.root, this.platform), args: ['totalcross:preview-stop']}
             : {executable: this.platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreviewStop', '--console=plain']};
     }
 

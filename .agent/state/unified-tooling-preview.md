@@ -95,6 +95,7 @@ Completed Plan 08C slices:
     versioned complete ProjectModel emitted by Gradle and Maven and consumed by CLI
     duplicate Gradle typed-package task removed; totalcrossPackage is the public path
     preview frame-stream and standalone run-window presentation modes separated
+    VS Code preview commands prefer Maven Wrapper when present
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -108,7 +109,6 @@ Remaining Plan 08C blockers:
 
     failed-build preservation in VS Code
     pointer scaling and Webview resize
-    Maven Wrapper preference
     deterministic VSIX bundling
     removal of release-facing SNAPSHOT defaults
 

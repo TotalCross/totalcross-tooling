@@ -78,7 +78,7 @@ converter source, create tags, or publish publicly.
 
 - [ ] Build successfully before requesting a candidate reload.
 - [ ] Keep the displayed frame and session after a failed build.
-- [ ] Prefer Maven Wrapper when present.
+- [x] Prefer Maven Wrapper when present.
 - [ ] Scale pointer coordinates to intrinsic frame pixels.
 - [ ] Send resize and apply device size, density, and orientation.
 - [ ] Bundle production dependencies deterministically into the VSIX.

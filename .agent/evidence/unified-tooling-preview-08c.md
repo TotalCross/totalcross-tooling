@@ -78,3 +78,6 @@ reached the text-file size limit. Full command output remains outside the repo.
   currently blocked locally because its downloaded VS Code test bundle lacks the
   expected macOS `Contents/MacOS/Electron` executable; no behavior result is
   recorded from that E2E attempt.
+- 2026-07-29: VS Code preview, build, and stop commands now prefer `mvnw` or
+  `mvnw.cmd` when the Maven Wrapper exists, falling back to the system Maven
+  executable only when it does not. The focused TypeScript compile passed.

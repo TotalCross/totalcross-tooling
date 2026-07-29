@@ -2,7 +2,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 import * as assert from 'assert';
-import {previewCommand} from '../../preview-client';
+import {mavenExecutable, previewCommand} from '../../preview-client';
 import {ProjectLayout} from '../../project-layout';
 
 suite('Preview client', () => {
@@ -18,5 +18,11 @@ suite('Preview client', () => {
         const command = previewCommand({...layout, buildTool: 'maven'}, 'darwin');
         assert.strictEqual(command.executable, 'mvn');
         assert.deepStrictEqual(command.args, ['compile', 'totalcross:preview']);
+    });
+
+    test('prefers Maven Wrapper when it is present', () => {
+        assert.strictEqual(mavenExecutable('/project', 'darwin', () => true), './mvnw');
+        assert.strictEqual(mavenExecutable('/project', 'win32', () => true), '.\\mvnw.cmd');
+        assert.strictEqual(mavenExecutable('/project', 'darwin', () => false), 'mvn');
     });
 });
