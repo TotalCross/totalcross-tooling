@@ -55,7 +55,7 @@ Plan 04 docs commit `60d3726`; Plan 05 commit `026ed8a`; Plan 06 commit
 TotalCross Plan 08 Android migration commit: `fac934fa3`.
 Plan 08B stabilization slice: tooling `612e658`, frame/control continuation
 `b9ece39`; TotalCross SDK `a020512e4`, headless-frame continuation
-`fab77de18`.
+`fab77de18`, aggregate compatibility gate `6e9161739`.
 
 ## Active paths
 
@@ -105,7 +105,10 @@ server, SDK compile, VS Code, license checks, and local staging passed. The
 standalone CLI now produces a real fixture PNG (320x568) and the control-file
 probe passed resize, pointer, key, and stop commands. VS Code now polls the
 coordinator-owned frame and forwards those events; aggregate compatibility,
-clean-cache staged consumption, and the full end-to-end matrix remain open.
+clean-cache staged consumption now resolves SDK, preview-runtime, and tooling
+CLI artifacts without `mavenLocal` after staging the required annotations
+artifact. The full Gradle/Maven/VS Code matrix and public-baseline compatibility
+review remain open.
 
 ## Deferrals and exclusions
 

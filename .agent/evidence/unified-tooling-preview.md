@@ -101,3 +101,17 @@ program. Full command output belongs in `/tmp` or build artifacts.
 - 2026-07-28: direct CLI fixture probe correctly emitted `started` but did not
   emit a first frame with the empty `PreviewMainWindow.initUI` fixture on this
   macOS host; the release-level first-frame claim remains open.
+- 2026-07-29: the SDK gained an optional `aggregateCompatibilityCheck` japicmp
+  task. Comparing the current aggregate JAR with a clean JAR built from the
+  previous SDK checkpoint `a020512e4` passed with no binary-incompatible
+  changes; the report is `totalcross/TotalCrossSDK/build/reports/aggregate-compatibility.txt`.
+  A strict comparison against the older cached 7.2.0 artifact still reports
+  historical Launcher/deployer incompatibilities predating this checkpoint.
+- 2026-07-29: Maven dependency resolution from a fresh local repository, with
+  only the staged SDK repository plus Maven Central and no `mavenLocal`, first
+  exposed the missing `com.totalcross.annotations:totalcross-annotations:1.0.0`
+  staging dependency. After publishing that existing release artifact into
+  the staging repository, aggregate and preview-runtime SDK artifacts resolved;
+  tooling CLI resolution from `/tmp/totalcross-plan08b-staging` also resolved
+  all internal host/worker/protocol dependencies. The clean repository was
+  `/tmp/totalcross-clean-m2.Symu0K`.

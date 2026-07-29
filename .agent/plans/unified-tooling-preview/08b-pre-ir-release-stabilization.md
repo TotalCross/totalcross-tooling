@@ -234,8 +234,10 @@ The canonical host/worker path, build-tool adapters, VS Code command surface,
 shared deploy service, narrow Maven publications, and a local staging repository
 are implemented. The CLI now produces a real fixture PNG and accepts control-file
 resize, pointer, key, and stop commands; VS Code polls that frame and forwards
-the same events. Release acceptance remains open for aggregate compatibility,
-clean-cache staged consumption, and the complete Gradle/Maven/VS Code matrix.
+the same events. Clean-cache SDK/tooling resolution and a checkpoint-based
+aggregate compatibility gate now pass. Release acceptance remains open for the
+public-baseline compatibility decision and the complete Gradle/Maven/VS Code
+matrix.
 
 ## Revision Note
 
@@ -292,6 +294,10 @@ tests), VS Code integration suite (30 tests), SDK `compileJava`, license checks,
 and tooling-java publication to `/tmp/totalcross-plan08b-staging`. The direct
 CLI fixture produced `/tmp/totalcross-cli-frame.png` as a 320x568 PNG; a second
 control-file run accepted resize, pointer, key, and stop commands.
+The clean Maven repository `/tmp/totalcross-clean-m2.Symu0K` resolved SDK,
+preview-runtime, and tooling CLI artifacts from staged repositories without
+`mavenLocal`; the required annotations artifact was added to staging. japicmp
+passed against a clean aggregate JAR built from checkpoint `a020512e4`.
 
 ### Useful Evidence and Examples
 
@@ -303,9 +309,11 @@ repository contains `totalcross-sdk` plus `totalcross-api`,
 
 ### Limitations, Remaining Work, and Open Questions
 
-The clean Gradle/Maven/VS Code matrix, staged empty-cache consumption, aggregate
-binary comparison, and installed-VSIX acceptance remain open. No IR merge, tag,
-push, or public publication was performed.
+The clean Gradle/Maven/VS Code matrix and installed-VSIX acceptance remain open.
+The older cached 7.2.0 comparison still reports historical Launcher/deployer
+incompatibilities and requires a release-owner compatibility decision; the
+preceding checkpoint comparison is green. No IR merge, tag, push, or public
+publication was performed.
 
 ### Possible Article Angles
 
