@@ -11,6 +11,9 @@ import com.totalcross.tooling.deploy.DeployRequest;
 import com.totalcross.tooling.deploy.DeployResult;
 import com.totalcross.tooling.deploy.DeployToolchain;
 import com.totalcross.tooling.deploy.LegacyDeployService;
+import com.totalcross.tooling.environment.*;
+import com.totalcross.tooling.jdk.*;
+import com.totalcross.tooling.platform.HostPlatform;
 import com.totalcross.tooling.store.ExternalToolResolver;
 import java.io.File;
 import java.io.IOException;
@@ -104,15 +107,26 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
         ResolvedArtifact sdkArtifact = findSdkArtifact();
         String sdkVersion = getSdkVersion().getOrElse(sdkArtifact.getModuleVersion().getId().getVersion());
         int targetVersion = JavaTargetCompatibility.targetVersion(getApplicationJar().get().getAsFile().toPath());
-        boolean useRetrolambda = JavaTargetCompatibility.requiresRetrolambda(sdkVersion, targetVersion);
         Path output = getOutputDirectory().get().getAsFile().toPath();
         Files.createDirectories(output);
+        File configuredSdkHome = optionalDirectory(getTotalcrossHome());
         File sdkHome = new SdkResolver(getProject().getGradle().getGradleUserHomeDir().toPath(), new ArchiveDownloader())
-                .resolve(sdkVersion, optionalDirectory(getTotalcrossHome()));
+                .resolve(sdkVersion, configuredSdkHome);
         boolean useJdk11 = JavaTargetCompatibility.usesJdk11(sdkVersion);
-        File jdkHome = useJdk11
-                ? new JdkResolver(getProject().getGradle().getGradleUserHomeDir().toPath(), new ArchiveDownloader(), "11").resolve(null)
-                : new JdkResolver(getProject().getGradle().getGradleUserHomeDir().toPath(), new ArchiveDownloader()).resolve(optionalDirectory(getJdkPath()));
+        File jdkHome = new JdkResolver(getProject().getGradle().getGradleUserHomeDir().toPath(), new ArchiveDownloader(),
+                useJdk11 ? "11" : "17").resolve(optionalDirectory(getJdkPath()));
+        ToolingEnvironment environment;
+        try {
+            environment = new ToolingEnvironmentResolver(new JdkSelector(new JdkCapabilityProbe(HostPlatform.detect())))
+                    .resolve(new ToolingEnvironmentRequest(sdkVersion, sdkHome.toPath(),
+                            configuredSdkHome == null ? "Gradle shared SDK cache" : "totalcrossHome", targetVersion,
+                            new JdkRequest(useJdk11 ? "11" : "17", jdkHome.toPath(), null), List.of()));
+        } catch (JdkSelectionException | IllegalArgumentException failure) {
+            throw new GradleException("TotalCross tooling environment is not usable: " + failure.getMessage(), failure);
+        }
+        sdkHome = environment.sdkHome().toFile();
+        jdkHome = environment.toolingJdk().home().toFile();
+        boolean useRetrolambda = environment.requiresRetrolambda();
         File java = new File(jdkHome, "bin" + File.separator + (isWindows() ? "java.exe" : "java"));
 
         String applicationName = getApplicationName().get();
