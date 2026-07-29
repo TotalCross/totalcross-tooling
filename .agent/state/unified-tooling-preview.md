@@ -100,8 +100,10 @@ the SDK compiled, and official Protobuf/Bundletool version probes passed. Logs:
 `/tmp/tooling-plan08-license.log`.
 Plan 08B validation: tooling-java, Gradle, focused Maven/package, live-preview-
 server, SDK compile, VS Code, license checks, and local staging passed. The
-standalone CLI fixture did not produce a first frame on this macOS host; VS Code
-worker input/webview forwarding and the full end-to-end matrix remain open.
+standalone CLI now produces a real fixture PNG (320x568) and the control-file
+probe passed resize, pointer, key, and stop commands. VS Code now polls the
+coordinator-owned frame and forwards those events; aggregate compatibility,
+clean-cache staged consumption, and the full end-to-end matrix remain open.
 
 ## Deferrals and exclusions
 

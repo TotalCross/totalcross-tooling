@@ -84,9 +84,12 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
             .map(java.io.File::getAbsolutePath).collect(Collectors.joining(java.io.File.pathSeparator));
         String java = Paths.get(System.getProperty("java.home"), "bin",
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
+        Path frame = session.resolveSibling("preview-frame.png");
+        Path control = session.resolveSibling("preview-control.txt");
         Process process = new ProcessBuilder(java, "-cp", ToolingCli.runtimeClasspath(),
             ToolingCli.class.getName(), "preview", "--project", projectDirectory().getAbsolutePath(),
-            "--main", resolvedApplicationClass, "--classpath", value)
+            "--main", resolvedApplicationClass, "--classpath", value, "--frame-file", frame.toString(),
+            "--control-file", control.toString())
             .directory(projectDirectory()).redirectErrorStream(true).start();
         String firstEvent = process.inputReader().readLine();
         if (firstEvent == null) throw new IOException("TotalCross preview coordinator exited before starting");

@@ -27,7 +27,7 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
       runtime = start.invoke(null, mainClass, consumer, applicationLoader, args);
     } catch (ReflectiveOperationException e) {
       Throwable cause = e instanceof InvocationTargetException && e.getCause() != null ? e.getCause() : e;
-      throw new IllegalStateException("unable to start TotalCross preview runtime: "
+      throw new IllegalStateException("unable to start TotalCross preview runtime (SDK preview contract requires LauncherRuntime.startPreviewFrames and PreviewFrameConsumer): "
           + (cause.getMessage() == null ? cause.getClass().getName() : cause.getMessage()), cause);
     }
   }

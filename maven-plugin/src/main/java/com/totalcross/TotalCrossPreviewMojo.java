@@ -81,9 +81,12 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         String java = Paths.get(System.getProperty("java.home"), "bin",
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
         String cli = ToolingCli.runtimeClasspath();
+        Path frame = descriptor.resolveSibling("preview-frame.png");
+        Path control = descriptor.resolveSibling("preview-control.txt");
         Process process = new ProcessBuilder(java, "-cp", cli, ToolingCli.class.getName(), "preview",
             "--project", project.toString(), "--main", applicationClass, "--classpath",
-            String.join(File.pathSeparator, classpath)).directory(project.toFile()).redirectErrorStream(true).start();
+            String.join(File.pathSeparator, classpath), "--frame-file", frame.toString(), "--control-file", control.toString())
+            .directory(project.toFile()).redirectErrorStream(true).start();
         String event = process.inputReader().readLine();
         if (event == null) throw new IOException("TotalCross preview coordinator exited before starting");
         Files.writeString(descriptor, Files.readString(descriptor).replaceFirst("}$",

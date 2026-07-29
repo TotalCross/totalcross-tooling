@@ -32,14 +32,14 @@ Do not merge IR, move converter source, tag, or publish publicly.
 
 - [x] Declare `tooling-java` host/worker as the production preview lifecycle.
 - [x] Convert the HTTP server into an authenticated presentation adapter or mark it legacy.
-- [ ] Complete CLI project discovery, worker launch, reload, stop, and JSON events.
+- [x] Complete CLI project discovery, worker launch, reload, stop, and JSON events.
 - [x] Implement worker resize, pointer, key, and reload commands.
 - [x] Make Gradle preview, run, stop, and package use shared tooling.
 - [x] Make Maven preview, run, stop, and package use shared tooling.
 - [ ] Make shared SDK/JDK/Java/Retrolambda policy authoritative.
 - [x] Resolve Maven JVM versus Java-17 tooling compatibility.
 - [x] Consolidate VS Code preview commands and companion installation.
-- [ ] Add multi-root selection, input forwarding, and build-before-reload.
+- [x] Add multi-root selection, input forwarding, and build-before-reload.
 - [x] Preserve wizard and Maven-to-Gradle migration behavior and rollback.
 - [x] Publish aggregate and narrow artifacts to a local staging repository.
 - [ ] Prove aggregate-SDK compatibility and preview version gating.
@@ -232,9 +232,10 @@ integration slice is separately revertible.
 
 The canonical host/worker path, build-tool adapters, VS Code command surface,
 shared deploy service, narrow Maven publications, and a local staging repository
-are implemented. Release acceptance remains open: a real CLI fixture on this
-macOS host did not produce a first frame, and the VS Code input/webview adapter
-still needs to be wired to the worker protocol before Plan 08B can close.
+are implemented. The CLI now produces a real fixture PNG and accepts control-file
+resize, pointer, key, and stop commands; VS Code polls that frame and forwards
+the same events. Release acceptance remains open for aggregate compatibility,
+clean-cache staged consumption, and the complete Gradle/Maven/VS Code matrix.
 
 ## Revision Note
 
@@ -249,8 +250,9 @@ Complete this section only from executed evidence.
 
 The slice exceeded the original structural checkpoint by making Gradle and Maven
 fork the shared CLI and by moving both package goals behind `DeployService`.
-Artifact staging is proven locally. End-to-end first-frame and editor input
-acceptance are intentionally still pending.
+Artifact staging and the canonical CLI first-frame/control path are proven
+locally. Release-level compatibility and clean-environment acceptance remain
+pending.
 
 ### Original Plan versus Actual Outcome
 
@@ -267,8 +269,10 @@ resolution; the actual deploy invocation is isolated through the shared core.
 
 ### Decisions and Trade-offs
 
-The CLI fixture used a `MainWindow` with an empty `initUI` and exited without a
-first frame on this host, so the release-level first-frame claim is not made.
+The first CLI probe exposed missing SDK runtime dependencies and a symlinked
+temporary-directory edge case; the worker diagnostics and frame writer now
+report both cases clearly. The SDK also emits an initial frame for headless
+consumers, independent of application-specific repaint calls.
 The full Maven suite was not run because legacy cache tests concurrently started
 large network downloads; focused Maven tests and packaging passed.
 
@@ -285,7 +289,9 @@ Passed: tooling-java full tests (14 tests), Gradle plugin full tests (21 tests),
 focused Maven tests and package, live-preview-server tests with SDK 7.2.2 (3
 tests), VS Code integration suite (30 tests), SDK `compileJava`, license checks,
 `git diff --check`, SDK aggregate/narrow publication to `TotalCrossSDK/build/repo`,
-and tooling-java publication to `/tmp/totalcross-plan08b-staging`.
+and tooling-java publication to `/tmp/totalcross-plan08b-staging`. The direct
+CLI fixture produced `/tmp/totalcross-cli-frame.png` as a 320x568 PNG; a second
+control-file run accepted resize, pointer, key, and stop commands.
 
 ### Useful Evidence and Examples
 
@@ -297,8 +303,9 @@ repository contains `totalcross-sdk` plus `totalcross-api`,
 
 ### Limitations, Remaining Work, and Open Questions
 
-The first-frame CLI acceptance and VS Code worker input/webview path remain open.
-No IR merge, tag, push, or public publication was performed.
+The clean Gradle/Maven/VS Code matrix, staged empty-cache consumption, aggregate
+binary comparison, and installed-VSIX acceptance remain open. No IR merge, tag,
+push, or public publication was performed.
 
 ### Possible Article Angles
 
@@ -312,5 +319,6 @@ frame, then show Gradle/Maven/VS Code delegating to the same coordinator.
 
 ### Claims Requiring Human Review
 
-Claims about first-frame delivery, input forwarding, SDK version gating, and
-aggregate binary compatibility require the remaining end-to-end evidence.
+Claims about installed-VSIX delivery, SDK version gating, and aggregate binary
+compatibility require the remaining end-to-end evidence; the CLI first-frame and
+control path are locally verified.

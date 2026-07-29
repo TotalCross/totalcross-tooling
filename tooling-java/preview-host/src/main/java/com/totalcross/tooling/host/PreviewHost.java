@@ -4,6 +4,7 @@ package com.totalcross.tooling.host;
 
 import com.totalcross.tooling.protocol.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public final class PreviewHost implements AutoCloseable {
   private final PreviewHostSession session;
   private Process worker;
+  private final StringBuilder workerOutput = new StringBuilder();
 
   public PreviewHost() throws IOException { session = new PreviewHostSession(); }
   public PreviewHostSession session() { return session; }
@@ -25,6 +27,9 @@ public final class PreviewHost implements AutoCloseable {
     args.add(session.token());
     if (applicationClasspath != null && !applicationClasspath.isBlank()) args.add(applicationClasspath);
     worker = new ProcessBuilder(args).redirectErrorStream(true).start();
+    Thread outputReader = new Thread(() -> drain(worker.getInputStream()), "totalcross-preview-worker-output");
+    outputReader.setDaemon(true);
+    outputReader.start();
     try {
       session.accept(15_000);
     } catch (IOException failure) {
@@ -58,6 +63,14 @@ public final class PreviewHost implements AutoCloseable {
     session.send(MessageType.KEY, 4, (keyCode + "," + pressed + "," + modifiers).getBytes(StandardCharsets.UTF_8));
   }
 
+  /** Returns worker diagnostics when the child closes before the protocol reports an error. */
+  public String workerDiagnostics() {
+    if (worker != null && !worker.isAlive()) {
+      try { worker.waitFor(); } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); }
+    }
+    synchronized (workerOutput) { return workerOutput.toString().trim(); }
+  }
+
   public void prepareReload() throws IOException { session.send(MessageType.RELOAD, 5, new byte[0]); }
 
   public void reload(String mainClass, String... args) throws IOException {
@@ -69,5 +82,17 @@ public final class PreviewHost implements AutoCloseable {
   @Override public void close() throws IOException {
     if (worker != null && worker.isAlive()) { session.stop(); worker.destroy(); }
     session.close();
+  }
+
+  private void drain(InputStream stream) {
+    try (stream) {
+      byte[] buffer = new byte[1024];
+      int count;
+      while ((count = stream.read(buffer)) >= 0) {
+        synchronized (workerOutput) { workerOutput.append(new String(buffer, 0, count, StandardCharsets.UTF_8)); }
+      }
+    } catch (IOException ignored) {
+      // The worker may be terminated while its diagnostics stream is being drained.
+    }
   }
 }

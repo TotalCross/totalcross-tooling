@@ -45,15 +45,14 @@ export class PreviewClient {
     }
 
     public async reload(): Promise<void> {
+        await this.run(this.stopCommand());
         await this.run(buildCommand(this.layout, this.platform));
         await this.start();
         this.emit({kind: 'reload-ready', message: this.layout.root});
     }
 
     public stop(): void {
-        const command = this.layout.buildTool === 'maven'
-            ? {executable: this.platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview-stop']}
-            : {executable: this.platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreviewStop', '--console=plain']};
+        const command = this.stopCommand();
         void this.run(command).catch(() => undefined);
         if (this.process) this.process.kill();
         this.process = undefined;
@@ -78,6 +77,12 @@ export class PreviewClient {
             child.on('error', reject);
             child.on('close', (code: number | null) => code === 0 ? resolve() : reject(new Error(output || `build exited with ${code}`)));
         });
+    }
+
+    private stopCommand(): PreviewCommand {
+        return this.layout.buildTool === 'maven'
+            ? {executable: this.platform === 'win32' ? 'mvn.cmd' : 'mvn', args: ['totalcross:preview-stop']}
+            : {executable: this.platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossPreviewStop', '--console=plain']};
     }
 
     private emit(event: PreviewEvent): void {
