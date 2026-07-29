@@ -67,3 +67,8 @@ reached the text-file size limit. Full command output remains outside the repo.
   task and its implementation. `totalcrossPackage` remains the sole public
   Gradle packaging path, matching Maven's `totalcross:package`; the Gradle
   functional suite verifies that the removed task is no longer listed.
+- 2026-07-29: `preview` and `run` now share process promotion but use distinct
+  presentation modes. The CLI opens `AwtPreviewWindow` only for `run`; Gradle
+  and Maven select the corresponding CLI command for their run tasks/goals.
+  The duplicate Gradle run wrapper was removed. Tooling CLI, Gradle plugin, and
+  Maven plugin tests passed.

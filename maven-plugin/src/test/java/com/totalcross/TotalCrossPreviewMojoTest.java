@@ -28,11 +28,13 @@ class TotalCrossPreviewMojoTest {
     @Test
     void previewUsesTheSelectedJdkForTheCliAndWorker() throws Exception {
         Path selectedJdk = Path.of("/tmp/selected-jdk");
-        List<String> command = TotalCrossPreviewMojo.previewCommand(selectedJdk,
+        List<String> command = TotalCrossPreviewMojo.previewCommand(selectedJdk, "preview",
                 Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt"));
 
         String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
         assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
+        assertEquals("preview", command.get(4));
+        assertEquals("run", new TotalCrossRunMojo().commandName());
         assertEquals("/tmp/project-model.json", command.get(command.indexOf("--model") + 1));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }

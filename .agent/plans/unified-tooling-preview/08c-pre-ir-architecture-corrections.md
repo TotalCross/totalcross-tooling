@@ -52,7 +52,7 @@ converter source, create tags, or publish publicly.
 - [x] Route input and stop only to the promoted worker.
 - [x] Close the previous worker and descendants only after promotion.
 - [x] Prove repeated reload leaves no old worker processes.
-- [ ] Define distinct preview and run presentation modes.
+- [x] Define distinct preview and run presentation modes.
 
 ### Shared resolution and immutable JDK catalog
 

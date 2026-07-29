@@ -6,4 +6,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 @Mojo(name = "run", requiresDependencyResolution = ResolutionScope.RUNTIME)
-public final class TotalCrossRunMojo extends TotalCrossPreviewMojo { }
+public final class TotalCrossRunMojo extends TotalCrossPreviewMojo {
+    @Override protected String commandName() { return "run"; }
+}

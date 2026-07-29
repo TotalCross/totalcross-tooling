@@ -25,6 +25,7 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
     @Optional @InputDirectory @PathSensitive(PathSensitivity.ABSOLUTE)
     public abstract org.gradle.api.file.DirectoryProperty getJdkPath();
     private final Property<String> applicationClass;
+    private final Property<String> presentationMode;
 
     public TotalCrossPreviewTask() {
         getSessionFile().convention(getProject().getLayout().getBuildDirectory().file("totalcross/preview-session.json"));
@@ -32,8 +33,11 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         getOutputs().upToDateWhen(task -> false);
         applicationClass = getProject().getObjects().property(String.class);
         applicationClass.convention(getProject().getName());
+        presentationMode = getProject().getObjects().property(String.class);
+        presentationMode.convention("preview");
     }
     @Input public Property<String> getApplicationClass() { return applicationClass; }
+    @Input public Property<String> getPresentationMode() { return presentationMode; }
 
     @TaskAction public void startPreview() throws Exception {
         Path project = getProject().getProjectDir().toPath().toAbsolutePath().normalize();
@@ -91,7 +95,7 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         Path control = session.resolveSibling("preview-control.txt");
         Path log = session.resolveSibling("preview.log");
         Files.deleteIfExists(frame);
-        Process process = new ProcessBuilder(previewCommand(toolingJdk.home(), frame, control))
+        Process process = new ProcessBuilder(previewCommand(toolingJdk.home(), presentationMode.get(), frame, control))
             .directory(projectDirectory()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         if (!awaitFirstFrame(process, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(session, Files.readString(session).replaceFirst("}$",
@@ -99,10 +103,10 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         getLogger().lifecycle("TotalCross preview coordinator started with PID {} after first frame", process.pid());
     }
 
-    static List<String> previewCommand(Path toolingJdk, Path frame, Path control) throws Exception {
+    static List<String> previewCommand(Path toolingJdk, String mode, Path frame, Path control) throws Exception {
         String java = toolingJdk.resolve("bin").resolve(
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
-        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), "preview",
+        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
             "--model", frame.resolveSibling("project-model.json").toString(), "--jdk-path", toolingJdk.toString(),
             "--frame-file", frame.toString(), "--control-file", control.toString());
     }

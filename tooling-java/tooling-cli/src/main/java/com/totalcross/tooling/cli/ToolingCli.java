@@ -4,6 +4,7 @@
 package com.totalcross.tooling.cli;
 
 import com.totalcross.tooling.host.*;
+import com.totalcross.tooling.host.AwtPreviewWindow;
 import com.totalcross.tooling.build.ProjectModel;
 import com.totalcross.tooling.build.ProjectModelCodec;
 import com.totalcross.tooling.jdk.JdkCatalogResolver;
@@ -13,6 +14,7 @@ import com.totalcross.tooling.worker.PreviewWorkerMain;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
+import java.awt.GraphicsEnvironment;
 import javax.imageio.ImageIO;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -44,6 +46,7 @@ public final class ToolingCli {
     if (args.length == 0 || "--help".equals(args[0])) { usage(); return; }
     if ("stop".equals(args[0])) { stop(args); return; }
     if (!List.of("preview", "run").contains(args[0])) throw new IllegalArgumentException("unknown command: " + args[0]);
+    boolean runWindow = "run".equals(args[0]);
     Path session = optionPath(args, "--session", null);
     Path modelFile = optionPath(args, "--model", session == null ? null : session.resolveSibling("project-model.json"));
     ProjectModel model = readProjectModel(modelFile);
@@ -73,6 +76,7 @@ public final class ToolingCli {
       if (!coordinator.reload(() -> candidate(worker, classpath, initialMainClass))) {
         throw new IllegalStateException("preview worker did not start: " + coordinator.lastFailure());
       }
+      AwtPreviewWindow window = runWindow ? runWindow(coordinator, mainClass) : null;
       try (ControlLoop controls = controlFile == null ? null : new ControlLoop(coordinator, controlFile,
           (nextMainClass, reloadArgs) -> coordinator.reload(() -> candidate(worker, classpath, nextMainClass, reloadArgs)),
           error -> emit("error", outputProject, outputMainClass, error))) {
@@ -84,6 +88,7 @@ public final class ToolingCli {
         if (next != null) {
           frame = true;
           if (frameFile != null) writeFrame(frameFile, next);
+          if (window != null) window.present(next);
           emit("frame", project, mainClass, null, frameFile == null ? null : frameFile.toString());
           if (once) break;
         }
@@ -94,9 +99,20 @@ public final class ToolingCli {
         emit("error", project, mainClass, detail);
         throw new IllegalStateException(detail);
       }
+      if (window != null) window.close();
       emit("stopped", project, mainClass, null);
       }
     }
+  }
+
+  static AwtPreviewWindow runWindow(PreviewReloadCoordinator coordinator, String mainClass) {
+    if (GraphicsEnvironment.isHeadless()) throw new IllegalStateException("TotalCross run requires a graphical desktop");
+    AwtPreviewWindow window = new AwtPreviewWindow("TotalCross Run — " + mainClass, new AwtPreviewWindow.InputListener() {
+      public void pointer(int x, int y, int button, boolean pressed) { try { coordinator.pointer(x, y, button, pressed); } catch (Exception ignored) { } }
+      public void key(int keyCode, boolean pressed, int modifiers) { try { coordinator.key(keyCode, pressed, modifiers); } catch (Exception ignored) { } }
+    });
+    window.showWindow();
+    return window;
   }
 
   private static ProcessWorkerCandidate candidate(List<String> worker, String classpath, String mainClass, String... args)

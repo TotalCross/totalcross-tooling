@@ -69,7 +69,12 @@ public class TotalCrossPlugin implements Plugin<Project> {
             task.getApplicationClass().convention(extension.getApplicationName());
             task.getJdkPath().convention(extension.getJdkPath());
         });
-        project.getTasks().register("totalcrossRun", TotalCrossRunTask.class, task -> task.dependsOn(previewTask));
+        project.getTasks().register("totalcrossRun", TotalCrossPreviewTask.class, task -> {
+            task.dependsOn(modelTask, "classes");
+            task.getApplicationClass().convention(extension.getApplicationName());
+            task.getJdkPath().convention(extension.getJdkPath());
+            task.getPresentationMode().set("run");
+        });
         project.getTasks().register("totalcrossPreviewStop", TotalCrossPreviewStopTask.class);
     }
 

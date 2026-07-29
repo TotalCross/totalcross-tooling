@@ -134,7 +134,7 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         Path control = descriptor.resolveSibling("preview-control.txt");
         Path log = descriptor.resolveSibling("preview.log");
         Files.deleteIfExists(frame);
-        List<String> command = previewCommand(toolingJdk.home(), frame, control);
+        List<String> command = previewCommand(toolingJdk.home(), commandName(), frame, control);
         long pid = launchCoordinator(command, project, log);
         if (!awaitFirstFrame(pid, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(descriptor, Files.readString(descriptor).replaceFirst("}$",
@@ -142,10 +142,12 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         getLog().info("TotalCross preview coordinator started with PID " + pid + " after first frame");
     }
 
-    static List<String> previewCommand(Path toolingJdk, Path frame, Path control) throws Exception {
+    protected String commandName() { return "preview"; }
+
+    static List<String> previewCommand(Path toolingJdk, String mode, Path frame, Path control) throws Exception {
         String java = toolingJdk.resolve("bin").resolve(
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
-        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), "preview",
+        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
             "--model", frame.resolveSibling("project-model.json").toString(), "--jdk-path", toolingJdk.toString(),
             "--frame-file", frame.toString(), "--control-file", control.toString());
     }
