@@ -176,3 +176,7 @@ program. Full command output belongs in `/tmp` or build artifacts.
   the real smoke still ended with `Connection reset` after a long external
   operation, so release-grade typed packaging remains open. Log:
   `/tmp/totalcross-gradle-typed-deploy-realsdk-fixed.log`.
+- 2026-07-29: tooling commit `d0c6e1e` preserves captured legacy deploy output
+  when the reflective invocation fails, making future packaging failures
+  diagnosable without changing the typed result contract. The tooling-core
+  deploy test passed in `/tmp/tooling-core-deploy-diagnostics.log`.

@@ -129,6 +129,8 @@ The legacy deploy adapter was hardened in tooling `e8c79a4` to isolate
 non-daemon deploy threads and honor the requested SDK home. Core/tooling and
 plugin tests passed; a real SDK packaging smoke remains open after an external
 `Connection reset`.
+Failure output is now retained by tooling `d0c6e1e`; tooling-core validation
+passed, but the real packaging smoke has not been rerun to completion.
 
 ## Deferrals and exclusions
 
