@@ -118,8 +118,9 @@ Gradle and Maven matrices now preserve the active worker through failed compile,
 reload repaired classes, process controls/resources, and stop cleanly. Typed
 deploy packaging, installed-VSIX activation, and public-baseline review remain
 open.
-The local VSIX was packaged/installed and the existing VS Code suite passed 30
-tests, but installed-VSIX activation remains an explicit release gate.
+The local VSIX was packaged/installed and the installed extension passed all 30
+integration tests under the local VS Code executable; manual installed-project
+E2E remains an explicit release gate.
 An isolated published-Gradle-plugin packaging smoke resolved from staging and
 reached `totalcrossPackage`, but was stopped because its synthetic SDK home did
 not contain the complete distribution required by real `tc.Deploy`; the typed

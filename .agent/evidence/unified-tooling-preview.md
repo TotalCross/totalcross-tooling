@@ -192,3 +192,8 @@ program. Full command output belongs in `/tmp` or build artifacts.
   classes, and removed public nested classes. The report is
   `totalcross/TotalCrossSDK/build/reports/aggregate-compatibility.txt`; this is
   a release-baseline decision, not a preview-gating failure.
+- 2026-07-29: the installed VSIX was loaded by the local VS Code executable
+  (without downloading a test Electron) and passed all 30 integration tests,
+  including command activation, preview client, project generation, migration,
+  and rollback behavior. Output is `/tmp/vscode-installed-vsix-local-test.log`;
+  the manual installed-project E2E remains open.

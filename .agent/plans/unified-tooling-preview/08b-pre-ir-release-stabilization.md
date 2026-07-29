@@ -327,7 +327,8 @@ repository contains `totalcross-sdk` plus `totalcross-api`,
 
 ### Limitations, Remaining Work, and Open Questions
 
-The clean Gradle/Maven/VS Code matrix and installed-VSIX acceptance remain open.
+The clean Gradle/Maven/VS Code matrix and the manual installed-project E2E
+remain open; installed-VSIX activation and its 30-test integration suite pass.
 The published Gradle plugin also resolved from isolated staging and reached
 `totalcrossPackage`, but its real deploy smoke used a synthetic SDK home and was
 stopped because that home lacked the complete distribution required by
