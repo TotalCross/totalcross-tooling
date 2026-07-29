@@ -5,100 +5,112 @@ SPDX-License-Identifier: Apache-2.0
 # Coordinate the TotalCross tooling and live-preview program
 
 This is the master ExecPlan for a sequential multi-repository program. It follows
-the rules in `TotalCross/totalcross-depot-tools/.agent/PLANS.md`. After bootstrap,
-it is maintained under
-`totalcross-tooling/.agent/plans/unified-tooling-preview/00-master-sequence.md`.
-The detailed implementation is intentionally split into smaller ExecPlans so a
-lower-capacity model can execute one bounded context at a time.
+`TotalCross/totalcross-depot-tools/.agent/PLANS.md`. Detailed work is split into
+bounded plans so a lower-capacity model can execute one context at a time.
 
 ## Purpose / Big Picture
 
-After this program, a developer can install and use TotalCross tooling without
-depending on tooling classes bundled inside the SDK. A standalone Java live
-preview can start from the command line, Gradle, Maven, or VS Code; source changes
-can rebuild and replace an isolated preview worker; the VS Code extension still
-owns its Gradle project wizard and Maven-to-Gradle conversion workflow; SDKs,
-JDKs, and external tools are installed side by side in operating-system-native
-locations.
+Deliver a publishable TotalCross release before merging
+`feature/422-create-ir-for-jniaot`. The pre-IR release keeps converter and native
+IR ownership unchanged, preserves `totalcross-sdk.jar`, `totalcross.Launcher`,
+and `tc.Deploy`, and ships one production preview lifecycle through CLI, Gradle,
+Maven, and VS Code.
 
-The program first creates a reproducible workspace from an otherwise empty
-folder. It then separates artifacts before moving source, so the unfinished
-`feature/422-create-ir-for-jniaot` work is not disrupted. Physical converter and
-deployer ownership is reconsidered only after that branch has been merged and
-its converter-to-native fixtures have been revalidated.
+After the pre-IR release is tagged and verified, development may continue with
+the IR merge, source-ownership decision, and final SDK slimming.
 
 ## Working Set and Resume Protocol
 
-Execute the numbered plans in order. The normal first read after bootstrap is:
+Read first:
 
-    totalcross-tooling/.agent/state/unified-tooling-preview.md
+    .agent/state/unified-tooling-preview.md
 
-Read this master plan only to select the next numbered plan or reconcile a
-milestone boundary. Read the active numbered plan in full, then inspect only the
-paths it names. Search
-`.agent/evidence/unified-tooling-preview.md` only when prior command evidence is
-needed. Completed detail moves to
-`.agent/archive/unified-tooling-preview-history.md`. The final factual handoff is
-`.agent/reports/unified-tooling-preview-editorial.md`.
+Read this master only to choose the next plan. Then read the active plan in full.
+Search evidence only when a prior command result is needed.
 
-The repositories are sibling directories:
+Repositories:
 
     <workspace>/totalcross
     <workspace>/totalcross-tooling
 
-The TotalCross branch is
-`feature/392-feature-request-live-ui-preview-for-ides`. The tooling repository is
-cloned from remote `main`, then uses
-`feature/unify-tooling-and-preview`. Local commits may be created by the plans.
-Pushes, pull requests, tags, releases, and destructive history operations require
-explicit user instruction.
+Branches:
+
+    totalcross:
+      feature/392-feature-request-live-ui-preview-for-ides
+
+    totalcross-tooling:
+      feature/unify-tooling-and-preview
+
+The pre-IR release must be cut from dedicated release branches created only after
+Plan 08B acceptance. Pushes, tags, publication, and releases require explicit
+user approval at the irreversible step.
 
 ## Progress
 
-- [x] Execute Plan 01 and create the canonical workspace and plan set.
-- [x] Execute Plan 02 and deliver the shared store and vendor-neutral JDK policy.
-- [x] Execute Plan 03 and establish artifact and deploy boundaries without moving converter sources.
-- [x] Execute Plan 04 and decompose the desktop launcher before extending the preview contract.
-- [x] Execute Plan 05 and deliver the standalone preview host, worker, protocol, and CLI.
-- [x] Execute Plan 06 and integrate Gradle and Maven build flows.
-- [x] Execute Plan 07 and preserve and extend the VS Code workflows.
-- [ ] Execute Plan 08 and complete hot reload plus reusable external-tool storage.
-- [ ] Execute Plan 09 only after the IR merge gate is satisfied.
-- [ ] Execute Plan 10 and finish SDK slimming, compatibility, and final validation.
-- [ ] Reconcile the master outcomes and final editorial report.
+- [x] Plan 01: bootstrap repositories, plans, state, and workspace.
+- [x] Plan 02: shared store and vendor-neutral JDK policy.
+- [x] Plan 03: logical artifacts and typed deploy boundary.
+- [x] Plan 04: launcher decomposition and runtime preview boundary.
+- [x] Plan 05: protocol, host, worker, and CLI structural checkpoint.
+- [x] Plan 06: Gradle and Maven structural integration checkpoint.
+- [x] Plan 07: VS Code workflow preservation checkpoint.
+- [ ] Plan 08: complete shared tools and Android deploy migration.
+- [ ] Plan 08B: stabilize one production preview and plugin/editor flow.
+- [ ] Plan 08R: stage, publish, and verify the pre-IR release.
+- [ ] Plan 09: merge IR and decide physical source ownership.
+- [ ] Plan 10: post-IR slimming and final program closure.
+- [ ] Reconcile state, evidence, archive, and editorial report.
 
-## Current Architecture and Scope
+Plans 05–07 being checked means their modules and focused tests exist. Their
+release-level end-to-end acceptance is intentionally closed by Plan 08B.
 
-The `totalcross` repository contains the Java SDK, the native VM, the current
-desktop launcher, converter, deployer, platform packaging, and the branch-392
-preview work. The `totalcross-tooling` repository contains the Gradle plugin,
-Maven plugin, VS Code extension, and related shared tooling work.
+## Pre-IR release scope
 
-The current preview contract is not process-neutral because it exposes AWT
-`BufferedImage` and TotalCross UI types. The current plugins duplicate SDK/JDK
-selection and Java compatibility logic. Android deployment downloads tools such
-as `protoc` and `bundletool` beneath the SDK. The VS Code extension already has
-valuable user-facing project creation and migration behavior that must remain.
+The release includes:
 
-This program does not move native TCIR, JIT, or AOT implementation out of the
-VM. It does not change TCZ format as a prerequisite. It does not make preview
-worker isolation optional for production use. It does not remove compatibility
-entry points `totalcross.Launcher` or `tc.Deploy` until a later major-version
-decision.
+    aggregate totalcross-sdk.jar
+    narrow SDK artifacts published in parallel when ready
+    totalcross.Launcher compatibility facade
+    tc.Deploy compatibility facade
+    shared SDK/JDK/tool store
+    vendor-neutral tooling JDK selection
+    typed deploy as the plugin execution path
+    authenticated preview protocol
+    persistent host and disposable worker
+    standalone preview/run CLI
+    Gradle preview, run, stop, and package
+    Maven preview, run, stop, and package
+    VS Code Gradle project wizard
+    VS Code Maven-to-Gradle conversion with rollback
+    one VS Code preview command set
+    automatic companion discovery or installation
+
+The release excludes:
+
+    IR branch merge
+    TCIR, JIT, or AOT relocation
+    TCZ format changes
+    physical converter source movement
+    converter fixture ownership changes
+    removal of totalcross-sdk.jar
+    removal of totalcross.Launcher or tc.Deploy
+    breaking Launcher API changes
+    aggressive SDK slimming not proven compatible
 
 
 ## Cross-plan safety and size policy
 
-Run only one plan in this set at a time. Preserve unrelated local work. Never use
-`git reset --hard`, `git clean -fd`, force-push, history rewriting, tag deletion,
-or repository archival unless the user explicitly requests that exact operation.
+Run one plan at a time. Preserve unrelated work. Never use `git reset --hard`,
+`git clean -fd`, force-push, history rewriting, tag deletion, or repository
+archival unless the user explicitly requests that exact operation.
 
 Every created or modified text file must remain at or below 20 KiB and at or
-below approximately 600 lines. Check the staged diff before every commit with
-the policy script created by Plan 01. If an existing non-protected file already
-exceeds either limit, split it by responsibility before making the functional
-change. Do not split a protected IR-related file merely to satisfy this rule.
-The protected paths are:
+below approximately 600 lines. Run the staged size-policy checker before every
+commit. If an existing non-protected file exceeds either limit, split it by
+responsibility before the functional change. Do not split a protected IR-related
+file merely to satisfy this rule.
+
+Protected paths:
 
     TotalCrossSDK/src/main/java/tc/tools/converter/**
     TotalCrossSDK/src/test/java/tc/tools/converter/**
@@ -108,177 +120,103 @@ The protected paths are:
     TotalCrossVM/src/tests/ir/**
     docs/architecture/bytecode/**
 
-The exception follows those logical files during the first history-preserving
-move after the IR merge. Do not refactor them for size as part of this program.
 Generated files, third-party code, caches, and build output must not be committed.
 
-Use token-efficient execution. Read the active state file first, inspect only
-the named paths for the active slice, run focused validation, store full verbose
-output in `/tmp` or build artifacts, and record only concise results and paths.
-Do not repeatedly dump large plans, logs, diffs, or generated files.
+Use token-efficient execution. Read the state file first, then the active plan.
+Inspect only named paths. Store verbose output in `/tmp` or build artifacts and
+record only concise results, commit IDs, and log paths. Do not repeatedly print
+large plans, logs, generated files, or full repository diffs.
 
 ## Plan of Work
 
-Plan 01 bootstraps both repositories, records immutable baselines, creates the
-multi-root VS Code workspace, installs the plan set in the tooling repository,
-and creates the shared state, evidence, archive, report, and file-size checker.
+Plan 08 finishes the work already active: concrete external-tool metadata,
+`protoc` and `bundletool` installation, Android deploy integration through
+`DeployToolchain`, offline reuse, and safe legacy fallback.
 
-Plan 02 creates a pure-Java shared tooling core. It implements operating-system
-native data and cache roots, immutable side-by-side SDK/JDK/tool installations,
-checksums, file locks, atomic staging, vendor-neutral JDK resolution, and real
-process capability probes. Corretto is a macOS candidate, not an assumption;
-the selected JDK must prove that ordinary subprocesses, `xattr`, and `protoc`
-can be launched.
+Plan 08B makes the `tooling-java` host/worker stack the only production preview
+lifecycle. The HTTP/Webview server becomes an adapter or is marked legacy. It
+completes the CLI, Gradle, Maven, and VS Code flows; removes public placeholders;
+makes shared JDK/SDK/Java policy authoritative; resolves Maven JVM compatibility;
+and proves compatibility with the aggregate SDK.
 
-Plan 03 creates separate SDK artifacts from the current source locations and a
-typed deploy API in tooling. It keeps the converter and deployer source in
-`totalcross`, preserves the legacy aggregate SDK JAR, and makes new consumers use
-narrow artifacts and adapters.
+Plan 08R freezes release branches, chooses non-SNAPSHOT versions, publishes to a
+staging repository, consumes the staged artifacts from empty caches, and then,
+after explicit approval, publishes SDK artifacts, tooling modules, Maven plugin,
+Gradle plugin, companion distribution, and VSIX in dependency order. It publishes
+a beta first unless prior external validation justifies an RC.
 
-Plan 04 first splits the oversized `totalcross.Launcher` by responsibility,
-because modified non-protected files must meet the size policy. It then adds a
-runtime-facing preview adapter that can copy frames and accept lifecycle/input
-commands without exposing AWT or TotalCross UI classes in the tooling protocol.
+Plan 09 starts only after Plan 08R records a successful pre-IR release. It merges
+the reviewed IR work, revalidates converter/native fixtures, and decides whether
+physical converter/deployer movement is safe.
 
-Plan 05 creates a loopback-only authenticated protocol, disposable preview
-worker, AWT host, and CLI commands. A standalone command starts an application,
-shows frames, reports diagnostics, and exits cleanly.
-
-Plan 06 makes Gradle and Maven emit the same build-session model. Gradle uses
-continuous build to recompile and notify a persistent host. Maven owns a bounded
-watch loop that invokes its compile lifecycle. Shared SDK/JDK, target-version,
-and Retrolambda policy leaves the plugin implementations.
-
-Plan 07 keeps the VS Code extension responsible for the project wizard,
-Maven-to-Gradle conversion, backup and rollback presentation, workspace opening,
-preview UI, device settings, and diagnostics. It delegates build and preview
-mechanics to the shared tooling.
-
-Plan 08 adds worker replacement, debounce, stale-session cleanup, resource
-reload, and the global versioned storage of `protoc`, `bundletool`, and similar
-tools. It proves repeated reload without retaining old application classloaders.
-
-Plan 09 detects whether `feature/422-create-ir-for-jniaot` is merged into the
-integration base. If not, it stops without altering protected files. If merged,
-it integrates the base into branch 392, revalidates TCIR and converter fixtures,
-creates a repository-preserving migration branch, and moves only the agreed
-converter/deployer ownership while keeping native TCIR/JIT/AOT in `totalcross`.
-
-Plan 10 removes obsolete aggregate dependencies and SDK-bundled tools only after
-all new consumers pass. It validates compatibility facades, installation
-migration, plugin workflows, VS Code workflows, preview behavior, packaging, and
-the final file-size policy.
-
-## Surprises & Discoveries
-
-- Observation: the remote default branch of `TotalCross/totalcross-tooling` is
-  `main`, even though an older local checkout may call its branch `master`.
-  Evidence: record `git remote show origin` during Plan 01.
-
-- Observation: branch 392 already exposes preview functionality through AWT and
-  TotalCross UI types, so extraction must preserve behavior while changing the
-  external boundary.
-  Evidence: inspect `TotalCrossSDK/src/main/java/totalcross/preview/PreviewRuntime.java`
-  in Plan 04.
-
-- Observation: the IR branch uses converter-generated native fixtures, which
-  makes a premature source move a merge and validation risk.
-  Evidence: record the exact branch diff and fixture paths during Plan 01.
-
-- Observation: the TotalCross remote default branch is `master`, not `main`.
-  Evidence: `origin/HEAD` points to `origin/master` at
-  `b7c25d7762aa326bf0c3a9bd384c173efad006da`; `origin/main` does not exist.
-
-- Observation: the live-preview integration base is the existing branch-392
-  branch, not the default branch.
-  Evidence: `origin/feature/392-feature-request-live-ui-preview-for-ides` is at
-  `21a3d17e8cde3d3d2c45afc527448ffbee22e792` and contains the live-preview work.
-
-- Observation: the IR branch is not yet an ancestor of the branch-392
-  integration base.
-  Evidence: `git merge-base --is-ancestor origin/feature/422-create-ir-for-jniaot
-  origin/feature/392-feature-request-live-ui-preview-for-ides` returned exit
-  status 1.
+Plan 10 removes only post-IR payload proven obsolete, completes cache migration,
+runs final compatibility measurements, and closes the long-running program.
 
 ## Decision Log
 
-- Decision: use one master plan and ten sequential plans.
-  Rationale: each execution remains bounded and resumable without loading the
-  whole program into context.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: cut a supported pre-IR release before branch 422 integration.
+  Rationale: preview/tooling can be stabilized independently and provide a known
+  rollback point before converter and VM changes.
+  Date/Author: 2026-07-28 / User and OpenAI.
 
-- Decision: perform artifact separation before physical source relocation.
-  Rationale: consumers can be migrated without creating avoidable conflicts with
-  the unfinished IR work.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: close release gaps in Plan 08B instead of reopening Plans 05–07.
+  Rationale: prior checkpoints and evidence remain valid while the new plan
+  explicitly distinguishes scaffolding from production acceptance.
+  Date/Author: 2026-07-28 / OpenAI.
 
-- Decision: keep the VS Code wizard and Maven-to-Gradle conversion in the
-  extension.
-  Rationale: they are user-facing workflows; shared tooling supplies mechanisms,
-  not ownership of the interaction.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: keep the aggregate SDK during the pre-IR release.
+  Rationale: existing projects must not be forced to declare narrow artifacts.
+  Date/Author: 2026-07-28 / OpenAI.
 
-- Decision: enforce 20 KiB and about 600 lines on every created or modified text
-  file, except protected IR-related files.
-  Rationale: smaller files improve maintenance and reduce agent context cost
-  without destabilizing the IR branch.
-  Date/Author: 2026-07-26 / User and OpenAI.
+- Decision: publish a beta before an RC unless equivalent external staging
+  evidence already exists.
+  Rationale: the release introduces new cross-process and multi-tool workflows.
+  Date/Author: 2026-07-28 / OpenAI.
 
 ## Validation and Acceptance
 
-Each numbered plan states focused acceptance. At every commit run `git diff
---check`, the staged file-size checker, and the smallest test that proves the
-slice. Run broad SDK, plugin, platform, or packaging builds only at milestone
-closure or when the changed contract requires them.
+The pre-IR release is accepted when a clean environment can resolve all public
+artifacts without `mavenLocal`, create or convert a project in VS Code, start
+preview from CLI/Gradle/Maven/VS Code, rebuild after a source edit, preserve the
+old worker after a failed build or candidate, promote a valid replacement after
+its first frame, stop the session, package through the typed deploy path, and
+reuse installed tools offline.
 
-The complete program is accepted when a clean workspace can create or convert a
-project in VS Code, start preview from CLI/Gradle/Maven/VS Code, rebuild after a
-source edit, replace the worker, display the new frame, package through the typed
-deploy path, and use side-by-side SDK/JDK/tool installations without relying on
-SDK-bundled tooling resources.
+An existing project depending only on `com.totalcross:totalcross-sdk` must still
+compile and pass focused `Launcher` and `tc.Deploy` smoke tests. Preview may
+require the new SDK version and must report that requirement clearly.
 
 ## Risks and Open Questions
 
-The exact source-history migration after the IR merge may reveal additional
-cross-repository fixture coupling. Plan 09 must preserve history and may retain a
-small compatibility module in `totalcross` if moving it would duplicate runtime
-contracts. The plan must record that decision rather than forcing an unsafe move.
+The current repository contains two preview paths. Plan 08B must remove lifecycle
+duplication before release. The Maven plugin currently mixes an older target with
+Java-17 tooling classes; Plan 08B must either isolate tooling in a Java-17
+subprocess or document and version a Java-17 minimum.
 
-Vendor download endpoints and archive layouts may change. The store therefore
-records concrete metadata and validates installed capabilities instead of
-trusting a vendor name or a `latest` URL.
+Narrow artifacts are not replacements for the aggregate SDK until their API
+coverage and dependency metadata are proven. Publish them as additive artifacts.
 
 ## Idempotence and Recovery
 
-Every plan begins by verifying branch, origin, working-tree scope, previous
-checkpoint, and state file. Existing directories are inspected, never
-overwritten. Partial installations use staging directories and atomic rename.
-Preview sessions use unique IDs and stale-session cleanup. A failed cross-repo
-slice is recovered by reverting only its logical commits, never by resetting
-unrelated work.
+Every plan verifies branch, origin, working-tree scope, last checkpoint, and
+state. Failed staging does not change public repositories. Release branches are
+created only after Plan 08B acceptance and receive only release fixes. The feature
+branches remain available for Plan 09.
 
 ## Outcomes & Retrospective
 
-Plan 01 completed the reproducible workspace bootstrap. The tooling repository
-now owns the eleven canonical plans, checkpoint/evidence files, the staged
-file-size checker, and a relative two-root VS Code workspace. The IR branch was
-not merged: ancestry against the reviewed branch-392 integration base returned
-exit status 1. Plan 02 is the next active slice; later outcomes remain pending.
-Evidence is summarized in `.agent/evidence/unified-tooling-preview.md`.
+Plans 01–07 produced the workspace, shared core, artifact boundaries, launcher
+split, preview modules, plugin scaffolding, and preserved VS Code workflows.
+Plan 08 remains active. Release-level integration is pending.
 
 ## Revision Note
 
-2026-07-26: created the sequential plan set, added bootstrap, branch-422 merge
-protection, VS Code workflow preservation, token-efficient execution, and the
-20 KiB/600-line file policy.
-
-2026-07-26: bootstrap confirmed `origin/master` as the TotalCross integration
-default branch, while the reviewed live-preview integration base is branch 392;
-the IR merge gate against branch 392 remains unsatisfied.
+2026-07-28: inserted Plan 08B and Plan 08R, defined a pre-IR release boundary,
+and deferred IR integration until the published release is verified.
 
 ## Editorial Report
 
-This section is mandatory at completion. Keep it factual and evidence-based.
+Complete this section only from executed evidence.
 
 ### Editorial Summary
 

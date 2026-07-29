@@ -2,65 +2,77 @@
 SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
 SPDX-License-Identifier: Apache-2.0
 -->
-# Complete hot reload and move reusable external tools to the shared store
+# Complete shared tools and Android deploy migration
 
-This ExecPlan is Plan 08. It turns preview replacement into a robust repeated
-workflow and removes SDK-local ownership of downloaded helper executables.
+This ExecPlan is Plan 08. It completes the active shared-tool work. Do not start
+Plan 08B until every acceptance item below passes.
 
 ## Purpose / Big Picture
 
-Repeated source and resource edits rebuild and replace only the disposable
-application worker while the preview host and window remain available. Android
-deployment tools such as `protoc` and `bundletool` are downloaded once per
-version and host platform into the shared tooling store.
+Store `protoc`, `bundletool`, and future helper tools outside individual SDK
+installations and make Android deployment consume them through the typed tooling
+boundary. Repeated preview reload work already implemented remains covered by its
+focused tests.
 
 ## Working Set and Resume Protocol
 
-Read state and this plan. Work in preview coordinator/host/worker, shared store,
-typed deploy adapter, and the narrow Android tool-resolution paths. Do not
-perform the branch-422 merge or physical converter move.
+Read state and this plan. Inspect only:
+
+    tooling-java shared store and external-tool catalog
+    typed DeployToolchain and LegacyDeployService
+    Android deploy tool-resolution code
+    focused Android packaging tests
+    Plan 08 reload coordinator tests
+
+Do not merge IR, move converter source, or perform publication.
 
 ## Progress
 
-- [x] Add debounced build and reload state transitions.
-- [x] Replace workers only after successful build and readiness.
-- [x] Add resource-only and class-change handling.
-- [x] Add stale-session and orphan-worker cleanup.
-- [x] Add repeated-reload leak and failure tests.
-- [x] Add versioned `protoc` and `bundletool` catalog entries.
-- [ ] Migrate Android deploy resolution to shared tools.
-- [ ] Remove only obsolete SDK-local download behavior.
-- [ ] Commit and update state to Plan 09.
+- [x] Add debounced reload state transitions.
+- [x] Promote a candidate only after ready plus first frame.
+- [x] Add resource/class handling and stale-session cleanup.
+- [x] Add repeated-reload failure and leak smoke tests.
+- [x] Add versioned tool catalog structures.
+- [ ] Replace placeholder tool metadata with concrete versions, URLs, and hashes.
+- [ ] Install and verify `protoc` on supported host platforms.
+- [ ] Install and verify `bundletool`.
+- [ ] Pass resolved tools through `DeployToolchain`.
+- [ ] Migrate Android deploy resolution to the shared store.
+- [ ] Add read-only legacy SDK fallback with one deprecation diagnostic.
+- [ ] Prove checksum failure, offline reuse, and concurrent installation safety.
+- [ ] Remove obsolete SDK-local download code only after focused equivalence tests.
+- [ ] Commit, update evidence, and set active plan to Plan 08B.
 
 ## Current Architecture and Scope
 
-The host is long-lived. Each worker owns one application classloader and one
-preview runtime. Reload creates a new worker, waits for authenticated ready plus
-first valid frame, atomically promotes it to active, then closes the old worker.
-A failed candidate never replaces the current working preview.
-
-External tools use the Plan-02 store layout:
+Shared installations use:
 
     tools/protoc/<version>/<platform>/
     tools/bundletool/<version>/all/
 
-Each installation records checksum and source metadata. The SDK may reference
-tools through the typed deploy context but no longer downloads them into
-`etc/tools`.
+Each completed installation records source, concrete version, SHA-256, platform,
+and completion metadata. `bundletool` is platform-independent Java content.
+`protoc` is host-specific.
+
+The Android deployer receives resolved paths from `DeployToolchain`. It must not
+construct vendor URLs or select cache directories. An explicitly configured old
+SDK may be read as a temporary fallback; the deployer must not download new files
+into that SDK.
 
 
 ## Cross-plan safety and size policy
 
-Run only one plan in this set at a time. Preserve unrelated local work. Never use
-`git reset --hard`, `git clean -fd`, force-push, history rewriting, tag deletion,
-or repository archival unless the user explicitly requests that exact operation.
+Run one plan at a time. Preserve unrelated work. Never use `git reset --hard`,
+`git clean -fd`, force-push, history rewriting, tag deletion, or repository
+archival unless the user explicitly requests that exact operation.
 
 Every created or modified text file must remain at or below 20 KiB and at or
-below approximately 600 lines. Check the staged diff before every commit with
-the policy script created by Plan 01. If an existing non-protected file already
-exceeds either limit, split it by responsibility before making the functional
-change. Do not split a protected IR-related file merely to satisfy this rule.
-The protected paths are:
+below approximately 600 lines. Run the staged size-policy checker before every
+commit. If an existing non-protected file exceeds either limit, split it by
+responsibility before the functional change. Do not split a protected IR-related
+file merely to satisfy this rule.
+
+Protected paths:
 
     TotalCrossSDK/src/main/java/tc/tools/converter/**
     TotalCrossSDK/src/test/java/tc/tools/converter/**
@@ -70,167 +82,145 @@ The protected paths are:
     TotalCrossVM/src/tests/ir/**
     docs/architecture/bytecode/**
 
-The exception follows those logical files during the first history-preserving
-move after the IR merge. Do not refactor them for size as part of this program.
 Generated files, third-party code, caches, and build output must not be committed.
 
-Use token-efficient execution. Read the active state file first, inspect only
-the named paths for the active slice, run focused validation, store full verbose
-output in `/tmp` or build artifacts, and record only concise results and paths.
-Do not repeatedly dump large plans, logs, diffs, or generated files.
+Use token-efficient execution. Read the state file first, then the active plan.
+Inspect only named paths. Store verbose output in `/tmp` or build artifacts and
+record only concise results, commit IDs, and log paths. Do not repeatedly print
+large plans, logs, generated files, or full repository diffs.
 
 ## Plan of Work
 
-Implement a small explicit session state machine with states such as idle,
-building, starting candidate, active, failed candidate, stopping, and closed.
-Keep transitions in one focused class and side effects in collaborators.
+First verify upstream release files and calculate hashes from downloaded bytes.
+Do not commit `"catalog-required"`, empty hashes, floating `latest` URLs, or
+machine-local paths.
 
-Debounce file events. Ignore build outputs and temporary editor files. On a
-source change, wait for the build tool's successful notification before starting
-a candidate worker. On a resource change that the runtime can consume without
-compile, update the session descriptor and still replace the worker unless a
-tested narrower reload exists.
+Add catalog entries for every host currently supported by Android packaging.
+A missing host entry produces a clear unsupported-host error. Install through the
+Plan-02 locked, checksum-verified, atomic store.
 
-Candidate promotion requires protocol compatibility, ready status, and one
-valid frame. If startup times out or the candidate crashes, keep the old worker
-and emit a diagnostic. After promotion, request graceful close of the old worker,
-then force termination only after a bounded timeout.
+After installation, run:
 
-Add a test that performs at least twenty deterministic reloads and uses weak
-references or process inspection to prove old application classloaders/processes
-are not retained. This is a smoke leak check, not a claim of complete memory-leak
-proof.
+    protoc --version
+    java -jar bundletool.jar version
 
-Create a versioned tool catalog in shared tooling. Tool download providers
-resolve concrete versions and checksums. `bundletool` is platform-independent
-Java content; `protoc` is host-specific. Use the tooling JDK capability probe to
-run `protoc --version` after installation on macOS and other available hosts.
+Use the selected tooling JDK. On macOS, run the existing ProcessBuilder/xattr
+probe and distinguish an absent quarantine attribute from process-creation
+failure.
 
-Change Android deploy code to request tools from the typed `DeployToolchain`.
-Do not delete SDK-local tools until focused packaging and deploy tests prove the
-new path. Preserve a temporary read-only fallback for an explicitly configured
-legacy SDK home and log its deprecation once.
+Extend `DeployToolchain` with typed accessors for required tools. Change Android
+deploy code to request those paths. Keep download, extraction, and store classes
+out of the SDK deploy implementation.
 
-## Surprises & Discoveries
+Add a temporary fallback that accepts an explicitly configured legacy SDK tool
+path only when the file exists and passes a version probe. Log one deprecation
+diagnostic per execution. Never silently prefer legacy content over a verified
+shared installation.
 
-- Observation: none recorded yet.
-  Evidence: record reload timing, leak checks, or tool quarantine behavior that
-  affects the final design.
+Focused tests must cover concrete catalog metadata, checksum mismatch,
+interrupted staging, concurrent installation, offline reuse, missing platform,
+version probe failure, shared-store preference, and legacy fallback.
+
+Run one focused Android package with the shared tools. Compare output type,
+expected files, and success status against the current path. Only then remove
+obsolete local download behavior. Retain templates or SDK resources still needed
+at runtime.
 
 ## Decision Log
 
-- Decision: promote a candidate only after its first valid frame.
-  Rationale: readiness without render proof can replace a working preview with a
-  broken process.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: finish external tools before preview release stabilization.
+  Rationale: Gradle, Maven, CLI, and VS Code must share the same deploy toolchain
+  during end-to-end release tests.
+  Date/Author: 2026-07-28 / OpenAI.
 
-- Decision: store helper tools independently of SDK versions.
-  Rationale: identical tool versions can be reused safely across SDKs and plugins.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: legacy SDK fallback is read-only and explicit.
+  Rationale: compatibility must not recreate mutable per-SDK tool ownership.
+  Date/Author: 2026-07-28 / OpenAI.
 
 ## Validation and Acceptance
 
-Acceptance requires twenty successful reloads with one deliberately broken
-candidate in the middle. The old preview remains visible during the failed build
-or candidate, a later valid edit succeeds, and no old worker remains alive.
+Acceptance requires:
 
-Run focused Android deploy resolution with a temporary store. Verify `protoc
---version`, bundletool invocation, checksum failure, offline reuse, and legacy
-fallback. Do not run every Android ABI build unless native packaging changed.
+    all tooling-java tests pass
+    twenty-reload candidate test passes
+    concrete catalog contains no placeholder checksum
+    protoc and bundletool version probes pass
+    checksum failure is rejected
+    second install works offline
+    two concurrent requests produce one valid installation
+    Android deploy uses DeployToolchain paths
+    legacy fallback is tested and deprecated
+    obsolete SDK-local download code is removed or explicitly documented as used
 
-Run the staged size checker and `git diff --check`.
+Run focused Android packaging, `git diff --check`, and staged size checks in both
+repositories. Record exact commits and log paths in state and evidence.
 
 ## Risks and Open Questions
 
-File-watch behavior differs by OS and editor. Keep a polling fallback with a
-bounded interval if the native watch service proves unreliable. macOS quarantine
-removal must use explicit ProcessBuilder arguments and must distinguish an absent
-attribute from process-creation failure.
+Upstream release layouts may change. Provider-specific URL logic must remain
+isolated. Existing Android code may combine tool resolution with packaging; split
+that non-protected file before modification when it exceeds the size policy.
 
 ## Idempotence and Recovery
 
-Tool installations are immutable and retry through staging. Failed candidate
-workers are terminated and their session files removed. Stale cleanup never
-kills a process unless the session token, recorded PID start identity, and age
-match.
+Installations are immutable. Failed downloads remain in unique staging paths and
+never replace a completed installation. Reverting the Android integration commit
+restores the prior resolver without deleting shared-store content.
 
 ## Outcomes & Retrospective
 
-Implementation checkpoint completed on 2026-07-26. The reload coordinator,
-debouncer, stale-session cleaner, and external-tool catalog are implemented and
-tested. The coordinator waits for ready plus first frame before promoting a
-candidate, closes the previous active candidate only after promotion, and
-preserves it when a candidate fails. Plan 08 remains active until the Android
-deployer consumes the shared tool catalog and obsolete local download behavior
-is retired safely.
+Reload coordination is implemented and tested. External-tool consumption by the
+Android deployer remains the completion gate.
 
 ## Revision Note
 
-2026-07-26: combined robust worker promotion with external-tool store migration,
-because both depend on the shared process and installation services.
+2026-07-28: narrowed Plan 08 to the remaining concrete tool and Android deploy
+work; release-level preview and plugin consolidation moved to Plan 08B.
 
 ## Editorial Report
 
-This section is mandatory at completion. Keep it factual and evidence-based.
+Complete this section only from executed evidence.
 
 ### Editorial Summary
 
-The worker-promotion boundary is complete. Android deploy still has a legacy
-`etc/tools/android/protoc` resolver in the SDK; moving it requires a typed
-deploy-context change and packaging validation after the IR/source-ownership
-gate, so it remains intentionally visible rather than silently removed.
+Not completed yet.
 
 ### Original Plan versus Actual Outcome
 
-Added `PreviewSessionState`, `PreviewReloadCoordinator`, `ReloadDebouncer`,
-`StaleSessionCleaner`, `ExternalToolCatalog`, and `ExternalToolRequest`; the
-host test performs twenty successful reloads followed by a failed candidate.
+Not completed yet.
 
 ### What Changed
 
-Candidate promotion is transactional and first-frame gated. External tools use
-the shared store coordinate shape and immutable installer, with concrete
-version/source catalog entries and checksum verification required at install.
+Not completed yet.
 
 ### Decisions and Trade-offs
 
-The initial external-tool request used the wrong `InstallRequest` argument order;
-the shared store test compile caught and corrected it before any install path was
-executed.
+Not completed yet.
 
 ### Unexpected Problems and Discoveries
 
-`./tooling-java/gradlew -p tooling-java test --console=plain` passed all module
-tests, including the 20-reload candidate promotion test and the existing
-protocol/host/tooling-core suites.
+Not completed yet.
 
 ### Validation and Measurable Results
 
-Full output: `/tmp/tooling-plan08-test.log`. The implementation is in the
-tooling branch; no SDK Android download source was deleted.
+Not completed yet.
 
 ### Useful Evidence and Examples
 
-The shared catalog is ready, but the SDK Android deployer still needs an
-explicit typed-toolchain integration and legacy fallback test before its local
-download behavior can be retired.
+Not completed yet.
 
 ### Limitations, Remaining Work, and Open Questions
 
-Repeated reload should be described as a state-machine promotion problem, not
-as a UI repaint problem: readiness and first frame are the safety boundary.
+Not completed yet.
 
 ### Possible Article Angles
 
-Show one broken candidate in the middle of twenty successful reloads and the
-unchanged active preview as evidence of safe promotion.
+Not completed yet.
 
 ### Suggested Narrative
 
-Human review is required for the exact `protoc`/`bundletool` checksums and for
-the final SDK deployer migration after the IR gate.
+Not completed yet.
 
 ### Claims Requiring Human Review
 
-The exact `protoc`/`bundletool` checksums and the final SDK deployer migration
-remain open; Plan 09 must not start while those Plan 08 items are incomplete.
+Not completed yet.

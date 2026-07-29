@@ -2,62 +2,63 @@
 SPDX-FileCopyrightText: 2026 Amalgam Solucoes em TI Ltda.
 SPDX-License-Identifier: Apache-2.0
 -->
-# Slim the SDK and complete final compatibility validation
+# Complete post-IR SDK slimming and close the program
 
-This ExecPlan is Plan 10 and closes the unified tooling and preview program.
+This ExecPlan is Plan 10. It starts after Plan 09 completes semantic IR
+integration and the source-ownership decision.
 
 ## Purpose / Big Picture
 
-Remove obsolete tooling payload from the SDK only after every supported consumer
-uses the new artifacts and shared store. Prove old compatibility entry points,
-new CLI/plugin/editor workflows, live reload, packaging, and installation
-migration. Finish the factual editorial report from observed evidence.
+Remove only payload proven obsolete after IR integration, preserve the pre-IR
+support line, validate installation migration and compatibility, and close the
+multi-repository program with measured outcomes.
 
 ## Working Set and Resume Protocol
 
-Read state, this plan, master progress, and the concise evidence index. Inspect
-only dependency declarations, package scripts, compatibility facades, install
-migration, and tests named by failures. Do not reread completed plan files unless
-their acceptance evidence is missing.
+Read state, this plan, the Plan-09 decision, and concise evidence. Inspect only
+dependency declarations, package scripts, compatibility facades, cache migration,
+and tests named by failures.
 
 ## Progress
 
 - [ ] Inventory remaining SDK tooling classes, dependencies, and bundled tools.
+- [ ] Compare the post-IR development artifacts with the pre-IR release baseline.
 - [ ] Remove or relocate only consumers already migrated.
 - [ ] Preserve compatibility facades and documented deprecations.
-- [ ] Add legacy cache discovery or one-time migration.
-- [ ] Run focused compatibility and artifact-size checks.
+- [ ] Add legacy cache discovery or verified copy migration.
+- [ ] Re-run aggregate SDK and narrow-artifact compatibility checks.
 - [ ] Run the justified cross-project final matrix.
-- [ ] Reconcile state, master progress, evidence, archive, and outcomes.
-- [ ] Finalize the editorial report with actual results.
-- [ ] Commit final documentation and leave both repositories clean.
+- [ ] Measure SDK and distribution size changes.
+- [ ] Reconcile state, master, evidence, archive, and final report.
+- [ ] Commit final documentation and leave both repositories scoped and clean.
 
 ## Current Architecture and Scope
 
-Candidates for removal from the aggregate SDK include deploy-only libraries,
-converter/deployer implementation packages when ownership moved, preview-host
-dependencies such as AWT helper libraries, and downloaded `etc/tools` content.
-Do not remove runtime Java classes, TCZ support, native VM code, or compatibility
-facades required by supported releases.
+The pre-IR release branch remains supported and unchanged. Plan 10 affects the
+post-IR development line.
 
-The final SDK may continue to publish an aggregate compatibility JAR while new
-tooling consumes narrow artifacts. Complete removal of compatibility classes is
-a future major-version decision unless this plan proves no supported consumer
-requires them.
+Candidates include deploy-only libraries, obsolete SDK-local tools, implementation
+packages moved in Plan 09, and preview-host dependencies no longer required by
+the aggregate SDK. Do not remove runtime Java classes, TCZ support, native VM
+code, or compatibility facades without a separate major-version decision.
+
+The aggregate SDK may remain published indefinitely. Narrow artifacts are
+preferred by tooling but are not required for existing applications.
 
 
 ## Cross-plan safety and size policy
 
-Run only one plan in this set at a time. Preserve unrelated local work. Never use
-`git reset --hard`, `git clean -fd`, force-push, history rewriting, tag deletion,
-or repository archival unless the user explicitly requests that exact operation.
+Run one plan at a time. Preserve unrelated work. Never use `git reset --hard`,
+`git clean -fd`, force-push, history rewriting, tag deletion, or repository
+archival unless the user explicitly requests that exact operation.
 
 Every created or modified text file must remain at or below 20 KiB and at or
-below approximately 600 lines. Check the staged diff before every commit with
-the policy script created by Plan 01. If an existing non-protected file already
-exceeds either limit, split it by responsibility before making the functional
-change. Do not split a protected IR-related file merely to satisfy this rule.
-The protected paths are:
+below approximately 600 lines. Run the staged size-policy checker before every
+commit. If an existing non-protected file exceeds either limit, split it by
+responsibility before the functional change. Do not split a protected IR-related
+file merely to satisfy this rule.
+
+Protected paths:
 
     TotalCrossSDK/src/main/java/tc/tools/converter/**
     TotalCrossSDK/src/test/java/tc/tools/converter/**
@@ -67,31 +68,32 @@ The protected paths are:
     TotalCrossVM/src/tests/ir/**
     docs/architecture/bytecode/**
 
-The exception follows those logical files during the first history-preserving
-move after the IR merge. Do not refactor them for size as part of this program.
 Generated files, third-party code, caches, and build output must not be committed.
 
-Use token-efficient execution. Read the active state file first, inspect only
-the named paths for the active slice, run focused validation, store full verbose
-output in `/tmp` or build artifacts, and record only concise results and paths.
-Do not repeatedly dump large plans, logs, diffs, or generated files.
+Use token-efficient execution. Read the state file first, then the active plan.
+Inspect only named paths. Store verbose output in `/tmp` or build artifacts and
+record only concise results, commit IDs, and log paths. Do not repeatedly print
+large plans, logs, generated files, or full repository diffs.
 
 ## Plan of Work
 
-Generate a dependency and artifact inventory from the actual build. For each
-candidate, name its current consumer and the new replacement. Remove it only when
-a focused test proves the replacement. Keep removals in small commits grouped by
-capability, not one broad cleanup.
+Generate a dependency and artifact inventory from the actual post-IR build. For
+each removal candidate record:
 
-Update packaging scripts and CI together with local build behavior. If an
-oversized non-protected build or workflow file must change, extract reusable
-sections before the functional edit. Do not modify generated projects or vendored
-files.
+    current artifact and path
+    current consumers
+    replacement
+    focused proof
+    size impact
+    compatibility impact
 
-Implement legacy installation discovery. The shared store may read old Gradle,
-Maven, or SDK-local caches and either use them read-only or copy verified
-artifacts into the new immutable layout. Never delete the old cache automatically.
-Record source, checksum when available, and migration result.
+Remove one capability group at a time. Update build scripts, publication
+metadata, CI, and documentation together. Split oversized non-protected build
+files before functional changes.
+
+Implement legacy installation discovery for old Gradle, Maven, SDK-local, and
+tooling caches. Use verified read-only access or copy into immutable shared-store
+locations. Never delete old caches automatically.
 
 Run focused compatibility tests for:
 
@@ -102,79 +104,62 @@ Run focused compatibility tests for:
     CLI preview and run
     Gradle package and continuous preview
     Maven package and preview
-    VS Code project wizard
-    VS Code Maven-to-Gradle conversion and rollback
+    VS Code wizard and Maven conversion rollback
     repeated worker reload
     global protoc and bundletool reuse
+    IR default-off and enabled modes
 
-Then run only the platform/package matrix justified by changed build scripts.
-Record unavailable hosts and credentials honestly. Measure final artifact sizes
-and compare with the baseline from Plan 03; do not claim performance improvement
-without a relevant measurement.
+Compare aggregate and distribution size with the Plan-03 and pre-IR release
+baselines. Report bytes and percentages without claiming runtime performance.
 
-Consolidate completed detail into archive, rewrite state as complete, update the
-master checklist, and finalize
-`.agent/reports/unified-tooling-preview-editorial.md` with the required factual
-sections. Copy only a concise final summary into each completed plan's Editorial
-Report or point to the canonical report if repository rules allow.
-
-## Surprises & Discoveries
-
-- Observation: none recorded yet.
-  Evidence: add final packaging or compatibility discoveries that matter to
-  future maintenance.
+Finalize the canonical editorial report with actual commands, results, skipped
+hosts, publication status, compatibility decisions, IR merge findings, and
+remaining major-version work.
 
 ## Decision Log
 
-- Decision: remove SDK content only after consumer-by-consumer proof.
-  Rationale: package size reduction must not break legacy workflows.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: slimming is post-IR and consumer-by-consumer.
+  Rationale: release compatibility and IR integration must be known first.
+  Date/Author: 2026-07-28 / OpenAI.
 
-- Decision: retain compatibility facades through this program.
-  Rationale: implementation ownership can change without forcing an immediate
-  user-facing breaking release.
-  Date/Author: 2026-07-26 / OpenAI.
+- Decision: pre-IR release branches are never rewritten by cleanup.
+  Rationale: they are the stable support and rollback line.
+  Date/Author: 2026-07-28 / OpenAI.
 
 ## Validation and Acceptance
 
-The final acceptance scenario starts from a clean sample project and a shared
-store with no selected SDK/JDK/tool version installed. It resolves the
-toolchain, creates or converts a project in VS Code, starts preview, reloads after
-a source edit, packages through Gradle and Maven samples, reuses cached tools
-offline, and still runs the documented legacy facade smoke tests.
+A clean post-IR environment must resolve the toolchain, create or convert a
+project, preview and reload through all supported entry points, package through
+Gradle and Maven, reuse tools offline, and pass aggregate SDK compatibility
+smokes.
 
-Run `git diff --check`, staged size-policy checks, repository-focused tests, and
-the justified final builds. Record every command actually run, pass/fail status,
-log path, skipped expensive validation, and reason. Both repositories end with
-no unexplained changes.
+Run focused tests, justified platform builds, `git diff --check`, and staged size
+checks. Record every command, pass/fail status, log path, skipped validation, and
+reason. Both repositories end with no unexplained changes.
 
 ## Risks and Open Questions
 
-A dependency that appears deploy-only may also be used by desktop runtime paths.
-Use class and dependency analysis plus focused execution before removal. CI
-platform availability may limit proof; report unsupported or untested targets
-instead of generalizing.
+A dependency that appears deploy-only may still serve desktop runtime behavior.
+Use class analysis and focused execution before removal. Some platform validation
+may remain unavailable; report it honestly.
 
 ## Idempotence and Recovery
 
-Each removal is separately revertible. Legacy cache migration copies rather than
-moves. Package scripts write to build outputs. If the final matrix exposes a
-regression, revert the smallest capability commit and keep the compatibility
-artifact until a follow-up plan.
+Each removal is separately revertible. Cache migration copies rather than moves.
+Failed post-IR cleanup does not affect the pre-IR release branches or tags.
 
 ## Outcomes & Retrospective
 
-Not started. At completion summarize delivered workflows, retained compatibility,
-measured artifact changes, deferred platforms, and lessons from the IR merge.
+Not started.
 
 ## Revision Note
 
-2026-07-26: made SDK slimming evidence-driven and added final cross-project,
-installation, editor, build-tool, and editorial completion criteria.
+2026-07-28: moved slimming after the pre-IR release and IR merge, preserved the
+release line, and added measured comparison against both baselines.
 
 ## Editorial Report
 
-This section is mandatory at completion. Keep it factual and evidence-based.
+Complete this section only from executed evidence.
 
 ### Editorial Summary
 
