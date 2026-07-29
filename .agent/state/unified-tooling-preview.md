@@ -134,6 +134,10 @@ passed, but the real packaging smoke has not been rerun to completion.
 Preview version gating is proven against cached SDK 7.2.0: the CLI returns a
 structured compatibility error and exit 1 when the required preview contract is
 absent. Aggregate binary compatibility with that public baseline remains open.
+The aggregate check records concrete removals/modifications against 7.2.0;
+public publication therefore remains blocked pending an explicit versioning or
+compatibility decision. The current preview-capable floor proven locally is
+SDK 7.2.2.
 
 ## Deferrals and exclusions
 

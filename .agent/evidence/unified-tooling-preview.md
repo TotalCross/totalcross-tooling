@@ -186,3 +186,9 @@ program. Full command output belongs in `/tmp` or build artifacts.
   `LauncherRuntime.startPreviewFrames`/`PreviewFrameConsumer`, return exit 1,
   and leave no coordinator process. Log:
   `/tmp/totalcross-preview-old-sdk-gating.log`.
+- 2026-07-29: `aggregateCompatibilityCheck` against the cached public
+  `totalcross-sdk-7.2.0.jar` completed with strict mode disabled and reported
+  real binary incompatibilities in `totalcross.Launcher`, converter/deployer
+  classes, and removed public nested classes. The report is
+  `totalcross/TotalCrossSDK/build/reports/aggregate-compatibility.txt`; this is
+  a release-baseline decision, not a preview-gating failure.

@@ -340,6 +340,10 @@ an external `Connection reset`, so the typed-deploy gate remains open.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.
+The aggregate check against 7.2.0 reports concrete public API removals and
+classfile changes, so the current preview-capable floor proven locally is SDK
+7.2.2 and public publication requires an explicit versioning/compatibility
+decision.
 The older cached 7.2.0 comparison still reports historical Launcher/deployer
 incompatibilities and requires a release-owner compatibility decision; the
 preceding checkpoint comparison is green. No IR merge, tag, push, or public
