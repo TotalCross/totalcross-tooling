@@ -167,3 +167,12 @@ program. Full command output belongs in `/tmp` or build artifacts.
   lacked the complete distribution layout required by real `tc.Deploy`. The
   shared typed `DeployService` contract remains covered by the Gradle functional
   suite; release-grade real packaging remains open.
+- 2026-07-29: the official `TotalCross-7.2.2.zip` was extracted to a temporary
+  SDK home with `dist/vm`, `dist/libs`, and the deployer layout. The real
+  packaging smoke exposed a non-daemon telemetry thread and SDK-home discovery
+  gap in the legacy adapter; tooling commit `e8c79a4` now runs the invocation in
+  a daemon thread and applies the requested SDK home as temporary `user.dir`.
+  Tooling-java (14 tests), the Gradle plugin suite, and Maven packaging passed;
+  the real smoke still ended with `Connection reset` after a long external
+  operation, so release-grade typed packaging remains open. Log:
+  `/tmp/totalcross-gradle-typed-deploy-realsdk-fixed.log`.

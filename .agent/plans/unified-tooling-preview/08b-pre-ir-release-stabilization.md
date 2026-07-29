@@ -332,6 +332,10 @@ The published Gradle plugin also resolved from isolated staging and reached
 stopped because that home lacked the complete distribution required by
 `tc.Deploy`; the typed contract is covered by the functional suite, while a
 release-grade real packaging run still requires a complete SDK home.
+With the official 7.2.2 SDK archive, the adapter now isolates legacy non-daemon
+threads and honors the requested SDK home (`e8c79a4`). Deterministic core,
+Gradle, and Maven validations pass, but the real packaging smoke still ends in
+an external `Connection reset`, so the typed-deploy gate remains open.
 The older cached 7.2.0 comparison still reports historical Launcher/deployer
 incompatibilities and requires a release-owner compatibility decision; the
 preceding checkpoint comparison is green. No IR merge, tag, push, or public

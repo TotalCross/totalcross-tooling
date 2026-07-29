@@ -125,6 +125,10 @@ reached `totalcrossPackage`, but was stopped because its synthetic SDK home did
 not contain the complete distribution required by real `tc.Deploy`; the typed
 contract is covered by the plugin functional suite, while release-grade real
 packaging remains open.
+The legacy deploy adapter was hardened in tooling `e8c79a4` to isolate
+non-daemon deploy threads and honor the requested SDK home. Core/tooling and
+plugin tests passed; a real SDK packaging smoke remains open after an external
+`Connection reset`.
 
 ## Deferrals and exclusions
 
