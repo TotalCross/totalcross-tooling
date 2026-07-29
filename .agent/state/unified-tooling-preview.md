@@ -170,6 +170,9 @@ stream/font, exception, deploy, and converter API removals.
 The SDK standard suite and dedicated artifact-boundary task passed after
 injecting the test-only `totalcross.artifact.dir` property into the Gradle Test
 worker; the initial plain-suite failures were only missing-environment failures.
+TotalCross commit `62a4df7b5` now excludes the `artifact-boundary` tag from the
+ordinary SDK test task, so both the standard suite and dedicated boundary task
+pass without temporary initialization.
 
 ## Deferrals and exclusions
 

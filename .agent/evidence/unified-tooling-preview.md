@@ -250,3 +250,10 @@ program. Full command output belongs in `/tmp` or build artifacts.
   the missing property, not SDK assertions. Logs:
   `/tmp/totalcross-plan08b-sdk-standard-test-fixed-env.log` and
   `/tmp/totalcross-plan08b-artifact-boundaries-rerun.log`.
+- 2026-07-29: `TotalCrossSDK/build.gradle` now excludes the tagged
+  `artifact-boundary` tests from the ordinary `test` task; the dedicated
+  `artifactContentTest` remains responsible for them. After TotalCross commit
+  `62a4df7b5`, both `./gradlew test` and `./gradlew artifactContentTest` pass
+  without temporary test-property injection. Logs:
+  `/tmp/totalcross-plan08b-sdk-standard-test-final.log` and
+  `/tmp/totalcross-plan08b-artifact-boundaries-final.log`.

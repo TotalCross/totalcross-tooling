@@ -359,6 +359,9 @@ service is unavailable and the test remains an external infrastructure blocker.
 The SDK standard suite and `artifactContentTest` passed after injecting the
 test-only artifact directory into the Gradle Test worker; a plain suite run
 without that property produced only setup failures in `ArtifactBoundariesTest`.
+TotalCross commit `62a4df7b5` corrected the task separation by excluding the
+`artifact-boundary` tag from the ordinary SDK test task. The standard suite and
+dedicated boundary task now pass without temporary initialization.
 Preview version gating is proven against cached SDK 7.2.0: the CLI emits a
 structured compatibility error and exits 1 when the required runtime contract
 is absent. The separate aggregate binary compatibility decision remains open.
