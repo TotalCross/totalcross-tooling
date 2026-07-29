@@ -6,6 +6,9 @@ import com.totalcross.tooling.build.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.*;
+import com.totalcross.tooling.jdk.JdkCatalogResolver;
+import com.totalcross.tooling.jdk.JdkInstallation;
+import com.totalcross.tooling.jdk.JdkRequest;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.*;
@@ -28,6 +31,8 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
     private String mainClass;
     @Parameter(property = "totalcross.preview.noLaunch", defaultValue = "false")
     private boolean noLaunch;
+    @Parameter(property = "totalcross.jdkPath")
+    private String jdkPath;
     @Component
     private MavenProject mavenProject;
 
@@ -82,21 +87,28 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
 
     private void launchSharedPreview(String applicationClass, Path project, Path descriptor) throws Exception {
         List<String> classpath = mavenProject.getRuntimeClasspathElements();
-        String java = Paths.get(System.getProperty("java.home"), "bin",
-            System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
-        String cli = ToolingCli.runtimeClasspath();
+        JdkInstallation toolingJdk = JdkCatalogResolver.production().resolve(
+            new JdkRequest("17", jdkPath == null || jdkPath.isBlank() ? null : Paths.get(jdkPath), null));
         Path frame = descriptor.resolveSibling("preview-frame.png");
         Path control = descriptor.resolveSibling("preview-control.txt");
         Path log = descriptor.resolveSibling("preview.log");
         Files.deleteIfExists(frame);
-        List<String> command = List.of(java, "-cp", cli, ToolingCli.class.getName(), "preview",
-            "--project", project.toString(), "--main", applicationClass, "--classpath",
-            String.join(File.pathSeparator, classpath), "--frame-file", frame.toString(), "--control-file", control.toString());
+        List<String> command = previewCommand(toolingJdk.home(), project, applicationClass,
+            String.join(File.pathSeparator, classpath), frame, control);
         long pid = launchCoordinator(command, project, log);
         if (!awaitFirstFrame(pid, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(descriptor, Files.readString(descriptor).replaceFirst("}$",
             ",\"pid\":" + pid + "}"));
         getLog().info("TotalCross preview coordinator started with PID " + pid + " after first frame");
+    }
+
+    static List<String> previewCommand(Path toolingJdk, Path project, String applicationClass,
+        String classpath, Path frame, Path control) throws Exception {
+        String java = toolingJdk.resolve("bin").resolve(
+            System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
+        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), "preview",
+            "--project", project.toString(), "--main", applicationClass, "--classpath", classpath,
+            "--jdk-path", toolingJdk.toString(), "--frame-file", frame.toString(), "--control-file", control.toString());
     }
 
     private long launchCoordinator(List<String> command, Path project, Path log) throws Exception {

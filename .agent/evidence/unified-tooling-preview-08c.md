@@ -41,3 +41,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   the shared catalog resolver and accepts a probed `--jdk-path` override. Its
   worker command is constructed from that selected home rather than the CLI
   process JVM. The CLI test and fat-JAR build passed.
+- 2026-07-29: Gradle `totalcrossPreview` and Maven `totalcross:preview` now
+  resolve Java 17 through the same catalog resolver before starting the CLI.
+  Gradle wires `totalcross.jdkPath` into its preview task; Maven exposes the
+  equivalent `totalcross.jdkPath` parameter. Both commands start the CLI from
+  the selected JDK and pass `--jdk-path` onward to its worker. Gradle tests
+  (including seven functional tests) and Maven tests passed with no failures.

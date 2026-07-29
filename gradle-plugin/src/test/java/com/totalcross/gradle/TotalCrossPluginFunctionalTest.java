@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipFile;
@@ -137,6 +138,17 @@ class TotalCrossPluginFunctionalTest {
 
         assertEquals("totalcross.sample.main.TCSample",
                 TotalCrossPreviewTask.discoverApplicationClass(output, "TCSample"));
+    }
+
+    @Test
+    void previewUsesTheSelectedJdkForTheCliAndWorker() throws Exception {
+        Path selectedJdk = Path.of("/tmp/selected-jdk");
+        List<String> command = TotalCrossPreviewTask.previewCommand(selectedJdk, Path.of("/tmp/project"),
+                "example.App", "classes", Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt"));
+
+        String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
+        assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
+        assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }
 
     private String buildScript(Path repository, Path sdkHome, String pluginId) {

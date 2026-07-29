@@ -4,6 +4,9 @@ package com.totalcross.gradle;
 
 import com.totalcross.tooling.build.*;
 import com.totalcross.tooling.cli.ToolingCli;
+import com.totalcross.tooling.jdk.JdkCatalogResolver;
+import com.totalcross.tooling.jdk.JdkInstallation;
+import com.totalcross.tooling.jdk.JdkRequest;
 import java.io.IOException;
 import java.nio.file.*;
 import java.io.File;
@@ -19,6 +22,8 @@ import org.gradle.api.tasks.*;
 public abstract class TotalCrossPreviewTask extends DefaultTask {
     @OutputFile public abstract RegularFileProperty getSessionFile();
     @InputFiles public abstract ConfigurableFileCollection getWatchedInputs();
+    @Optional @InputDirectory @PathSensitive(PathSensitivity.ABSOLUTE)
+    public abstract org.gradle.api.file.DirectoryProperty getJdkPath();
     private final Property<String> applicationClass;
 
     public TotalCrossPreviewTask() {
@@ -82,21 +87,30 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
             .getByName(SourceSet.MAIN_SOURCE_SET_NAME);
         String value = mainSourceSet.getRuntimeClasspath().getFiles().stream()
             .map(java.io.File::getAbsolutePath).collect(Collectors.joining(java.io.File.pathSeparator));
-        String java = Paths.get(System.getProperty("java.home"), "bin",
-            System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
+        Path configuredJdk = getJdkPath().isPresent()
+            ? getJdkPath().get().getAsFile().toPath() : null;
+        JdkInstallation toolingJdk = JdkCatalogResolver.production().resolve(
+            new JdkRequest("17", configuredJdk, null));
         Path frame = session.resolveSibling("preview-frame.png");
         Path control = session.resolveSibling("preview-control.txt");
         Path log = session.resolveSibling("preview.log");
         Files.deleteIfExists(frame);
-        Process process = new ProcessBuilder(java, "-cp", ToolingCli.runtimeClasspath(),
-            ToolingCli.class.getName(), "preview", "--project", projectDirectory().getAbsolutePath(),
-            "--main", resolvedApplicationClass, "--classpath", value, "--frame-file", frame.toString(),
-            "--control-file", control.toString())
+        Process process = new ProcessBuilder(previewCommand(toolingJdk.home(), projectDirectory().toPath(),
+            resolvedApplicationClass, value, frame, control))
             .directory(projectDirectory()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         if (!awaitFirstFrame(process, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(session, Files.readString(session).replaceFirst("}$",
             ",\"pid\":" + process.pid() + "}"));
         getLogger().lifecycle("TotalCross preview coordinator started with PID {} after first frame", process.pid());
+    }
+
+    static List<String> previewCommand(Path toolingJdk, Path project, String applicationClass,
+        String classpath, Path frame, Path control) throws Exception {
+        String java = toolingJdk.resolve("bin").resolve(
+            System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
+        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), "preview",
+            "--project", project.toString(), "--main", applicationClass, "--classpath", classpath,
+            "--jdk-path", toolingJdk.toString(), "--frame-file", frame.toString(), "--control-file", control.toString());
     }
 
     private boolean awaitFirstFrame(Process process, Path frame) throws InterruptedException, IOException {

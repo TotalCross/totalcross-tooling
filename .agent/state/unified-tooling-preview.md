@@ -20,8 +20,9 @@ Reason:
     Plan 08B produced a useful E2E checkpoint, but a later audit found that
     resolver, model, VS Code input, and release details remained incomplete.
     Process-backed promotion and immutable catalog installation are now
-    implemented. The current decision gate is authoritative catalog selection
-    across Gradle, Maven, CLI, and the companion before removing JavaJDKManager.
+    implemented. Catalog selection is authoritative across Gradle, Maven, CLI,
+    and the companion path; remaining work corrects the release-facing preview
+    contract, model, and VS Code behavior.
 
 Next command:
 
@@ -88,6 +89,8 @@ Completed Plan 08C slices:
     Gradle and Maven package/Retrolambda adapters migrated to the catalog
     Maven JavaJDKManager and its dynamic Zulu download test removed
     CLI worker launched with the catalog-selected Java 17 home
+    Gradle and Maven preview coordinators launched with the catalog-selected
+    Java 17 home and propagate that home to the CLI worker
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -95,15 +98,13 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    authoritative catalog selection across the companion adapter
-    explicit jdkPath precedence with capability probes
-    dynamic providers restricted to catalog maintenance
-    removal of Maven JavaJDKManager
-    removal of latest URLs and forced arch=x86 from production resolution
+    Java-17 plugin loading documentation and enforcement
+    complete ProjectModel and one public package path
+    preview versus run presentation semantics
+    VS Code build-before-reload and installed-VSIX behavior
 
 Remaining Plan 08C blockers:
 
-    authoritative shared resolution across Gradle, Maven, CLI, and companion
     Java-17 plugin loading documentation and enforcement
     complete ProjectModel
     one public package path

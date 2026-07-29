@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,17 @@ class TotalCrossPreviewMojoTest {
         } finally {
             delete(output);
         }
+    }
+
+    @Test
+    void previewUsesTheSelectedJdkForTheCliAndWorker() throws Exception {
+        Path selectedJdk = Path.of("/tmp/selected-jdk");
+        List<String> command = TotalCrossPreviewMojo.previewCommand(selectedJdk, Path.of("/tmp/project"),
+                "example.App", "classes", Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt"));
+
+        String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
+        assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
+        assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }
 
     private static void delete(Path path) throws Exception {

@@ -62,10 +62,10 @@ converter source, create tags, or publish publicly.
 - [x] Add concrete JDK versions, URLs, SHA-256 values, and archive layouts.
 - [x] Cover the minimum pre-IR release host matrix.
 - [x] Install catalog JDKs through the immutable shared store.
-- [ ] Make `jdkPath` the probed highest-priority override.
-- [ ] Add actionable `jdkPath` fallback for unsupported hosts.
-- [ ] Restrict dynamic providers to catalog-maintenance workflows.
-- [ ] Make shared SDK/JDK/store services authoritative in Gradle, Maven, and CLI.
+- [x] Make `jdkPath` the probed highest-priority override.
+- [x] Add actionable `jdkPath` fallback for unsupported hosts.
+- [x] Restrict dynamic providers to catalog-maintenance workflows.
+- [x] Make shared SDK/JDK/store services authoritative in Gradle, Maven, and CLI.
 - [x] Remove the Maven Zulu-only, latest, x86 JDK download path.
 - [ ] Enforce and document Java 17 for loading both pre-IR plugins.
 - [ ] Serialize and parse the complete versioned ProjectModel.
