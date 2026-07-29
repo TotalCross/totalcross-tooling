@@ -37,3 +37,7 @@ reached the text-file size limit. Full command output remains outside the repo.
   download test were removed; no production Maven source references the legacy
   manager. Tooling publication to Maven Local, the tooling Java suite, Gradle
   plugin tests, and Maven plugin tests passed.
+- 2026-07-29: the standalone CLI now resolves the Java 17 worker home through
+  the shared catalog resolver and accepts a probed `--jdk-path` override. Its
+  worker command is constructed from that selected home rather than the CLI
+  process JVM. The CLI test and fat-JAR build passed.

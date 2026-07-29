@@ -10,8 +10,11 @@ plugins {
 java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
 
 dependencies {
+    implementation project(':tooling-core')
     implementation project(':preview-host')
     implementation project(':preview-worker')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 }
 
 application { mainClass = 'com.totalcross.tooling.cli.ToolingCli' }

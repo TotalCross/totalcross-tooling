@@ -4,6 +4,9 @@
 package com.totalcross.tooling.cli;
 
 import com.totalcross.tooling.host.*;
+import com.totalcross.tooling.jdk.JdkCatalogResolver;
+import com.totalcross.tooling.jdk.JdkRequest;
+import com.totalcross.tooling.jdk.JdkInstallation;
 import com.totalcross.tooling.worker.PreviewWorkerMain;
 import java.io.File;
 import java.io.IOException;
@@ -50,10 +53,13 @@ public final class ToolingCli {
     boolean once = has(args, "--once");
     Path frameFile = optionPath(args, "--frame-file", null);
     Path controlFile = optionPath(args, "--control-file", null);
+    Path configuredJdk = optionPath(args, "--jdk-path", null);
+    JdkInstallation toolingJdk = JdkCatalogResolver.production().resolve(
+        new JdkRequest("17", configuredJdk, null));
     Path outputProject = project;
     String outputMainClass = mainClass;
     try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(15))) {
-      List<String> worker = List.of(javaExecutable(), "-cp", runtimeClasspath(),
+      List<String> worker = List.of(javaExecutable(toolingJdk.home()), "-cp", runtimeClasspath(),
           PreviewWorkerMain.class.getName());
       String initialMainClass = mainClass;
       if (!coordinator.reload(() -> candidate(worker, classpath, initialMainClass))) {
@@ -142,9 +148,9 @@ public final class ToolingCli {
         .distinct().reduce((left, right) -> left + File.pathSeparator + right).orElseThrow();
   }
 
-  private static String javaExecutable() {
+  static String javaExecutable(Path home) {
     String name = System.getProperty("os.name", "").toLowerCase().startsWith("windows") ? "java.exe" : "java";
-    return Path.of(System.getProperty("java.home"), "bin", name).toString();
+    return home.resolve("bin").resolve(name).toString();
   }
 
   private static Path sessionProject(Path session, Path fallback) throws IOException {
@@ -200,7 +206,7 @@ public final class ToolingCli {
   private static String escape(String value) { return value.replace("\\", "\\\\").replace("\"", "\\\""); }
 
   private static void usage() {
-    System.out.println("usage: totalcross-tooling preview|run --project <path> [--session <file>] [--main <class>] [--classpath <path>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file>");
+    System.out.println("usage: totalcross-tooling preview|run --project <path> [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file>");
   }
 
   private static final class ControlLoop implements AutoCloseable {

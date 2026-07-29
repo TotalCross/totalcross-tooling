@@ -87,6 +87,7 @@ Completed Plan 08C slices:
     catalog resolver with probed jdkPath precedence and actionable fallback
     Gradle and Maven package/Retrolambda adapters migrated to the catalog
     Maven JavaJDKManager and its dynamic Zulu download test removed
+    CLI worker launched with the catalog-selected Java 17 home
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -94,7 +95,7 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    authoritative catalog selection across CLI and companion adapters
+    authoritative catalog selection across the companion adapter
     explicit jdkPath precedence with capability probes
     dynamic providers restricted to catalog maintenance
     removal of Maven JavaJDKManager
