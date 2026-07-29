@@ -66,7 +66,7 @@ converter source, create tags, or publish publicly.
 - [ ] Add actionable `jdkPath` fallback for unsupported hosts.
 - [ ] Restrict dynamic providers to catalog-maintenance workflows.
 - [ ] Make shared SDK/JDK/store services authoritative in Gradle, Maven, and CLI.
-- [ ] Remove the Maven Zulu-only, latest, x86 JDK download path.
+- [x] Remove the Maven Zulu-only, latest, x86 JDK download path.
 - [ ] Enforce and document Java 17 for loading both pre-IR plugins.
 - [ ] Serialize and parse the complete versioned ProjectModel.
 - [ ] Include real roots, outputs, dependencies, SDK, targets, and arguments.

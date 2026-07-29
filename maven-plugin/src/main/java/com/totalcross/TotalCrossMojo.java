@@ -140,20 +140,17 @@ public class TotalCrossMojo extends AbstractMojo {
             }
             totalcrossHome = totalCrossSDKDownloader.getPath().getAbsolutePath();
         }
-        if (jdkPath == null) {
-            JavaJDKManager javaJDKManager = JavaJDKManager.forVersion(
-                    JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17");
-            javaJDKManager.init();
-            jdkPath = javaJDKManager.getPath().getAbsolutePath();
-        }
         try {
+            JdkInstallation selectedJdk = JdkCatalogResolver.production().resolve(
+                    new JdkRequest(JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17",
+                            jdkPath == null ? null : Paths.get(jdkPath), null));
             ToolingEnvironment environment = new ToolingEnvironmentResolver(
                     new JdkSelector(new JdkCapabilityProbe(HostPlatform.detect()))).resolve(
                     new ToolingEnvironmentRequest(sdk.getVersion(), Paths.get(totalcrossHome),
                             configuredSdkHome ? "totalcrossHome" : "Maven legacy SDK manager",
                             JavaCompatibilityPolicy.targetVersion(Paths.get(outputDirectory, finalName + "." + packaging)),
                             new JdkRequest(JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17",
-                                    Paths.get(jdkPath), null), List.of()));
+                                    selectedJdk.home(), null), List.of()));
             totalcrossHome = environment.sdkHome().toString();
             jdkPath = environment.toolingJdk().home().toString();
         } catch (JdkSelectionException | IllegalArgumentException failure) {

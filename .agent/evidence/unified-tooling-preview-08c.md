@@ -31,3 +31,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   when no offline or catalog installation can be used. Focused tooling-core
   tests passed; Gradle, Maven, CLI, and companion migration remains the next
   slice.
+- 2026-07-29: Gradle package and Maven package/Retrolambda now obtain their
+  tooling JDK from the catalog resolver, preserving a probed configured
+  `jdkPath` when supplied. Maven `JavaJDKManager` and its Zulu-only dynamic
+  download test were removed; no production Maven source references the legacy
+  manager. Tooling publication to Maven Local, the tooling Java suite, Gradle
+  plugin tests, and Maven plugin tests passed.

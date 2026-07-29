@@ -85,6 +85,8 @@ Completed Plan 08C slices:
     concrete Java 11 and 17 catalog entries for the minimum release host matrix
     atomic catalog installation, real macOS ARM64 probes, and offline reuse
     catalog resolver with probed jdkPath precedence and actionable fallback
+    Gradle and Maven package/Retrolambda adapters migrated to the catalog
+    Maven JavaJDKManager and its dynamic Zulu download test removed
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -92,7 +94,7 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    authoritative catalog selection across every production adapter
+    authoritative catalog selection across CLI and companion adapters
     explicit jdkPath precedence with capability probes
     dynamic providers restricted to catalog maintenance
     removal of Maven JavaJDKManager

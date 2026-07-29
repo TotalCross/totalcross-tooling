@@ -35,6 +35,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
+import com.totalcross.tooling.jdk.JdkCatalogResolver;
+import com.totalcross.tooling.jdk.JdkRequest;
+import com.totalcross.tooling.jdk.JdkSelectionException;
+import java.nio.file.Path;
 
 @Mojo(name = "retrolambda", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class TotalCrossRetroLambdaMojo extends AbstractMojo {
@@ -65,15 +69,11 @@ public class TotalCrossRetroLambdaMojo extends AbstractMojo {
 					+ " uses the Java 17 compatibility policy.");
 			return;
 		}
-		if (jdkPath == null) {
-			JavaJDKManager javaJDKManager = new JavaJDKManager();
-			try {
-				javaJDKManager.init();
-			} catch (IOException e) {
-				throw new MojoExecutionException(e.getMessage(), e);
-			}
-
-			jdkPath = javaJDKManager.getPath().getAbsolutePath();
+		try {
+			jdkPath = JdkCatalogResolver.production().resolve(
+					new JdkRequest("11", jdkPath == null ? null : Path.of(jdkPath), null)).home().toString();
+		} catch (JdkSelectionException error) {
+			throw new MojoExecutionException("TotalCross tooling JDK is not usable: " + error.getMessage(), error);
 		}
 
 		executeMojo(
