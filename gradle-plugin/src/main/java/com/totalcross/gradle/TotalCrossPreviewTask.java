@@ -49,7 +49,7 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
             return;
         }
         if (!Boolean.parseBoolean(String.valueOf(getProject().findProperty("totalcross.preview.noLaunch")))) {
-            launchSharedPreview(resolvedApplicationClass, session);
+            launchSharedPreview(session);
         }
     }
 
@@ -82,11 +82,7 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         }
     }
 
-    private void launchSharedPreview(String resolvedApplicationClass, Path session) throws Exception {
-        var mainSourceSet = getProject().getExtensions().getByType(SourceSetContainer.class)
-            .getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-        String value = mainSourceSet.getRuntimeClasspath().getFiles().stream()
-            .map(java.io.File::getAbsolutePath).collect(Collectors.joining(java.io.File.pathSeparator));
+    private void launchSharedPreview(Path session) throws Exception {
         Path configuredJdk = getJdkPath().isPresent()
             ? getJdkPath().get().getAsFile().toPath() : null;
         JdkInstallation toolingJdk = JdkCatalogResolver.production().resolve(
@@ -95,8 +91,7 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         Path control = session.resolveSibling("preview-control.txt");
         Path log = session.resolveSibling("preview.log");
         Files.deleteIfExists(frame);
-        Process process = new ProcessBuilder(previewCommand(toolingJdk.home(), projectDirectory().toPath(),
-            resolvedApplicationClass, value, frame, control))
+        Process process = new ProcessBuilder(previewCommand(toolingJdk.home(), frame, control))
             .directory(projectDirectory()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         if (!awaitFirstFrame(process, frame)) throw new IOException("TotalCross preview coordinator exited before its first frame: " + log);
         Files.writeString(session, Files.readString(session).replaceFirst("}$",
@@ -104,13 +99,12 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
         getLogger().lifecycle("TotalCross preview coordinator started with PID {} after first frame", process.pid());
     }
 
-    static List<String> previewCommand(Path toolingJdk, Path project, String applicationClass,
-        String classpath, Path frame, Path control) throws Exception {
+    static List<String> previewCommand(Path toolingJdk, Path frame, Path control) throws Exception {
         String java = toolingJdk.resolve("bin").resolve(
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
         return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), "preview",
-            "--project", project.toString(), "--main", applicationClass, "--classpath", classpath,
-            "--jdk-path", toolingJdk.toString(), "--frame-file", frame.toString(), "--control-file", control.toString());
+            "--model", frame.resolveSibling("project-model.json").toString(), "--jdk-path", toolingJdk.toString(),
+            "--frame-file", frame.toString(), "--control-file", control.toString());
     }
 
     private boolean awaitFirstFrame(Process process, Path frame) throws InterruptedException, IOException {

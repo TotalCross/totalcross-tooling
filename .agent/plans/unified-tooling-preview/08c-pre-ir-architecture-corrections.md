@@ -68,8 +68,8 @@ converter source, create tags, or publish publicly.
 - [x] Make shared SDK/JDK/store services authoritative in Gradle, Maven, and CLI.
 - [x] Remove the Maven Zulu-only, latest, x86 JDK download path.
 - [x] Enforce and document Java 17 for loading both pre-IR plugins.
-- [ ] Serialize and parse the complete versioned ProjectModel.
-- [ ] Include real roots, outputs, dependencies, SDK, targets, and arguments.
+- [x] Serialize and parse the complete versioned ProjectModel.
+- [x] Include real roots, outputs, dependencies, SDK, targets, and arguments.
 - [ ] Remove or internalize `totalcrossTypedPackage`.
 - [ ] Remove obsolete resolver/download dependencies after equivalence tests.
 - [ ] Clarify internal versus external preview contract documentation.

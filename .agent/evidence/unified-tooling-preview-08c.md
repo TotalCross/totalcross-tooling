@@ -58,3 +58,8 @@ reached the text-file size limit. Full command output remains outside the repo.
   this model from `totalcrossProjectModel`; Maven emits it beside the preview
   session descriptor. The shared core, Gradle plugin, and Maven plugin tests
   passed. CLI and VS Code consumption remain open before the model gate closes.
+- 2026-07-29: Gradle and Maven now start the CLI with `--model` rather than
+  passing independently discovered project, class, and classpath values. The
+  CLI reads the versioned model to obtain those values, so VS Code reaches the
+  same path through its Gradle or Maven preview command. Tooling-core and CLI,
+  Gradle plugin, and Maven plugin tests passed.

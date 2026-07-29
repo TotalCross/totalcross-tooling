@@ -4,6 +4,8 @@
 package com.totalcross.tooling.cli;
 
 import com.totalcross.tooling.host.*;
+import com.totalcross.tooling.build.ProjectModel;
+import com.totalcross.tooling.build.ProjectModelCodec;
 import com.totalcross.tooling.jdk.JdkCatalogResolver;
 import com.totalcross.tooling.jdk.JdkRequest;
 import com.totalcross.tooling.jdk.JdkInstallation;
@@ -43,13 +45,19 @@ public final class ToolingCli {
     if ("stop".equals(args[0])) { stop(args); return; }
     if (!List.of("preview", "run").contains(args[0])) throw new IllegalArgumentException("unknown command: " + args[0]);
     Path session = optionPath(args, "--session", null);
-    Path project = optionPath(args, "--project", session == null ? Path.of(".") : session.getParent());
-    if (session != null) project = sessionProject(session, project);
+    Path modelFile = optionPath(args, "--model", session == null ? null : session.resolveSibling("project-model.json"));
+    ProjectModel model = readProjectModel(modelFile);
+    Path project = optionPath(args, "--project", null);
+    if (project == null) project = model == null ? (session == null ? Path.of(".") : session.getParent()) : model.project();
+    if (model == null && session != null) project = sessionProject(session, project);
     if (!Files.isDirectory(project)) throw new IllegalArgumentException("project does not exist: " + project);
     String mainClass = option(args, "--main", null);
+    if ((mainClass == null || mainClass.isBlank()) && model != null) mainClass = model.mainClass();
     if ((mainClass == null || mainClass.isBlank()) && session != null) mainClass = sessionMainClass(session);
     if (mainClass == null || mainClass.isBlank()) mainClass = discoverMainClass(project);
-    String classpath = applicationClasspath(project, option(args, "--classpath", null));
+    String explicitClasspath = option(args, "--classpath", null);
+    if ((explicitClasspath == null || explicitClasspath.isBlank()) && model != null) explicitClasspath = modelClasspath(model);
+    String classpath = applicationClasspath(project, explicitClasspath);
     boolean once = has(args, "--once");
     Path frameFile = optionPath(args, "--frame-file", null);
     Path controlFile = optionPath(args, "--control-file", null);
@@ -148,6 +156,20 @@ public final class ToolingCli {
         .distinct().reduce((left, right) -> left + File.pathSeparator + right).orElseThrow();
   }
 
+  static ProjectModel readProjectModel(Path file) throws IOException {
+    if (file == null || !Files.isRegularFile(file)) return null;
+    try { return new ProjectModelCodec().fromJson(Files.readString(file)); }
+    catch (IllegalArgumentException error) { throw new IOException("Invalid project model: " + file + ": " + error.getMessage(), error); }
+  }
+
+  static String modelClasspath(ProjectModel model) {
+    List<Path> entries = new ArrayList<>();
+    entries.add(model.classOutput().path());
+    model.resourceRoots().stream().map(root -> root.path()).forEach(entries::add);
+    entries.addAll(model.dependencies().entries());
+    return entries.stream().map(Path::toString).distinct().reduce((left, right) -> left + File.pathSeparator + right).orElse("");
+  }
+
   static String javaExecutable(Path home) {
     String name = System.getProperty("os.name", "").toLowerCase().startsWith("windows") ? "java.exe" : "java";
     return home.resolve("bin").resolve(name).toString();
@@ -206,7 +228,7 @@ public final class ToolingCli {
   private static String escape(String value) { return value.replace("\\", "\\\\").replace("\"", "\\\""); }
 
   private static void usage() {
-    System.out.println("usage: totalcross-tooling preview|run --project <path> [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file>");
+    System.out.println("usage: totalcross-tooling preview|run [--model <file>] [--project <path>] [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file>");
   }
 
   private static final class ControlLoop implements AutoCloseable {

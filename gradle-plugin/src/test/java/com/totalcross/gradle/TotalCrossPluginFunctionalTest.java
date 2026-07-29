@@ -147,11 +147,12 @@ class TotalCrossPluginFunctionalTest {
     @Test
     void previewUsesTheSelectedJdkForTheCliAndWorker() throws Exception {
         Path selectedJdk = Path.of("/tmp/selected-jdk");
-        List<String> command = TotalCrossPreviewTask.previewCommand(selectedJdk, Path.of("/tmp/project"),
-                "example.App", "classes", Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt"));
+        List<String> command = TotalCrossPreviewTask.previewCommand(selectedJdk,
+                Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt"));
 
         String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
         assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
+        assertEquals("/tmp/project-model.json", command.get(command.indexOf("--model") + 1));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }
 
