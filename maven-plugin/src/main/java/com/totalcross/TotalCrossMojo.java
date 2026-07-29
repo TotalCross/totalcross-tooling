@@ -21,6 +21,7 @@ import com.totalcross.tooling.deploy.DeployRequest;
 import com.totalcross.tooling.deploy.DeployResult;
 import com.totalcross.tooling.deploy.DeployToolchain;
 import com.totalcross.tooling.deploy.LegacyDeployService;
+import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
 import com.totalcross.tooling.store.ExternalToolResolver;
 
 import org.apache.maven.artifact.Artifact;
@@ -111,6 +112,16 @@ public class TotalCrossMojo extends AbstractMojo {
 
     private void setupSDKPath() throws IOException {
 
+        Artifact sdk = mavenProject.getArtifactMap()
+                .get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
+        if (sdk == null || sdk.getFile() == null) throw new IOException("TotalCross SDK artifact is not resolved");
+        try {
+            JavaCompatibilityPolicy.validate(sdk.getVersion(),
+                    JavaCompatibilityPolicy.targetVersion(Paths.get(outputDirectory, finalName + "." + packaging)));
+        } catch (IllegalArgumentException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+
         // Setup environment variable
         if (totalcrossHome == null) { // check if SDK path is provided, if not
                                       // totalCrossDownloader will check if SDK
@@ -126,7 +137,8 @@ public class TotalCrossMojo extends AbstractMojo {
             totalcrossHome = totalCrossSDKDownloader.getPath().getAbsolutePath();
         }
         if (jdkPath == null) {
-            JavaJDKManager javaJDKManager = new JavaJDKManager();
+            JavaJDKManager javaJDKManager = JavaJDKManager.forVersion(
+                    JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17");
             javaJDKManager.init();
             jdkPath = javaJDKManager.getPath().getAbsolutePath();
         }

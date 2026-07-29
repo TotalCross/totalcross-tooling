@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
 
 @Mojo(name = "retrolambda", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class TotalCrossRetroLambdaMojo extends AbstractMojo {
@@ -53,8 +54,15 @@ public class TotalCrossRetroLambdaMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		Artifact sdk = totalCrossSdk();
-		if (sdk != null && hasModernBytecode(sdk.getFile())) {
-			getLog().info("Skipping Retrolambda because the TotalCross SDK uses Java 17 bytecode.");
+		boolean legacySdk = sdk == null;
+		try {
+			legacySdk = sdk == null || JavaCompatibilityPolicy.usesJdk11(sdk.getVersion());
+		} catch (IllegalArgumentException error) {
+			throw new MojoExecutionException(error.getMessage(), error);
+		}
+		if (sdk != null && !legacySdk) {
+			getLog().info("Skipping Retrolambda because TotalCross SDK " + sdk.getVersion()
+					+ " uses the Java 17 compatibility policy.");
 			return;
 		}
 		if (jdkPath == null) {

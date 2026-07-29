@@ -13,14 +13,28 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class JavaJDKManager extends DownloadManager {
-    private static final String JDK_VERSION = "11";
+    private final String jdkVersion;
 
     public JavaJDKManager(String localRepositoryDir) {
-        super(localRepositoryDir, "zulu_jdk_11");
+        this(localRepositoryDir, "11");
     }
 
     public JavaJDKManager() {
-        super("zulu_jdk_11");
+        this("11", true);
+    }
+
+    public JavaJDKManager(String localRepositoryDir, String jdkVersion) {
+        super(localRepositoryDir, "zulu_jdk_" + jdkVersion);
+        this.jdkVersion = jdkVersion;
+    }
+
+    public static JavaJDKManager forVersion(String jdkVersion) {
+        return new JavaJDKManager(jdkVersion, true);
+    }
+
+    private JavaJDKManager(String jdkVersion, boolean useDefaultRepository) {
+        super("zulu_jdk_" + jdkVersion);
+        this.jdkVersion = jdkVersion;
     }
 
     public void init() throws IOException {
@@ -35,11 +49,11 @@ public class JavaJDKManager extends DownloadManager {
 
     public void download() throws IOException {
         URLConnection connection = new URL(
-                "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + JDK_VERSION
+                "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + jdkVersion
                         + "&ext=zip&os=" + SYSTEM_OS + "&arch=x86&hw_bitness=" + SYSTEM_BITNESS).openConnection();
         long fileSize = connection.getContentLength();
         try (InputStream inputStream = connection.getInputStream()) {
-            super.download("Download JDK " + JDK_VERSION, inputStream, fileSize);
+            super.download("Download JDK " + jdkVersion, inputStream, fileSize);
         }
     }
 

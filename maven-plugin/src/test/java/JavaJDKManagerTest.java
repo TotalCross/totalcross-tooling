@@ -43,6 +43,13 @@ public class JavaJDKManagerTest {
     }
 
     @Test
+    void selectsTheRequestedJdkGeneration() {
+        JavaJDKManager java17 = JavaJDKManager.forVersion("17");
+        String expected = DownloadManager.isMac ? "Contents/Home" : "";
+        assertEquals(Paths.get(java17.getLocalRepositoryDir(), "zulu_jdk_17", expected).toFile(), java17.getPath());
+    }
+
+    @Test
     void downloadAndUnzip() {
         try {
             javaJDKManager.init();
