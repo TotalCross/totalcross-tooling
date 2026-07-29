@@ -290,3 +290,7 @@ program. Full command output belongs in `/tmp` or build artifacts.
   resize, incomplete wrapper preference, VSIX dependency packaging that was
   not deterministic, and release-facing SNAPSHOT or `mavenLocal` defaults.
   These are release blockers, not a retraction of the Plan 08B evidence.
+- 2026-07-29: Plan 08C process milestone passed: 20 real JVM worker promotions
+  preserved the active worker after a failed candidate. The CLI created a frame,
+  replaced worker PID 8985 with 8994 on reload, and stopped cleanly. Tooling
+  Java tests passed in `/tmp/totalcross-plan08c-process-milestone-test.log`.

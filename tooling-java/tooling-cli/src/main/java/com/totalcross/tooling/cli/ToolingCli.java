@@ -3,9 +3,7 @@
 
 package com.totalcross.tooling.cli;
 
-import com.totalcross.tooling.host.PreviewHost;
-import com.totalcross.tooling.protocol.MessageType;
-import com.totalcross.tooling.protocol.ProtocolMessage;
+import com.totalcross.tooling.host.*;
 import com.totalcross.tooling.worker.PreviewWorkerMain;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +12,7 @@ import javax.imageio.ImageIO;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -51,38 +50,44 @@ public final class ToolingCli {
     boolean once = has(args, "--once");
     Path frameFile = optionPath(args, "--frame-file", null);
     Path controlFile = optionPath(args, "--control-file", null);
-    try (PreviewHost host = new PreviewHost()) {
+    Path outputProject = project;
+    String outputMainClass = mainClass;
+    try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(15))) {
       List<String> worker = List.of(javaExecutable(), "-cp", runtimeClasspath(),
           PreviewWorkerMain.class.getName());
-      host.launchWorker(worker, classpath);
-      host.sendStart(mainClass);
-      try (ControlLoop controls = controlFile == null ? null : new ControlLoop(host, controlFile)) {
+      String initialMainClass = mainClass;
+      if (!coordinator.reload(() -> candidate(worker, classpath, initialMainClass))) {
+        throw new IllegalStateException("preview worker did not start: " + coordinator.lastFailure());
+      }
+      try (ControlLoop controls = controlFile == null ? null : new ControlLoop(coordinator, controlFile,
+          (nextMainClass, reloadArgs) -> coordinator.reload(() -> candidate(worker, classpath, nextMainClass, reloadArgs)),
+          error -> emit("error", outputProject, outputMainClass, error))) {
         if (controls != null) controls.start();
       emit("started", project, mainClass, null);
       boolean frame = false;
-      ProtocolMessage message;
-      while ((message = host.session().receive()) != null) {
-        if (message.type() == MessageType.FRAME) {
+      while (coordinator.state() != com.totalcross.tooling.host.PreviewSessionState.CLOSED) {
+        com.totalcross.tooling.protocol.FrameData next = coordinator.nextFrame(Duration.ofMillis(250));
+        if (next != null) {
           frame = true;
-          if (frameFile != null) writeFrame(frameFile, com.totalcross.tooling.protocol.FrameData.decode(message.payload()));
+          if (frameFile != null) writeFrame(frameFile, next);
           emit("frame", project, mainClass, null, frameFile == null ? null : frameFile.toString());
           if (once) break;
-        } else if (message.type() == MessageType.ERROR) {
-          String error = new String(message.payload(), StandardCharsets.UTF_8);
-          emit("error", project, mainClass, error);
-          throw new IllegalStateException(error);
-        } else if (message.type() == MessageType.CLOSED) break;
+        }
       }
       if (!frame && once) {
-        String diagnostics = host.workerDiagnostics();
-        String detail = diagnostics.isBlank() ? "preview worker closed before its first frame" :
-            "preview worker closed before its first frame: " + diagnostics;
+        String detail = coordinator.lastFailure().isBlank() ? "preview worker closed before its first frame" :
+            "preview worker closed before its first frame: " + coordinator.lastFailure();
         emit("error", project, mainClass, detail);
         throw new IllegalStateException(detail);
       }
       emit("stopped", project, mainClass, null);
       }
     }
+  }
+
+  private static ProcessWorkerCandidate candidate(List<String> worker, String classpath, String mainClass, String... args)
+      throws IOException {
+    return new ProcessWorkerCandidate(worker, classpath, mainClass, args);
   }
 
   private static Path optionPath(String[] args, String name) { return optionPath(args, name, Path.of(".")); }
@@ -199,15 +204,21 @@ public final class ToolingCli {
   }
 
   private static final class ControlLoop implements AutoCloseable {
-    private final PreviewHost host;
+    @FunctionalInterface interface ReloadHandler { boolean reload(String mainClass, String... args); }
+    private final PreviewReloadCoordinator coordinator;
     private final Path file;
+    private final ReloadHandler reload;
+    private final java.util.function.Consumer<String> errors;
     private volatile boolean running = true;
     private int consumed;
     private Thread thread;
 
-    ControlLoop(PreviewHost host, Path file) throws IOException {
-      this.host = host;
+    ControlLoop(PreviewReloadCoordinator coordinator, Path file, ReloadHandler reload,
+        java.util.function.Consumer<String> errors) throws IOException {
+      this.coordinator = coordinator;
       this.file = file.toAbsolutePath().normalize();
+      this.reload = reload;
+      this.errors = errors;
       Path parent = this.file.getParent();
       if (parent != null && !Files.isDirectory(parent)) Files.createDirectories(parent);
       if (!Files.exists(this.file)) Files.createFile(this.file);
@@ -229,22 +240,26 @@ public final class ToolingCli {
         } catch (InterruptedException interrupted) {
           Thread.currentThread().interrupt();
           return;
-        } catch (IOException | RuntimeException ignored) {
-          // A partially written command is retried on the next poll.
+        } catch (Exception failure) {
+          errors.accept(failure.getMessage() == null ? failure.getClass().getName() : failure.getMessage());
         }
       }
     }
 
-    private void dispatch(String line) throws IOException {
+    private void dispatch(String line) throws Exception {
       if (line == null || line.isBlank()) return;
       String[] values = line.trim().split(",", -1);
       switch (values[0]) {
-        case "resize" -> host.sendResize(Integer.parseInt(values[1]), Integer.parseInt(values[2]), Double.parseDouble(values[3]));
-        case "pointer" -> host.sendPointer(Integer.parseInt(values[1]), Integer.parseInt(values[2]),
+        case "resize" -> coordinator.resize(Integer.parseInt(values[1]), Integer.parseInt(values[2]), Double.parseDouble(values[3]));
+        case "pointer" -> coordinator.pointer(Integer.parseInt(values[1]), Integer.parseInt(values[2]),
             Integer.parseInt(values[3]), Boolean.parseBoolean(values[4]));
-        case "key" -> host.sendKey(Integer.parseInt(values[1]), Boolean.parseBoolean(values[2]), Integer.parseInt(values[3]));
-        case "reload" -> host.reload(values[1], java.util.Arrays.copyOfRange(values, 2, values.length));
-        case "stop" -> host.session().stop();
+        case "key" -> coordinator.key(Integer.parseInt(values[1]), Boolean.parseBoolean(values[2]), Integer.parseInt(values[3]));
+        case "reload" -> {
+          if (!reload.reload(values[1], java.util.Arrays.copyOfRange(values, 2, values.length))) {
+            throw new IOException("preview reload failed: " + coordinator.lastFailure());
+          }
+        }
+        case "stop" -> coordinator.close();
         default -> { }
       }
     }

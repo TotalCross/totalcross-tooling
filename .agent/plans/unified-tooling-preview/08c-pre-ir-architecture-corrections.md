@@ -42,14 +42,14 @@ converter source, create tags, or publish publicly.
 
 ### Process-isolated preview
 
-- [ ] Add a process-backed candidate implementation.
-- [ ] Connect `PreviewReloadCoordinator` to production CLI execution.
-- [ ] Keep one coordinator alive while worker candidates are replaced.
-- [ ] Require authentication, ready, and first frame before promotion.
-- [ ] Preserve the active worker after timeout, error, or invalid frame.
-- [ ] Route input and stop only to the promoted worker.
-- [ ] Close the previous worker and descendants only after promotion.
-- [ ] Prove repeated reload leaves no old worker processes.
+- [x] Add a process-backed candidate implementation.
+- [x] Connect `PreviewReloadCoordinator` to production CLI execution.
+- [x] Keep one coordinator alive while worker candidates are replaced.
+- [x] Require authentication, ready, and first frame before promotion.
+- [x] Preserve the active worker after timeout, error, or invalid frame.
+- [x] Route input and stop only to the promoted worker.
+- [x] Close the previous worker and descendants only after promotion.
+- [x] Prove repeated reload leaves no old worker processes.
 - [ ] Define distinct preview and run presentation modes.
 
 ### Shared resolution and model

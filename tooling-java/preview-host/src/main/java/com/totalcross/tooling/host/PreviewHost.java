@@ -16,6 +16,7 @@ public final class PreviewHost implements AutoCloseable {
 
   public PreviewHost() throws IOException { session = new PreviewHostSession(); }
   public PreviewHostSession session() { return session; }
+  public long workerProcessId() { return worker == null ? -1 : worker.pid(); }
 
   public void launchWorker(List<String> command) throws IOException {
     launchWorker(command, null);
@@ -80,7 +81,16 @@ public final class PreviewHost implements AutoCloseable {
   }
 
   @Override public void close() throws IOException {
-    if (worker != null && worker.isAlive()) { session.stop(); worker.destroy(); }
+    if (worker != null && worker.isAlive()) {
+      try { session.stop(); } catch (IOException ignored) { }
+      ProcessHandle handle = worker.toHandle();
+      handle.descendants().forEach(child -> {
+        child.destroy();
+        if (child.isAlive()) child.destroyForcibly();
+      });
+      handle.destroy();
+      if (handle.isAlive()) handle.destroyForcibly();
+    }
     session.close();
   }
 

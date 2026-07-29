@@ -80,7 +80,6 @@ Plan 08B remains evidence, not the final release gate.
 
 Plan 08C:
 
-    process-backed candidate promotion
     failed-build preservation
     authoritative shared environment resolution
     complete project model
@@ -90,6 +89,15 @@ Plan 08C:
     Maven Wrapper preference
     deterministic VSIX bundling
     removal of release-facing SNAPSHOT defaults
+
+Completed Plan 08C milestones:
+
+    reconciliation of remote heads, resume commands, and audit evidence
+    process-backed worker promotion through the production CLI
+    twenty real-worker replacements with failed-candidate preservation
+
+Next milestone: make shared SDK/JDK/store resolution authoritative before
+changing the Gradle and Maven adapters.
 
 Plan 08D after 08C:
 
