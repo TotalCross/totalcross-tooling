@@ -152,7 +152,8 @@
 		"test:governance": "python3 -m unittest tests.test_repository_governance",
 		"audit": "npm audit --audit-level=low",
 		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"test:vsix": "npm run verify:vsix && node ./out/test/runTest.js --vsix totalcross-preview.vsix"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",

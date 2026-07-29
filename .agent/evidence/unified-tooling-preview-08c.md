@@ -98,3 +98,10 @@ reached the text-file size limit. Full command output remains outside the repo.
   `publishToMavenLocal`. Runtime dependency audit passed with zero findings;
   four pre-existing high findings remain only in the development Mocha chain,
   whose automated fix requires a breaking upgrade.
+- 2026-07-29: the VS Code test runner now accepts both the legacy macOS
+  `Electron` executable name and the current `Code` name. It can install the
+  generated VSIX into a temporary extension directory and run the same host
+  suite from that installed `totalcross.vscode-totalcross-0.1.0` directory.
+  Focused assertions prove reload emits success only after its build and sends
+  no candidate-reload control after build failure. Both the development and
+  installed-VSIX extension-host runs passed all 33 tests on VS Code 1.131.0.

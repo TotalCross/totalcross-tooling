@@ -99,6 +99,8 @@ Completed Plan 08C slices:
     VS Code scales pointer input and applies configured device resize and density
     deterministic local VSIX packaging with runtime-content verification
     release-facing VS Code defaults use Gradle plugin 0.1.0 without Maven Local
+    VS Code reload builds before control promotion and preserves the active frame on failure
+    focused and installed-VSIX extension-host suites pass on VS Code 1.131.0
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -106,12 +108,12 @@ Plan 08B remains evidence, not the final release gate.
 
 Current Plan 08C milestone:
 
-    VS Code build-before-reload and installed-VSIX behavior
+    resolver cleanup and preview-contract documentation
 
 Remaining Plan 08C blockers:
 
-    installed-VSIX E2E proof of build-before-reload and failed-build preservation
-    focused and installed-VSIX E2E execution on a usable VS Code test bundle
+    obsolete resolver/download dependency removal after equivalence tests
+    internal versus external preview-contract documentation
 
 Plan 08D after Plan 08C:
 
