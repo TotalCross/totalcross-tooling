@@ -139,6 +139,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     Java target inference falls back to compiled class-file majors after compiler flags (complete 2026-07-30)
     Java target inference reads literal existing Gradle/Maven build targets before classfiles (complete 2026-07-30)
     Launcher/Deploy plans separate recognized platforms, ordered arguments, and redacted secrets (complete 2026-07-30)
+    shared Gradle renderer maps legacy deploy platforms and retained switches (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

@@ -29,7 +29,7 @@ class ProjectConversionAnalyzerTest {
     assertEquals("launcher", plan.scriptEvidence().get(0).kind());
     assertEquals("7.6.0", plan.sdkCandidates().get(0).version());
     assertEquals(List.of("-android"), plan.deployArguments().get(0).platforms());
-    assertEquals(List.of("App", "/q"), plan.deployArguments().get(0).arguments());
+    assertEquals(List.of("/q"), plan.deployArguments().get(0).arguments());
     assertTrue(new ConversionPlanCodec().toJson(plan).contains("scriptEvidence"));
     assertTrue(new ConversionPlanCodec().toJson(plan).contains("deployArguments"));
   }

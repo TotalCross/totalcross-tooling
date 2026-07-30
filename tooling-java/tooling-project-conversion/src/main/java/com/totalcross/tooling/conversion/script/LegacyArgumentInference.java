@@ -22,11 +22,15 @@ public final class LegacyArgumentInference {
     List<String> platforms = new ArrayList<>(), arguments = new ArrayList<>();
     int command = evidence.arguments().indexOf("launcher".equals(evidence.kind()) ? "totalcross.Launcher" : "tc.Deploy");
     List<String> tail = command < 0 ? List.of() : evidence.arguments().subList(command + 1, evidence.arguments().size());
+    boolean deploySwitch = false;
     for (int index = 0; index < tail.size(); index++) {
       String value = tail.get(index);
       if (SECRET_OPTIONS.contains(value.toLowerCase(java.util.Locale.ROOT))) { index++; continue; }
-      if (PLATFORMS.contains(value.toLowerCase(java.util.Locale.ROOT))) platforms.add(value);
-      else if (!"<redacted>".equals(value)) arguments.add(value);
+      if (PLATFORMS.contains(value.toLowerCase(java.util.Locale.ROOT))) { platforms.add(value); deploySwitch = true; }
+      else if (!"<redacted>".equals(value) && (!"deploy".equals(evidence.kind()) || deploySwitch || value.startsWith("/") || value.startsWith("-"))) {
+        arguments.add(value);
+        deploySwitch |= value.startsWith("/") || value.startsWith("-");
+      }
     }
     return new LegacyArgumentMapping(evidence.script(), evidence.line(), platforms, arguments);
   }

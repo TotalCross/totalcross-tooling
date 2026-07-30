@@ -27,6 +27,6 @@ class LegacyScriptAnalyzerTest {
     assertTrue(evidence.get(0).secretPresent());
     var mapping = new LegacyArgumentInference().infer(evidence, "deploy").get(0);
     assertEquals(List.of("-android", "-linux"), mapping.platforms());
-    assertEquals(List.of("App", "/q"), mapping.arguments());
+    assertEquals(List.of("/q"), mapping.arguments());
   }
 }

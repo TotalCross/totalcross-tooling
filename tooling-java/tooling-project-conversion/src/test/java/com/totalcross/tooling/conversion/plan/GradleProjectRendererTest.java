@@ -17,10 +17,12 @@ class GradleProjectRendererTest {
 
   @Test void renders_a_conventional_project_from_unambiguous_evidence() throws Exception {
     Files.writeString(project.resolve("App.java"), "public class App extends totalcross.ui.MainWindow {}");
-    Files.writeString(project.resolve("legacy.sh"), "javac --release 17 App.java\njava totalcross.Launcher 7.6.0\n");
+    Files.writeString(project.resolve("legacy.sh"), "javac --release 17 App.java\njava totalcross.Launcher 7.6.0\njava tc.Deploy App -android /q\n");
     var files = new GradleProjectRenderer().render(new ProjectConversionAnalyzer().analyze(project), "0.1.0");
     assertTrue(files.get(Path.of("settings.gradle")).contains("rootProject.name"));
     assertTrue(files.get(Path.of("build.gradle")).contains("totalcross-sdk:7.6.0"));
     assertTrue(files.get(Path.of("build.gradle")).contains("options.release = 17"));
+    assertTrue(files.get(Path.of("build.gradle")).contains("platforms = ['-android']"));
+    assertTrue(files.get(Path.of("build.gradle")).contains("deployArguments = ['/q']"));
   }
 }
