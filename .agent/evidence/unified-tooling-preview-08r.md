@@ -14,3 +14,9 @@ SPDX-License-Identifier: Apache-2.0
 - 2026-07-30: Maven default packaging passed. Its effective POM resolved
   `2.0.4-beta.1` and tooling `0.1.0-beta.1` through the opt-in staging profile.
   License/provenance validation and its 20 tests also passed.
+- 2026-07-30: all eight catalog URLs returned HTTP 200. On the supported local
+  macOS ARM64 host, Temurin 11.0.28+6 and 17.0.16+8 archives were downloaded,
+  matched their committed SHA-256 values, contained the declared
+  `Contents/Home`, and passed `java -version` plus `javac -version`. The six
+  non-local host entries still require matching-host byte and capability
+  verification before the catalog gate can close.
