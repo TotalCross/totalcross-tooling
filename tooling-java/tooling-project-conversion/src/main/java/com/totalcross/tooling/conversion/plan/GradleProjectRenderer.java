@@ -6,6 +6,7 @@
 package com.totalcross.tooling.conversion.plan;
 
 import com.totalcross.tooling.conversion.inference.JavaTargetInference;
+import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
 import com.totalcross.tooling.sdk.SdkVersionCatalog;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,10 +22,16 @@ public final class GradleProjectRenderer {
   GradleProjectRenderer(SdkVersionResolver sdkCatalog) { this.sdkCatalog = sdkCatalog; }
 
   public Map<Path, String> render(ConversionPlan plan, String pluginVersion) throws IOException {
+    return render(plan, pluginVersion, null);
+  }
+
+  /** Renders an explicitly reviewed Java target instead of re-inferring it from legacy evidence. */
+  public Map<Path, String> render(ConversionPlan plan, String pluginVersion, Integer selectedJavaTarget) throws IOException {
     if (plan.mainWindowCandidates().size() != 1) throw new IllegalArgumentException("select exactly one MainWindow before generating Gradle files");
     if (plan.sdkCandidates().size() > 1) throw new IllegalArgumentException("select exactly one SDK version before generating Gradle files");
     String sdk = plan.sdkCandidates().isEmpty() ? sdkCatalog.latestStable() : plan.sdkCandidates().get(0).version();
-    int target = new JavaTargetInference().infer(sdk, plan.scriptEvidence(), plan.project()).target();
+    int target = selectedJavaTarget == null ? new JavaTargetInference().infer(sdk, plan.scriptEvidence(), plan.project()).target() : selectedJavaTarget;
+    JavaCompatibilityPolicy.validate(sdk, target);
     String mainClass = plan.mainWindowCandidates().get(0).className();
     String projectName = plan.project().getFileName() == null ? "totalcross-project" : plan.project().getFileName().toString();
     java.util.List<String> platforms = plan.deployArguments().stream().flatMap(item -> item.platforms().stream()).distinct().toList();

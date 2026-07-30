@@ -31,4 +31,11 @@ class GradleProjectRendererTest {
     var files = new GradleProjectRenderer(() -> "7.6.0").render(new ProjectConversionAnalyzer().analyze(project), "0.1.0");
     assertTrue(files.get(Path.of("build.gradle")).contains("totalcross-sdk:7.6.0"));
   }
+
+  @Test void uses_an_explicit_java_target_after_validating_it_for_the_selected_sdk() throws Exception {
+    Files.writeString(project.resolve("App.java"), "public class App extends totalcross.ui.MainWindow {}");
+    Files.writeString(project.resolve("legacy.sh"), "java totalcross.Launcher 7.6.0\n");
+    var files = new GradleProjectRenderer(() -> "7.6.0").render(new ProjectConversionAnalyzer().analyze(project), "0.1.0", 11);
+    assertTrue(files.get(Path.of("build.gradle")).contains("options.release = 11"));
+  }
 }

@@ -137,6 +137,23 @@ class TotalCrossPluginFunctionalTest {
     }
 
     @Test
+    void applies_explicit_conversion_selections_to_the_shared_plan() throws Exception {
+        Files.createDirectories(projectDirectory.resolve("legacy"));
+        Files.writeString(projectDirectory.resolve("legacy/App.java"), "package example; public class App extends totalcross.ui.MainWindow {}\n");
+        Files.writeString(projectDirectory.resolve("legacy/Other.java"), "package example; public class Other extends totalcross.ui.MainWindow {}\n");
+        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'conversion-app'\n");
+        Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n"
+                + "totalcrossConvertProject { selectedMainWindow = 'example.App'; selectedSdkVersion = '7.6.0'; selectedJavaTarget = 11 }\n");
+
+        GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
+                .withArguments("totalcrossConvertProject", "--stacktrace").build();
+
+        String plan = Files.readString(projectDirectory.resolve("build/totalcross/conversion-plan.json"));
+        assertTrue(plan.contains("\"className\":\"example.App\""));
+        assertFalse(plan.contains("\"className\":\"example.Other\""));
+    }
+
+    @Test
     void previewRunsAgainWhenItsDescriptorAlreadyExistsAndRunDependsOnPreview() throws Exception {
         Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'preview-app'\n");
         Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n");

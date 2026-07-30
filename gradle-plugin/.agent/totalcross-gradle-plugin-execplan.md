@@ -25,6 +25,7 @@ e de uma Zulu JDK 17. O exemplo em `examples/basic-app` prova o fluxo com uma
 - [x] (2026-07-13) Adaptados os plugins de aplicação e biblioteca, documentação e testes aos IDs e ao artefato definidos no build.
 - [x] (2026-07-30) Adicionada a task `totalcrossConvertProject` como adaptador do motor de conversão compartilhado.
 - [x] (2026-07-30) Alinhado o modo APPLY da task com o renderizador e a transação usados pelo CLI.
+- [x] (2026-07-30) Expostas seleções revisadas de MainWindow, SDK e alvo Java na task de conversão.
 
 ## Surprises & Discoveries
 
@@ -62,6 +63,10 @@ e de uma Zulu JDK 17. O exemplo em `examples/basic-app` prova o fluxo com uma
 
 - Decision: a task de conversão delega ao módulo `tooling-project-conversion` publicado localmente em vez de classificar arquivos no plugin.
   Rationale: preserva o mesmo plano, as mesmas verificações de fingerprint e a mesma transação para Gradle e CLI.
+  Date/Author: 2026-07-30 / OpenAI.
+
+- Decision: aceitar seleções do usuário apenas como redução de candidatos do plano compartilhado e validar o alvo Java no renderizador.
+  Rationale: evita criar regras de conversão no plugin e mantém CLI e Gradle no mesmo mecanismo.
   Date/Author: 2026-07-30 / OpenAI.
 
 ## Outcomes & Retrospective
@@ -123,3 +128,9 @@ cache não consegue criar subprocessos no macOS.
 Em 2026-07-15, foi adicionada a opção `logLevel`. SDKs 7.3.0 ou posteriores
 recebem `/log-level` com `quiet`, `normal`, `verbose` ou `debug`; SDKs legados
 aceitam somente `verbose`, traduzido para `/v`.
+
+Em 2026-07-30, `totalcrossConvertProject` recebeu `selectedMainWindow`,
+`selectedSdkVersion`, `selectedJavaTarget` e `nonInteractive`. O teste
+funcional confirmou que as seleções reduzem o plano compartilhado. `./gradlew
+test --console=plain` passou. As validações de licença continuam falhando apenas
+nos cinco caminhos históricos de proveniência já registrados.

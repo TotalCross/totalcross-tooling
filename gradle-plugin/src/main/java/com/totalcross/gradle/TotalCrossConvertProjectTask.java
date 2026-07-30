@@ -20,6 +20,7 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -29,22 +30,28 @@ public abstract class TotalCrossConvertProjectTask extends DefaultTask {
         getMode().convention("ANALYZE");
         getProjectDirectory().convention(getProject().getLayout().getProjectDirectory());
         getPlanFile().convention(getProject().getLayout().getBuildDirectory().file("totalcross/conversion-plan.json"));
+        getNonInteractive().convention(true);
     }
 
     @Input public abstract Property<String> getMode();
     @InputDirectory public abstract DirectoryProperty getProjectDirectory();
     @OutputFile public abstract RegularFileProperty getPlanFile();
+    @Optional @Input public abstract Property<String> getSelectedMainWindow();
+    @Optional @Input public abstract Property<String> getSelectedSdkVersion();
+    @Optional @Input public abstract Property<Integer> getSelectedJavaTarget();
+    @Input public abstract Property<Boolean> getNonInteractive();
 
     @TaskAction public void convert() throws Exception {
         Path project = getProjectDirectory().get().getAsFile().toPath().toAbsolutePath().normalize();
         String mode = getMode().get().trim().toUpperCase(java.util.Locale.ROOT);
         switch (mode) {
-            case "ANALYZE" -> writePlan(analyze(project));
+            case "ANALYZE" -> writePlan(review(analyze(project)));
             case "APPLY" -> {
-                ConversionPlan plan = analyze(project);
+                ConversionPlan plan = review(analyze(project));
+                requireReviewed(plan);
                 writePlan(plan);
                 ProjectConversionTransaction.Result result = new ProjectConversionTransaction().apply(plan,
-                    new GradleProjectRenderer().render(plan, "0.1.0"));
+                    new GradleProjectRenderer().render(plan, "0.1.0", getSelectedJavaTarget().getOrNull()));
                 getLogger().lifecycle("TotalCross conversion applied: {} files; journal {}", result.movedFiles(), result.journal());
             }
             case "VALIDATE" -> new GradleProjectValidator().validate(project);
@@ -57,6 +64,33 @@ public abstract class TotalCrossConvertProjectTask extends DefaultTask {
     }
 
     private ConversionPlan analyze(Path project) throws IOException { return new ProjectConversionAnalyzer().analyze(project); }
+
+    private ConversionPlan review(ConversionPlan plan) {
+        return new ConversionPlan(plan.schemaVersion(), plan.project(), plan.inventoryFingerprint(), plan.moves(), plan.generatedFiles(),
+            select(plan.mainWindowCandidates(), getSelectedMainWindow().getOrNull(), ConversionPlan.MainWindowCandidate::className), plan.scriptEvidence(),
+            selectSdk(plan.sdkCandidates(), getSelectedSdkVersion().getOrNull()),
+            plan.launcherArguments(), plan.deployArguments(), plan.warnings());
+    }
+
+    private void requireReviewed(ConversionPlan plan) {
+        if (!getNonInteractive().get()) return;
+        if (plan.mainWindowCandidates().size() != 1) throw new IllegalArgumentException("set selectedMainWindow before non-interactive apply");
+        if (plan.sdkCandidates().size() > 1) throw new IllegalArgumentException("set selectedSdkVersion before non-interactive apply");
+    }
+
+    private static <T> java.util.List<T> select(java.util.List<T> values, String selected, java.util.function.Function<T, String> name) {
+        if (selected == null || selected.isBlank()) return values;
+        return values.stream().filter(value -> selected.equals(name.apply(value))).findFirst().map(java.util.List::of)
+            .orElseThrow(() -> new IllegalArgumentException("selected conversion value was not found: " + selected));
+    }
+
+    private static java.util.List<com.totalcross.tooling.conversion.inference.SdkVersionInference.Candidate> selectSdk(
+            java.util.List<com.totalcross.tooling.conversion.inference.SdkVersionInference.Candidate> values, String selected) {
+        if (selected == null || selected.isBlank()) return values;
+        if (values.isEmpty()) return java.util.List.of(new com.totalcross.tooling.conversion.inference.SdkVersionInference.Candidate(
+            selected, Path.of("gradle-task"), 0, "user-selection"));
+        return select(values, selected, com.totalcross.tooling.conversion.inference.SdkVersionInference.Candidate::version);
+    }
 
     private void writePlan(ConversionPlan plan) throws IOException {
         Path output = getPlanFile().get().getAsFile().toPath();
