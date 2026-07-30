@@ -25,7 +25,7 @@ Do not merge IR or move source ownership.
 
 - [x] (2026-07-30) Verify every Plan-08C and Plan-08D gate against exact feature commits.
 - [x] (2026-07-30) Choose coordinated non-SNAPSHOT beta versions.
-- [ ] Create release branches from accepted feature commits.
+- [x] (2026-07-30) Create local release branches from accepted feature commits.
 - [ ] Freeze scope and allow only release fixes.
 - [x] (2026-07-30) Create one release manifest.
 - [x] (2026-07-30) Record JDK catalog schema, entries, platforms, and resource checksum.
@@ -272,6 +272,11 @@ entries in the pre-IR planning manifest.
 2026-07-30: Gradle release mode now resolves the beta tooling chain from a
 staging repository without `mavenLocal`; Maven uses the same configurable
 tooling version and an opt-in staging profile.
+
+2026-07-30: local release branches were created after Plan 08D acceptance.
+The SDK branch uses numeric version `7.2.3` because `Settings.versionStr` and
+the application compatibility policy require numeric SDK versions; the tooling
+and plugin branches retain their beta coordinates.
 
 
 ## Editorial Report

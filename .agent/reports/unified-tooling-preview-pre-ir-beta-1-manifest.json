@@ -3,15 +3,19 @@
   "status": "planned",
   "publicPublicationApproved": false,
   "release": {
-    "sdk": {"version": "7.2.3-beta.1", "coordinate": "com.totalcross:totalcross-sdk"},
+    "sdk": {"version": "7.2.3", "coordinate": "com.totalcross:totalcross-sdk"},
     "tooling": {"version": "0.1.0-beta.1", "coordinatePrefix": "com.totalcross.tooling"},
     "gradlePlugin": {"version": "0.1.0-beta.1", "coordinate": "com.totalcross:totalcross-gradle-plugin"},
     "mavenPlugin": {"version": "2.0.4-beta.1", "coordinate": "com.totalcross:totalcross-maven-plugin"},
     "vscode": {"version": "0.1.0-beta.1", "publisher": "TotalCross", "name": "vscode-totalcross"}
   },
   "commits": {
-    "totalcross": "9a36178ef185cc3986a446e7cdefdcb0451c402d",
-    "totalcrossTooling": "a59b4ed6d11a072fcd45be99b2eaa57ac74b3603"
+    "totalcross": "4b6bb643def497509aa1c25b1da60c1ea3add892",
+    "totalcrossTooling": "88868ae968d39ebb03c988f7244a191574c9b6b8"
+  },
+  "branches": {
+    "totalcross": "release/7.2.3-beta.1",
+    "totalcrossTooling": "release/0.1.0-beta.1"
   },
   "schemas": {
     "protocol": 1,

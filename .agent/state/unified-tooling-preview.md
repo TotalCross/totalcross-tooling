@@ -37,14 +37,18 @@ Expected workspace:
 
 TotalCross:
 
-    branch:
+    active release branch:
+      release/7.2.3-beta.1
+    feature branch:
       feature/392-feature-request-live-ui-preview-for-ides
     default branch:
       master
 
 Tooling:
 
-    branch:
+    active release branch:
+      release/0.1.0-beta.1
+    feature branch:
       feature/unify-tooling-and-preview
     default branch:
       main

@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 # Plan 08R evidence
 
-- 2026-07-30: candidate release versions are `7.2.3-beta.1` for the SDK,
+- 2026-07-30: candidate release versions are `7.2.3` for the SDK,
   `0.1.0-beta.1` for tooling and the Gradle plugin, `2.0.4-beta.1` for the
   Maven plugin, and `0.1.0-beta.1` for the VSIX. The planning manifest records
   exact feature commits and the catalog resource SHA-256.
@@ -24,3 +24,6 @@ SPDX-License-Identifier: Apache-2.0
   macOS ARM64 entries from the catalog and reused them with `offline=true`
   without a download. The capability probe accepted both homes and recorded
   the expected `jdk-catalog.properties` identities.
+- 2026-07-30: local release branches `release/7.2.3-beta.1` (SDK) and
+  `release/0.1.0-beta.1` (tooling) were created. The SDK branch commit
+  `4b6bb643d` sets the numeric SDK line to 7.2.3; its compileJava check passed.
