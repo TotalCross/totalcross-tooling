@@ -20,3 +20,7 @@ SPDX-License-Identifier: Apache-2.0
   `Contents/Home`, and passed `java -version` plus `javac -version`. The six
   non-local host entries still require matching-host byte and capability
   verification before the catalog gate can close.
+- 2026-07-30: the production `JdkCatalogInstaller` installed both verified
+  macOS ARM64 entries from the catalog and reused them with `offline=true`
+  without a download. The capability probe accepted both homes and recorded
+  the expected `jdk-catalog.properties` identities.

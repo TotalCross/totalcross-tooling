@@ -125,8 +125,9 @@ remain open.
 ## Active blockers
 
 Plans 08C and 08D gates pass. Plan 08R remains open for release assembly,
-clean-room staging, six non-local catalog byte/capability checks, offline
-verification, and explicit approval before any public publication. All eight
+clean-room staging, six non-local catalog byte/capability checks, and explicit
+approval before any public publication. Local macOS ARM64 catalog installation
+and offline reuse pass. All eight
 catalog URLs respond HTTP 200; both local macOS ARM64 entries match their
 committed hashes and declared homes. The official VSIX runner was observed to
 block while installing external Java Pack dependencies; the equivalent
