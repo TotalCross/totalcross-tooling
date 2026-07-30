@@ -20,4 +20,13 @@ class LegacyScriptAnalyzerTest {
     assertTrue(evidence.get(2).secretPresent());
     assertFalse(String.join(" ", evidence.get(2).arguments()).contains("private"));
   }
+
+  @Test void separates_deploy_platforms_and_omits_short_secret_options() {
+    var evidence = new LegacyScriptAnalyzer().analyzeFile(Path.of("build.sh"), List.of(
+        "java tc.Deploy App -android -linux /r private /q"));
+    assertTrue(evidence.get(0).secretPresent());
+    var mapping = new LegacyArgumentInference().infer(evidence, "deploy").get(0);
+    assertEquals(List.of("-android", "-linux"), mapping.platforms());
+    assertEquals(List.of("App", "/q"), mapping.arguments());
+  }
 }

@@ -24,7 +24,14 @@ public final class ConversionPlanCodec {
         + ",\"sdkCandidates\":" + array(plan.sdkCandidates(), candidate -> "{\"version\":" + quote(candidate.version())
             + ",\"script\":" + quote(candidate.script().toString()) + ",\"line\":" + candidate.line()
             + ",\"evidenceKind\":" + quote(candidate.evidenceKind()) + "}")
+        + ",\"launcherArguments\":" + mappings(plan.launcherArguments())
+        + ",\"deployArguments\":" + mappings(plan.deployArguments())
         + ",\"warnings\":" + array(plan.warnings(), this::quote) + "}";
+  }
+
+  private String mappings(List<com.totalcross.tooling.conversion.script.LegacyArgumentMapping> values) {
+    return array(values, value -> "{\"script\":" + quote(value.script().toString()) + ",\"line\":" + value.line()
+        + ",\"platforms\":" + array(value.platforms(), this::quote) + ",\"arguments\":" + array(value.arguments(), this::quote) + "}");
   }
 
   private <T> String array(List<T> values, Function<T, String> encoder) {

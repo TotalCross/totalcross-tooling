@@ -39,7 +39,7 @@ public final class LegacyScriptAnalyzer {
       String expanded = expand(line, variables);
       String kind = commandKind(expanded);
       if (kind == null) continue;
-      boolean secret = expanded.toLowerCase(Locale.ROOT).matches(".*(activation[-_ ]?key|password|certificate).*");
+      boolean secret = expanded.toLowerCase(Locale.ROOT).matches(".*(activation[-_ ]?key|password|certificate|(?:^|\\s)[/-]r(?:\\s|$)|(?:^|\\s)[/-]m(?:\\s|$)).*");
       results.add(new LegacyScriptEvidence(script, index + 1, kind, tokenize(secret ? redact(expanded) : expanded), secret));
     }
     return results;
@@ -71,7 +71,7 @@ public final class LegacyScriptAnalyzer {
   }
 
   private static String redact(String line) {
-    return line.replaceAll("(?i)((?:activation[-_ ]?key|password|certificate)\\s*(?:=|:)\\s*)([^\\s]+)", "$1<redacted>");
+    return line.replaceAll("(?i)((?:activation[-_ ]?key|password|certificate)\\s*(?:=|:)\\s*|[/-][rm]\\s+)([^\\s]+)", "$1<redacted>");
   }
 
   private static List<String> tokenize(String line) {

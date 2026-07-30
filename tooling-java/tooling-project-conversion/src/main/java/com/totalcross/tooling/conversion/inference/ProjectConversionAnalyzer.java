@@ -10,6 +10,7 @@ import com.totalcross.tooling.conversion.inventory.ProjectInventoryReader;
 import com.totalcross.tooling.conversion.java.JavaSourceClassifier;
 import com.totalcross.tooling.conversion.plan.ConversionPlan;
 import com.totalcross.tooling.conversion.script.LegacyScriptAnalyzer;
+import com.totalcross.tooling.conversion.script.LegacyArgumentInference;
 import com.totalcross.tooling.conversion.script.LegacyScriptEvidence;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -49,7 +50,8 @@ public final class ProjectConversionAnalyzer {
     }
     if (sdkCandidates.size() > 1) warnings.add("Multiple SDK versions were detected; select one before apply.");
     return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates,
-        scriptEvidence, sdkCandidates, warnings);
+        scriptEvidence, sdkCandidates, new LegacyArgumentInference().infer(scriptEvidence, "launcher"),
+        new LegacyArgumentInference().infer(scriptEvidence, "deploy"), warnings);
   }
 
   private static void append(List<ConversionPlan.Move> moves, List<JavaSourceClassifier.Source> sources, String kind) {
