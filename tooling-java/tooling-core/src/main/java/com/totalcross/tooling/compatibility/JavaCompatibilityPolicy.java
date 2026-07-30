@@ -47,6 +47,11 @@ public final class JavaCompatibilityPolicy {
         return isBefore730(sdkVersion);
     }
 
+    /** Highest application bytecode target accepted by the selected SDK generation. */
+    public static int highestApplicationTarget(String sdkVersion) {
+        return usesJdk11(sdkVersion) ? 8 : 17;
+    }
+
     public static void validate(String sdkVersion, int targetVersion) {
         if (usesJdk11(sdkVersion) && targetVersion > 8) {
             throw new IllegalArgumentException("TotalCross SDK " + sdkVersion

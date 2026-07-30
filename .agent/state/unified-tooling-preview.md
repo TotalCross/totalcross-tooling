@@ -27,7 +27,7 @@ Reason:
 
 Next command:
 
-    sed -n '1,300p'       .agent/plans/unified-tooling-preview/08c-pre-ir-architecture-corrections.md
+    sed -n '1,420p'       .agent/plans/unified-tooling-preview/08d-shared-project-conversion.md
 
 Resume commands are repository-relative. Historical `/tmp` locations remain in
 the append-only evidence file only.
@@ -118,6 +118,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     schema-versioned dry-run conversion plans and CLI analyze command (complete 2026-07-30)
     literal Unix/Windows legacy-script evidence parser with secret redaction (complete 2026-07-30)
     script evidence included in versioned conversion-plan output (complete 2026-07-30)
+    Java target inference from literal `javac --release` evidence and shared SDK ceiling (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

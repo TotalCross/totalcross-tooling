@@ -6,6 +6,7 @@
 package com.totalcross.tooling.compatibility;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,6 +21,8 @@ class JavaCompatibilityPolicyTest {
         assertFalse(JavaCompatibilityPolicy.requiresRetrolambda("7.3.0", 8));
         assertTrue(JavaCompatibilityPolicy.usesJdk11("7.2.2"));
         assertFalse(JavaCompatibilityPolicy.usesJdk11("7.3.0"));
+        assertEquals(8, JavaCompatibilityPolicy.highestApplicationTarget("7.2.2"));
+        assertEquals(17, JavaCompatibilityPolicy.highestApplicationTarget("7.3.0"));
     }
 
     @Test

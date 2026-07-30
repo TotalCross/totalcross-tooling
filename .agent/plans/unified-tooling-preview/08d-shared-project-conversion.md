@@ -103,6 +103,12 @@ so a future Gradle task and the CLI report the same source lines and redacted
 arguments. `./gradlew :tooling-project-conversion:test :tooling-cli:test`
 passed after this integration.
 
+The shared compatibility policy now supplies the highest application target for
+an SDK generation. The conversion inference accepts literal `javac --release`
+evidence ahead of that ceiling and rejects a script target unsupported by the
+selected SDK. `./gradlew :tooling-core:test :tooling-project-conversion:test`
+passed for this policy and inference slice.
+
 
 ## Cross-plan safety and size policy
 
