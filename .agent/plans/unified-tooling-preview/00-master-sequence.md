@@ -59,7 +59,7 @@ publications, and releases require explicit user approval.
 - [x] Plan 08: shared external tools and Android deploy migration.
 - [x] Plan 08B: first complete Gradle/Maven/VS Code E2E checkpoint.
 - [ ] Plan 08C: correct preview, model, resolver, and plugin architecture.
-- [ ] Plan 08D: add shared legacy-project conversion and reminder suppression.
+- [x] Plan 08D: add shared legacy-project conversion and reminder suppression.
 - [ ] Plan 08R: stage, publish, and verify the pre-IR release.
 - [ ] Plan 09: merge IR and decide physical source ownership.
 - [ ] Plan 10: post-IR slimming and final program closure.
@@ -238,9 +238,11 @@ receive only release fixes and remain separate from Plan 09.
 
 Plans 01–08B produced the workspace, shared core, artifact boundaries, launcher
 split, tooling modules, build-tool adapters, VS Code workflows, Android tool
-migration, and an installed-project E2E. Plan 08C is active; process-backed
-candidate promotion and capability probes are complete, while immutable JDK
-materialization and remaining plugin/editor corrections are pending.
+migration, and an installed-project E2E. Plan 08C corrected the process-backed
+preview, shared resolver, model, and VS Code release architecture. Plan 08D now
+adds the shared Java conversion engine, CLI bootstrap path, Gradle adapter,
+transactional rollback, and installed-VSIX conversion coverage. Plan 08R is the
+active pre-IR release preparation step; no release branch or publication exists.
 
 ## Revision Note
 

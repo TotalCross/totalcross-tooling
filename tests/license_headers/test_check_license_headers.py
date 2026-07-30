@@ -57,6 +57,11 @@ class HeaderValidationTests(unittest.TestCase):
     def test_missing_spdx(self): self.assertTrue(self.validate(f"Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n{amalgam(2022)}"))
     def test_excluded_path(self): self.assertEqual([], self.validate("binary", excluded=True))
     def test_generated_exclusion(self): self.assertEqual([], self.validate("generated", path="generated/a.js", excluded=True))
+    def test_deleted_untracked_provenance_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            item = record(path="removed.java")
+            self.assertEqual([], CHECK.validate_record(root, item, item["expected_license"]))
     def test_path_with_spaces(self): self.assertEqual([], self.validate(f"Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n{amalgam(2022)}\nSPDX-License-Identifier: Apache-2.0", path="src/a file.ts"))
     def test_shebang_placement(self): self.assertEqual([], self.validate(f"#!/usr/bin/env python3\n# Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n# {amalgam(2022)}\n# SPDX-License-Identifier: Apache-2.0", path="tool.py"))
     def test_xml_placement(self): self.assertEqual([], self.validate(f"<?xml version='1.0'?>\n<!--\n Copyright (C) 2019-2021 TotalCross Global Mobile Platform Ltda.\n {amalgam(2022)}\n SPDX-License-Identifier: Apache-2.0\n-->", path="a.xml"))

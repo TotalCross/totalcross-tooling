@@ -13,21 +13,17 @@ size limit.
 
 Active plan:
 
-    Plan 08D — shared project conversion (Milestone 1 complete)
+    Plan 08R — pre-IR release preparation
 
 Reason:
 
-    Plan 08B produced a useful E2E checkpoint, but a later audit found that
-    resolver, model, VS Code input, and release details remained incomplete.
-    Process-backed promotion and immutable catalog installation are now
-    implemented. Catalog selection is authoritative across Gradle, Maven, CLI,
-    and the companion path; remaining work corrects the release-facing preview
-    contract, model, and VS Code behavior. Plan 08C is complete; Plan 08D
-    begins the shared project-conversion implementation.
+    Plans 08C and 08D are complete. The next gate is a clean pre-IR release
+    assembled from non-SNAPSHOT artifacts, with catalog-backed JDK installation,
+    offline reuse, staged consumption, and the installed VSIX workflows proven.
 
 Next command:
 
-    sed -n '1,420p'       .agent/plans/unified-tooling-preview/08d-shared-project-conversion.md
+    sed -n '1,420p'       .agent/plans/unified-tooling-preview/08r-publish-pre-ir-release.md
 
 Resume commands are repository-relative. Historical `/tmp` locations remain in
 the append-only evidence file only.
@@ -56,9 +52,9 @@ Tooling:
 Fetch both remotes and record exact local and remote heads before the next
 implementation commit. Do not copy stale SHAs from historical state entries.
 
-Verified 2026-07-29 before the catalog-resolver slice:
+Verified 2026-07-30 before Plan 08R preparation:
 
-    totalcross-tooling local: dae0f5cd546bb2df4b3f1529f7b5303928e088a0
+    totalcross-tooling local: 27e807848ed6ac3345730958d7c635a14fe0ef15
     totalcross-tooling origin/feature/unify-tooling-and-preview: 718eb450ca5e05099dafb1b59d0ccde5378642b2
     totalcross local and origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d
 
@@ -105,13 +101,29 @@ Completed Plan 08C slices:
     preview protocol documentation distinguishes external integration from internal compatibility APIs
     Maven and Gradle SDK distribution resolution unified in tooling-core
 
+Completed Plan 08D:
+
+    project-scoped Maven reminder suppression and reset
+    shared inventory, Java layout classification, and MainWindow evidence
+    literal Unix/Windows script analysis with redaction
+    versioned conversion plans with SDK and Java inference
+    rendered Gradle project and official Wrapper assets
+    fingerprint-checked transactional apply and journal rollback
+    CLI analyze, apply, validate, and rollback bootstrap commands
+    Gradle totalcrossConvertProject adapter using the shared engine
+    deterministic companion JAR delivery and installed-VSIX conversion E2E
+
 Plan 08B remains evidence, not the final release gate.
 
 ## Active blockers
 
-Plan 08C is complete. Begin Plan 08D from its migration reminder and shared
-conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
-    Plan 08D after Plan 08C:
+Plans 08C and 08D gates pass. Plan 08R remains open for release assembly,
+clean-room staging, catalog/offline verification, and explicit approval before
+any public publication. The official VSIX runner was observed to block while
+installing external Java Pack dependencies; the equivalent unpacked release
+payload ran the installed-extension suite successfully.
+
+Historical Plan 08D evidence:
 
     project-scoped Maven reminder suppression and reset (complete 2026-07-30)
     shared conversion module inventory and Java layout classification (complete 2026-07-30)
@@ -151,11 +163,11 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     Gradle conversion task accepts reviewed MainWindow, SDK, and Java target selections (complete 2026-07-30)
     public CLI bootstrap analyze/apply/rollback works in a non-Gradle directory (complete 2026-07-30)
     installed VSIX companion E2E covers analyze, apply, wrapper validation, and rollback using a deterministic wrapper fixture (complete 2026-07-30)
-    shared Java legacy-conversion engine
-    Gradle conversion task and CLI bootstrap conversion
-    dynamic SDK and application-Java inference
-    transactional apply, validation, and rollback
-    installed-VSIX migration E2E
+    shared Java legacy-conversion engine (complete)
+    Gradle conversion task and CLI bootstrap conversion (complete)
+    dynamic SDK and application-Java inference (complete)
+    transactional apply, validation, and rollback (complete)
+    installed-VSIX migration E2E (complete)
 
 ## JDK catalog decision
 

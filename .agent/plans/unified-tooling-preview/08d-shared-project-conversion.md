@@ -79,70 +79,21 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 21:38Z) Require explicit Apply before mutation.
 - [x] (2026-07-30 21:38Z) Present rollback and validation results.
 - [x] (2026-07-30 23:30Z) Exercise installed VSIX companion full E2E.
-- [ ] Commit and update state to Plan 08R.
+- [x] (2026-07-30 23:35Z) Commit the accepted milestone and update state to Plan 08R.
 
-Milestone 1 is complete. VS Code workspace state stores the normalized folder
-URI plus Maven group/artifact identity; 34 tests passed.
+Plan 08D is complete. VS Code workspace state stores the normalized folder URI
+plus Maven group/artifact identity; the final installed-payload suite passed 36
+tests. The official runner's dependency-install path was separately observed to
+block on external Java Pack signature/download work, so the equivalent unpacked
+VSIX payload was used for the deterministic release gate.
 
-`ProjectInventoryReader` streams hashes without symlinks; `JavaSourceClassifier`
-produces conservative moves and candidates. Its focused test passed.
-
-`ProjectConversionAnalyzer` now turns that inventory into schema version 1 plan
-JSON and `totalcross-tooling convert-project analyze --project <path>` exposes
-the identical engine for folders that cannot apply Gradle plugins. The focused
-CLI suite passed with `./gradlew :tooling-cli:test`.
-
-The legacy script reader accepts root Unix/Windows scripts and Makefiles as
-evidence only. It supports same-file literal variables, skips command
-substitution and sourcing, recognizes compiler, Launcher, Deploy, and JAR
-commands, and redacts secret-bearing options before exposing arguments. Its
-focused module suite passed from `tooling-java`.
-
-Script evidence is included in the shared plan schema and its JSON-line output,
-so a future Gradle task and the CLI report the same source lines and redacted
-arguments. `./gradlew :tooling-project-conversion:test :tooling-cli:test`
-passed after this integration.
-
-The shared compatibility policy now supplies the highest application target for
-an SDK generation. The conversion inference accepts literal `javac --release`
-evidence ahead of that ceiling and rejects a script target unsupported by the
-selected SDK. `./gradlew :tooling-core:test :tooling-project-conversion:test`
-passed for this policy and inference slice.
-
-The transaction verifies fingerprints, rejects collisions/ambiguity, journals
-atomic moves, and restores failures. Generated Gradle and Wrapper files have
-atomic creation and rollback.
-
-CLI apply creates Gradle files and journal rollback removes them.
-
-The CLI `apply` command reads the saved plan's project and fingerprint, repeats
-analysis to reject drift, then invokes that transaction and returns a versioned
-JSON-line containing its backup and journal locations. Plan files must be
-outside the project so analysis does not mutate the selected folder.
-
-The CLI can now reverse a completed move operation with
-`convert-project rollback --journal <file>`. The journal's fixed generated
-location identifies its project root and matching backup without accepting a
-separate mutable root argument. Module and CLI focused tests passed.
-
-`GradleProjectValidator` requires the project-local Wrapper and invokes
-`classes totalcrossProjectModel --console=plain` through the shared process
-runner. `convert-project validate --project <path>` reports its successful
-completion as a versioned JSON line. The wrapper invocation and failure path
-are covered without using a shell.
-
-Launcher/Deploy SDK versions are typed plan candidates with script provenance;
-multiple versions remain a warning; catalog selection occurs at apply.
-
-The Gradle plugin now registers `totalcrossConvertProject` with ANALYZE, APPLY,
-VALIDATE, and ROLLBACK modes. Its implementation delegates directly to
-`tooling-project-conversion`; a Gradle TestKit scenario verified that ANALYZE
-creates the same schema-versioned plan for a legacy Java source. The plugin
-test suite passed after publishing only the local conversion module required by
-its existing development dependency model.
-
-VSIX packaging now builds and includes the executable CLI companion plus a
-SHA-256 file. Two consecutive packages had the same archive hash.
+The implementation and focused evidence are recorded in
+`.agent/evidence/unified-tooling-preview-08d.md`: the shared engine owns
+inventory, script evidence, inference, rendering, Wrapper delivery, validation,
+and rollback; CLI and Gradle call the same engine; and VS Code invokes only the
+packaged companion. The final suites covered schema output, ambiguity handling,
+fingerprint transactions, catalog fallback, typed Launcher/Deploy selections,
+and deterministic VSIX contents.
 
 
 ## Cross-plan safety and size policy
@@ -487,12 +438,34 @@ conversion passes.
 
 ## Outcomes & Retrospective
 
-Not started.
+The shared Java conversion engine now owns inventory, conservative Java and
+script evidence, SDK/Java inference, Gradle rendering, Wrapper delivery,
+validation, and journal-backed rollback. The CLI bootstraps folders that cannot
+load a Gradle plugin, while `totalcrossConvertProject` delegates to the same
+engine for existing Gradle builds. VS Code remains a thin consumer and invokes
+only the packaged companion for arbitrary-folder conversion.
+
+The final focused validation passed the full tooling-java suite, Gradle plugin
+tests, VS Code compilation and governance tests, license/provenance tests, and
+the installed VSIX suite (36 tests). `git diff --check` passed. The official
+VSIX helper was not used as the acceptance result because it blocked while
+installing the external Java Pack dependency; the unpacked VSIX payload passed
+the same host suite and executed its packaged companion against a temporary
+legacy project.
+
+The main trade-off is conservative interruption on ambiguous evidence and a
+CLI bootstrap path instead of trying to inject a temporary Gradle build into a
+non-Gradle folder. Governance validation now ignores only stale provenance
+records for paths no longer tracked, while preserving failures for current
+tracked files without valid headers.
 
 ## Revision Note
 
 2026-07-29: created the shared Gradle/CLI conversion engine plan and project-scoped
 Maven reminder preference.
+
+2026-07-30: completed all conversion, Gradle, CLI, VS Code, rollback, Wrapper,
+companion, and installed-payload gates; moved the shared checkpoint to Plan 08R.
 
 
 ## Editorial Report

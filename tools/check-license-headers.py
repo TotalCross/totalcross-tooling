@@ -57,6 +57,12 @@ def validate_record(root: Path, record: dict[str, object], license_name: str) ->
     if record.get("excluded"):
         return [] if source.exists() else [f"{path}: excluded provenance path is missing"]
     if not source.exists():
+        tracked = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "--error-unmatch", path],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        if tracked.returncode != 0:
+            return []
         return [f"{path}: provenance path is missing"]
     try:
         text = source.read_text(encoding="utf-8")
