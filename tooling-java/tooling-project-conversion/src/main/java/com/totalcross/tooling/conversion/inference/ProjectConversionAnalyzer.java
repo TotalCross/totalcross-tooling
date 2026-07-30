@@ -9,6 +9,8 @@ import com.totalcross.tooling.conversion.inventory.ProjectInventory;
 import com.totalcross.tooling.conversion.inventory.ProjectInventoryReader;
 import com.totalcross.tooling.conversion.java.JavaSourceClassifier;
 import com.totalcross.tooling.conversion.plan.ConversionPlan;
+import com.totalcross.tooling.conversion.script.LegacyScriptAnalyzer;
+import com.totalcross.tooling.conversion.script.LegacyScriptEvidence;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -18,11 +20,13 @@ import java.util.List;
 public final class ProjectConversionAnalyzer {
   private final ProjectInventoryReader inventoryReader;
   private final JavaSourceClassifier classifier;
+  private final LegacyScriptAnalyzer scriptAnalyzer;
 
-  public ProjectConversionAnalyzer() { this(new ProjectInventoryReader(), new JavaSourceClassifier()); }
-  ProjectConversionAnalyzer(ProjectInventoryReader inventoryReader, JavaSourceClassifier classifier) {
+  public ProjectConversionAnalyzer() { this(new ProjectInventoryReader(), new JavaSourceClassifier(), new LegacyScriptAnalyzer()); }
+  ProjectConversionAnalyzer(ProjectInventoryReader inventoryReader, JavaSourceClassifier classifier, LegacyScriptAnalyzer scriptAnalyzer) {
     this.inventoryReader = inventoryReader;
     this.classifier = classifier;
+    this.scriptAnalyzer = scriptAnalyzer;
   }
 
   public ConversionPlan analyze(Path project) throws IOException {
@@ -38,7 +42,11 @@ public final class ProjectConversionAnalyzer {
     layout.warnings().forEach(warning -> warnings.add(warning.source() + ": " + warning.evidence()));
     if (candidates.isEmpty()) warnings.add("No concrete public MainWindow candidate was detected; select one before apply.");
     if (candidates.size() > 1) warnings.add("Multiple MainWindow candidates were detected; select one before apply.");
-    return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates, warnings);
+    List<LegacyScriptEvidence> scriptEvidence = scriptAnalyzer.analyze(inventory.root());
+    if (scriptEvidence.stream().anyMatch(LegacyScriptEvidence::secretPresent)) {
+      warnings.add("Legacy script secrets were redacted and must be configured locally after conversion.");
+    }
+    return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates, scriptEvidence, warnings);
   }
 
   private static void append(List<ConversionPlan.Move> moves, List<JavaSourceClassifier.Source> sources, String kind) {

@@ -98,6 +98,11 @@ substitution and sourcing, recognizes compiler, Launcher, Deploy, and JAR
 commands, and redacts secret-bearing options before exposing arguments. Its
 focused module suite passed from `tooling-java`.
 
+Script evidence is included in the shared plan schema and its JSON-line output,
+so a future Gradle task and the CLI report the same source lines and redacted
+arguments. `./gradlew :tooling-project-conversion:test :tooling-cli:test`
+passed after this integration.
+
 
 ## Cross-plan safety and size policy
 

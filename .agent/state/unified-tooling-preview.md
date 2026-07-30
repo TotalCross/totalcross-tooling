@@ -117,6 +117,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     shared conversion module inventory and Java layout classification (complete 2026-07-30)
     schema-versioned dry-run conversion plans and CLI analyze command (complete 2026-07-30)
     literal Unix/Windows legacy-script evidence parser with secret redaction (complete 2026-07-30)
+    script evidence included in versioned conversion-plan output (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

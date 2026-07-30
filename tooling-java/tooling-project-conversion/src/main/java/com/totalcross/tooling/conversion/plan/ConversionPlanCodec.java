@@ -17,7 +17,11 @@ public final class ConversionPlanCodec {
             + quote(move.destination().toString()) + ",\"kind\":" + quote(move.kind()) + "}")
         + ",\"mainWindowCandidates\":" + array(plan.mainWindowCandidates(), candidate -> "{\"className\":"
             + quote(candidate.className()) + ",\"source\":" + quote(candidate.source().toString()) + ",\"evidence\":"
-            + quote(candidate.evidence()) + "}") + ",\"warnings\":" + array(plan.warnings(), this::quote) + "}";
+            + quote(candidate.evidence()) + "}") + ",\"scriptEvidence\":"
+        + array(plan.scriptEvidence(), evidence -> "{\"script\":" + quote(evidence.script().toString()) + ",\"line\":"
+            + evidence.line() + ",\"kind\":" + quote(evidence.kind()) + ",\"arguments\":"
+            + array(evidence.arguments(), this::quote) + ",\"secretPresent\":" + evidence.secretPresent() + "}")
+        + ",\"warnings\":" + array(plan.warnings(), this::quote) + "}";
   }
 
   private <T> String array(List<T> values, Function<T, String> encoder) {

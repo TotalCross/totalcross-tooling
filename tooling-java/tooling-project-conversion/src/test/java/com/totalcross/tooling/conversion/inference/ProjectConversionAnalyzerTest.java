@@ -19,11 +19,13 @@ class ProjectConversionAnalyzerTest {
     Path source = directory.resolve("app/App.java");
     Files.createDirectories(source.getParent());
     Files.writeString(source, "package demo; public class App extends totalcross.ui.MainWindow {}");
+    Files.writeString(directory.resolve("legacy.sh"), "java totalcross.Launcher --release 7.6.0");
     var plan = new ProjectConversionAnalyzer().analyze(directory);
     assertEquals(1, plan.schemaVersion());
     assertEquals(1, plan.mainWindowCandidates().size());
     assertEquals("main-source", plan.moves().get(0).kind());
     assertFalse(Files.exists(directory.resolve("src/main/java/demo/App.java")));
-    assertTrue(new ConversionPlanCodec().toJson(plan).contains("inventoryFingerprint"));
+    assertEquals("launcher", plan.scriptEvidence().get(0).kind());
+    assertTrue(new ConversionPlanCodec().toJson(plan).contains("scriptEvidence"));
   }
 }

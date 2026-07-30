@@ -5,12 +5,14 @@
 
 package com.totalcross.tooling.conversion.plan;
 
+import com.totalcross.tooling.conversion.script.LegacyScriptEvidence;
 import java.nio.file.Path;
 import java.util.List;
 
 /** Immutable dry-run result; an apply operation must verify its fingerprint before mutation. */
 public record ConversionPlan(int schemaVersion, Path project, String inventoryFingerprint,
-    List<Move> moves, List<MainWindowCandidate> mainWindowCandidates, List<String> warnings) {
+    List<Move> moves, List<MainWindowCandidate> mainWindowCandidates, List<LegacyScriptEvidence> scriptEvidence,
+    List<String> warnings) {
   public static final int SCHEMA_VERSION = 1;
 
   public ConversionPlan {
@@ -18,6 +20,7 @@ public record ConversionPlan(int schemaVersion, Path project, String inventoryFi
     project = project.toAbsolutePath().normalize();
     moves = List.copyOf(moves);
     mainWindowCandidates = List.copyOf(mainWindowCandidates);
+    scriptEvidence = List.copyOf(scriptEvidence);
     warnings = List.copyOf(warnings);
   }
 
