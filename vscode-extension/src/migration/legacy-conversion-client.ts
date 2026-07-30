@@ -21,12 +21,16 @@ export function companionCommand(extensionPath: string, javaCommand: string, arg
 }
 
 export function conversionPlanFromOutput(output: string): LegacyConversionPlan {
-    const event = output.split(/\r?\n/).filter((line) => line.trim()).map((line) => JSON.parse(line))
-        .find((item) => item && item.event === 'conversion-plan');
+    const event = conversionEventFromOutput(output, 'conversion-plan');
     if (!event || !event.plan || !Array.isArray(event.plan.moves) || !Array.isArray(event.plan.warnings)) {
         throw new Error('The TotalCross conversion companion did not return a valid conversion plan.');
     }
     return event.plan as LegacyConversionPlan;
+}
+
+export function conversionEventFromOutput(output: string, name: string): any {
+    return output.split(/\r?\n/).filter((line) => line.trim()).map((line) => JSON.parse(line))
+        .find((item) => item && item.event === name);
 }
 
 /** Executes the companion without a shell; all analysis and mutation remain in shared Java tooling. */

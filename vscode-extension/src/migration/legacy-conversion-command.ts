@@ -6,7 +6,7 @@
 import {promises as fs} from 'fs';
 import * as os from 'os';
 import * as vscode from 'vscode';
-import {companionCommand, conversionPlanFromOutput, runConversion} from './legacy-conversion-client';
+import {companionCommand, conversionEventFromOutput, conversionPlanFromOutput, runConversion} from './legacy-conversion-client';
 
 /** Presents an analysis produced by the packaged CLI; this module never classifies or moves project files. */
 export async function analyzeLegacyProject(context: vscode.ExtensionContext, folder?: vscode.WorkspaceFolder): Promise<void> {
@@ -29,7 +29,19 @@ export async function analyzeLegacyProject(context: vscode.ExtensionContext, fol
         output.appendLine(`SDK candidates: ${conversion.sdkCandidates.length}`);
         conversion.warnings.forEach((warning) => output.appendLine(`Warning: ${warning}`));
         output.show(true);
-        vscode.window.showInformationMessage(`TotalCross analysis found ${conversion.moves.length} proposed moves and ${conversion.warnings.length} warnings.`);
+        const action = await vscode.window.showInformationMessage(
+            `TotalCross analysis found ${conversion.moves.length} proposed moves and ${conversion.warnings.length} warnings.`, 'Apply', 'Cancel');
+        if (action !== 'Apply') { return; }
+        const applied = await runConversion(companionCommand(context.extensionPath, javaCommand, ['apply', '--plan', plan]), selected.uri.fsPath);
+        const event = conversionEventFromOutput(applied, 'conversion-applied');
+        if (!event || typeof event.journal !== 'string') { throw new Error('The TotalCross conversion companion did not return a rollback journal.'); }
+        try {
+            await runConversion(companionCommand(context.extensionPath, javaCommand, ['validate', '--project', selected.uri.fsPath]), selected.uri.fsPath);
+            vscode.window.showInformationMessage('TotalCross project conversion completed and validated.');
+        } catch (validationError) {
+            await runConversion(companionCommand(context.extensionPath, javaCommand, ['rollback', '--journal', event.journal]), selected.uri.fsPath);
+            throw validationError;
+        }
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         output.appendLine(message);

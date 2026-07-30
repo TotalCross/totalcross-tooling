@@ -76,8 +76,8 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 21:10Z) Add `TotalCross: Convert to TotalCross Project` analysis command.
 - [x] (2026-07-30 21:10Z) Call the packaged shared CLI; do not classify or move files in TypeScript.
 - [ ] Display detected evidence, conflicts, moves, generated files, and warnings.
-- [ ] Require explicit Apply before mutation.
-- [ ] Present rollback and validation results.
+- [x] (2026-07-30 21:38Z) Require explicit Apply before mutation.
+- [x] (2026-07-30 21:38Z) Present rollback and validation results.
 - [ ] Pass unit, fixture, integration, and installed-VSIX E2E tests.
 - [ ] Commit and update state to Plan 08R.
 
