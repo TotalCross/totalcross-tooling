@@ -147,6 +147,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     VS Code displays detailed reviewed conversion evidence, moves, generated files, and warnings (complete 2026-07-30)
     packaged VSIX verification and isolated installed-extension suite pass (complete 2026-07-30)
     conversion-plan JSON declares the exact conventional Gradle and Wrapper files to be generated (complete 2026-07-30)
+    installed VSIX executes its bundled companion against a temporary legacy project (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference
