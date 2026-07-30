@@ -52,6 +52,7 @@ public final class ProjectConversionAnalyzer {
     if (scriptEvidence.stream().anyMatch(LegacyScriptEvidence::secretPresent)) {
       warnings.add("Legacy script secrets were redacted and must be configured locally after conversion.");
     }
+    if (sdkCandidates.isEmpty()) warnings.add("No SDK version was detected; apply will resolve the latest stable SDK from the shared catalog.");
     if (sdkCandidates.size() > 1) warnings.add("Multiple SDK versions were detected; select one before apply.");
     return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates,
         scriptEvidence, sdkCandidates, new LegacyArgumentInference().infer(scriptEvidence, "launcher"),

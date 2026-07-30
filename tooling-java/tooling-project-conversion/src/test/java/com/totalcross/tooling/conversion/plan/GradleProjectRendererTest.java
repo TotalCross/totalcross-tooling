@@ -25,4 +25,10 @@ class GradleProjectRendererTest {
     assertTrue(files.get(Path.of("build.gradle")).contains("platforms = ['-android']"));
     assertTrue(files.get(Path.of("build.gradle")).contains("deployArguments = ['/q']"));
   }
+
+  @Test void resolves_the_catalog_sdk_only_when_the_plan_has_no_sdk_evidence() throws Exception {
+    Files.writeString(project.resolve("App.java"), "public class App extends totalcross.ui.MainWindow {}");
+    var files = new GradleProjectRenderer(() -> "7.6.0").render(new ProjectConversionAnalyzer().analyze(project), "0.1.0");
+    assertTrue(files.get(Path.of("build.gradle")).contains("totalcross-sdk:7.6.0"));
+  }
 }

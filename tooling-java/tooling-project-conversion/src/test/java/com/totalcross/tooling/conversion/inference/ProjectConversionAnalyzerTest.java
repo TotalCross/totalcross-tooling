@@ -52,4 +52,11 @@ class ProjectConversionAnalyzerTest {
     Files.writeString(directory.resolve("legacy.sh"), "java totalcross.Launcher 7.3.0");
     assertEquals("7.3.0", new ProjectConversionAnalyzer().analyze(directory).sdkCandidates().get(0).version());
   }
+
+  @Test void reports_catalog_resolution_without_contacting_it_during_analysis() throws Exception {
+    Files.writeString(directory.resolve("App.java"), "public class App extends totalcross.ui.MainWindow {}");
+    var plan = new ProjectConversionAnalyzer().analyze(directory);
+    assertTrue(plan.sdkCandidates().isEmpty());
+    assertTrue(plan.warnings().stream().anyMatch(warning -> warning.contains("latest stable SDK")));
+  }
 }
