@@ -60,7 +60,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 ### Gradle and CLI entry points
 
 - [x] (2026-07-30 19:14Z) Add `totalcrossConvertProject` to the Gradle plugin.
-- [x] (2026-07-30 19:14Z) Make the task use only the shared conversion engine.
+- [x] (2026-07-30 23:05Z) Use shared engine and reviewed task selections.
 - [x] (2026-07-30 18:58Z) Add CLI `convert-project validate` (analysis, apply, and rollback are complete).
 - [x] (2026-07-30 18:52Z) Add CLI `convert-project rollback` from a persisted transaction journal.
 - [x] (2026-07-30 18:48Z) Add CLI `convert-project apply` with saved-plan fingerprint revalidation.
