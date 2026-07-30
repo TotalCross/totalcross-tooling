@@ -50,14 +50,16 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [ ] Resolve missing SDK dynamically from the shared stable catalog.
 - [ ] Resolve missing Java from highest target accepted by that SDK.
 - [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.
-- [ ] Apply a hash-verified transaction with backup and rollback.
+- [x] (2026-07-30 18:48Z) Apply hash-verified source/resource moves with backup and rollback.
+- [ ] Extend the transaction to generated Gradle files and Wrapper assets.
 - [ ] Validate the resulting Gradle project through its wrapper.
 
 ### Gradle and CLI entry points
 
 - [ ] Add `totalcrossConvertProject` to the Gradle plugin.
 - [ ] Make the task use only the shared conversion engine.
-- [ ] Add CLI `convert-project apply`, `validate`, and `rollback` (analysis is complete).
+- [ ] Add CLI `convert-project validate` and `rollback` (analysis and apply are complete).
+- [x] (2026-07-30 18:48Z) Add CLI `convert-project apply` with saved-plan fingerprint revalidation.
 - [x] (2026-07-30 18:35Z) Add CLI `convert-project analyze` and emit a versioned JSON-line conversion plan.
 - [x] (2026-07-30 18:35Z) Emit versioned JSON lines suitable for IDE consumption.
 - [ ] Keep CLI as the bootstrap path when no Gradle build exists.
@@ -115,6 +117,11 @@ and journal paths, uses atomic moves where supported, verifies copy fallback
 hashes, and restores completed moves when a later operation fails. It currently
 covers reviewed source/resource moves; generated Gradle files and wrapper
 validation remain subsequent transaction work. Its focused module suite passed.
+
+The CLI `apply` command reads the saved plan's project and fingerprint, repeats
+analysis to reject drift, then invokes that transaction and returns a versioned
+JSON-line containing its backup and journal locations. Plan files must be
+outside the project so analysis does not mutate the selected folder.
 
 
 ## Cross-plan safety and size policy

@@ -44,4 +44,21 @@ class ToolingCliTest {
       try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }
     }
   }
+
+  @Test
+  void applies_only_a_saved_plan_that_still_matches_the_project() throws Exception {
+    Path project = Files.createTempDirectory("totalcross-convert-apply-");
+    try {
+      Path source = project.resolve("App.java");
+      Files.writeString(source, "public class App extends totalcross.ui.MainWindow {}");
+      Path plan = Files.createTempFile("totalcross-convert-apply-plan-", ".json");
+      Files.writeString(plan, new com.totalcross.tooling.conversion.plan.ConversionPlanCodec().toJson(ConvertProjectCommand.analyze(project)));
+      var result = ConvertProjectCommand.apply(plan);
+      assertEquals(1, result.movedFiles());
+      assertEquals(false, Files.exists(source));
+      Files.deleteIfExists(plan);
+    } finally {
+      try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }
+    }
+  }
 }
