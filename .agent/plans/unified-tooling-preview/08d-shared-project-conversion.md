@@ -75,7 +75,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:28Z) Add `TotalCross: Enable Maven Conversion Reminder`.
 - [x] (2026-07-30 21:10Z) Add `TotalCross: Convert to TotalCross Project` analysis command.
 - [x] (2026-07-30 21:10Z) Call the packaged shared CLI; do not classify or move files in TypeScript.
-- [ ] Display detected evidence, conflicts, moves, generated files, and warnings.
+- [x] (2026-07-30 22:42Z) Display evidence, conflicts, moves, generated files, and warnings.
 - [x] (2026-07-30 21:38Z) Require explicit Apply before mutation.
 - [x] (2026-07-30 21:38Z) Present rollback and validation results.
 - [ ] Pass unit, fixture, integration, and installed-VSIX E2E tests.

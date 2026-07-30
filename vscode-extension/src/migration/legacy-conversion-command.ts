@@ -6,7 +6,7 @@
 import {promises as fs} from 'fs';
 import * as os from 'os';
 import * as vscode from 'vscode';
-import {companionCommand, conversionEventFromOutput, conversionPlanFromOutput, runConversion} from './legacy-conversion-client';
+import {companionCommand, conversionEventFromOutput, conversionPlanFromOutput, conversionPlanSummary, runConversion} from './legacy-conversion-client';
 
 /** Presents an analysis produced by the packaged CLI; this module never classifies or moves project files. */
 export async function analyzeLegacyProject(context: vscode.ExtensionContext, folder?: vscode.WorkspaceFolder): Promise<void> {
@@ -24,10 +24,7 @@ export async function analyzeLegacyProject(context: vscode.ExtensionContext, fol
         const result = await vscode.window.withProgress({location: vscode.ProgressLocation.Notification, title: 'Analyzing TotalCross project...'},
             () => runConversion(command, selected.uri.fsPath));
         const conversion = conversionPlanFromOutput(result);
-        output.appendLine(`Moves: ${conversion.moves.length}`);
-        output.appendLine(`MainWindow candidates: ${conversion.mainWindowCandidates.length}`);
-        output.appendLine(`SDK candidates: ${conversion.sdkCandidates.length}`);
-        conversion.warnings.forEach((warning) => output.appendLine(`Warning: ${warning}`));
+        conversionPlanSummary(conversion).forEach((line) => output.appendLine(line));
         output.show(true);
         const action = await vscode.window.showInformationMessage(
             `TotalCross analysis found ${conversion.moves.length} proposed moves and ${conversion.warnings.length} warnings.`, 'Apply', 'Cancel');
