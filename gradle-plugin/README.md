@@ -93,11 +93,18 @@ application name, platforms, activation key, certificates, a supplied SDK/JDK,
 external resources, and TotalCross libraries. External resources and `*Lib.tcz`
 libraries are added to the generated `all.pkg` file.
 
-`totalcrossPreview` recompiles as needed, writes the preview session descriptor,
-and opens the desktop window on every invocation, even when a previous
-descriptor exists. It resolves the application FQN from the compiled output
-and includes the main source set's classes, resources, and runtime dependencies
-in the launched classpath. `totalcrossRun` depends on this preview task.
+`totalcrossPreview` recompiles as needed and starts the authenticated
+host/worker coordinator. Its supported external boundary is the versioned
+project model plus frame stream and control-file commands (`reload`, `resize`,
+pointer, and key input); IDEs consume frames and send those commands rather
+than linking to SDK preview classes. A worker becomes active only after it is
+ready and produces a valid first frame, so a failed candidate preserves the
+previous frame and worker. `totalcrossRun` uses the same lifecycle but presents
+the promoted frame stream in a native desktop window.
+
+SDK `totalcross.preview.*` classes and the legacy live-preview server remain
+internal compatibility surfaces. They are not a public extension API and may
+not be used as another reload owner.
 
 `logLevel` accepts `quiet`, `normal`, `verbose` and `debug`. SDK 7.3.0 or newer
 receives `/log-level <level>`; for earlier SDKs, only `verbose` is honored and

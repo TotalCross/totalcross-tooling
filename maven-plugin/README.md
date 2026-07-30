@@ -24,6 +24,14 @@ newer use JDK 17, while earlier SDKs can use JDK 11. Configure
 `totalcross.jdkPath` only to override or provide a compatible JDK when the
 catalog does not support the host.
 
+The stable integration boundary is the versioned project model and the
+cross-process frame/control protocol. A preview candidate is promoted only
+after readiness and its first valid frame, preserving the prior worker and
+displayed frame when a build or candidate fails. `totalcross:run` uses that
+same lifecycle with a native window. SDK `totalcross.preview.*` APIs and the
+legacy preview server are internal compatibility surfaces, not public reload
+or IDE integration APIs.
+
 ## Tasks
 | Task                   | Description                                                                                  |
 |------------------------|----------------------------------------------------------------------------------------------|
