@@ -21,6 +21,9 @@ public final class ConversionPlanCodec {
         + array(plan.scriptEvidence(), evidence -> "{\"script\":" + quote(evidence.script().toString()) + ",\"line\":"
             + evidence.line() + ",\"kind\":" + quote(evidence.kind()) + ",\"arguments\":"
             + array(evidence.arguments(), this::quote) + ",\"secretPresent\":" + evidence.secretPresent() + "}")
+        + ",\"sdkCandidates\":" + array(plan.sdkCandidates(), candidate -> "{\"version\":" + quote(candidate.version())
+            + ",\"script\":" + quote(candidate.script().toString()) + ",\"line\":" + candidate.line()
+            + ",\"evidenceKind\":" + quote(candidate.evidenceKind()) + "}")
         + ",\"warnings\":" + array(plan.warnings(), this::quote) + "}";
   }
 

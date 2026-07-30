@@ -6,13 +6,14 @@
 package com.totalcross.tooling.conversion.plan;
 
 import com.totalcross.tooling.conversion.script.LegacyScriptEvidence;
+import com.totalcross.tooling.conversion.inference.SdkVersionInference;
 import java.nio.file.Path;
 import java.util.List;
 
 /** Immutable dry-run result; an apply operation must verify its fingerprint before mutation. */
 public record ConversionPlan(int schemaVersion, Path project, String inventoryFingerprint,
     List<Move> moves, List<MainWindowCandidate> mainWindowCandidates, List<LegacyScriptEvidence> scriptEvidence,
-    List<String> warnings) {
+    List<SdkVersionInference.Candidate> sdkCandidates, List<String> warnings) {
   public static final int SCHEMA_VERSION = 1;
 
   public ConversionPlan {
@@ -21,6 +22,7 @@ public record ConversionPlan(int schemaVersion, Path project, String inventoryFi
     moves = List.copyOf(moves);
     mainWindowCandidates = List.copyOf(mainWindowCandidates);
     scriptEvidence = List.copyOf(scriptEvidence);
+    sdkCandidates = List.copyOf(sdkCandidates);
     warnings = List.copyOf(warnings);
   }
 

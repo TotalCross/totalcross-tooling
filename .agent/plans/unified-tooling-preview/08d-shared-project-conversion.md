@@ -46,6 +46,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:31Z) Infer main sources, tests, resources, and package paths.
 - [x] (2026-07-30 18:31Z) Locate direct concrete public `MainWindow` candidates and preserve candidate ambiguity for the plan.
 - [x] (2026-07-30 18:39Z) Parse supported Unix and Windows literal command evidence without execution.
+- [x] (2026-07-30 19:05Z) Extract script-backed SDK-version candidates into the versioned plan and report ambiguity.
 - [ ] Infer SDK, Java target, Launcher arguments, and Deploy arguments.
 - [ ] Resolve missing SDK dynamically from the shared stable catalog.
 - [ ] Resolve missing Java from highest target accepted by that SDK.
@@ -134,6 +135,11 @@ separate mutable root argument. Module and CLI focused tests passed.
 runner. `convert-project validate --project <path>` reports its successful
 completion as a versioned JSON line. The wrapper invocation and failure path
 are covered without using a shell.
+
+SDK versions present in Launcher or Deploy evidence are now exposed as typed
+plan candidates, with script and line provenance. Multiple distinct versions
+remain an explicit warning rather than a hidden selection. The dynamic catalog
+fallback and final SDK choice are still pending.
 
 
 ## Cross-plan safety and size policy

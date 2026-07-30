@@ -43,10 +43,13 @@ public final class ProjectConversionAnalyzer {
     if (candidates.isEmpty()) warnings.add("No concrete public MainWindow candidate was detected; select one before apply.");
     if (candidates.size() > 1) warnings.add("Multiple MainWindow candidates were detected; select one before apply.");
     List<LegacyScriptEvidence> scriptEvidence = scriptAnalyzer.analyze(inventory.root());
+    List<SdkVersionInference.Candidate> sdkCandidates = new SdkVersionInference().infer(scriptEvidence);
     if (scriptEvidence.stream().anyMatch(LegacyScriptEvidence::secretPresent)) {
       warnings.add("Legacy script secrets were redacted and must be configured locally after conversion.");
     }
-    return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates, scriptEvidence, warnings);
+    if (sdkCandidates.size() > 1) warnings.add("Multiple SDK versions were detected; select one before apply.");
+    return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates,
+        scriptEvidence, sdkCandidates, warnings);
   }
 
   private static void append(List<ConversionPlan.Move> moves, List<JavaSourceClassifier.Source> sources, String kind) {

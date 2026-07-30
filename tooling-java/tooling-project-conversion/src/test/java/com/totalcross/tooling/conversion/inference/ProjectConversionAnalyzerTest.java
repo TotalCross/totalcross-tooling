@@ -26,6 +26,7 @@ class ProjectConversionAnalyzerTest {
     assertEquals("main-source", plan.moves().get(0).kind());
     assertFalse(Files.exists(directory.resolve("src/main/java/demo/App.java")));
     assertEquals("launcher", plan.scriptEvidence().get(0).kind());
+    assertEquals("7.6.0", plan.sdkCandidates().get(0).version());
     assertTrue(new ConversionPlanCodec().toJson(plan).contains("scriptEvidence"));
   }
 }

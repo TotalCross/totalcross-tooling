@@ -123,6 +123,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     CLI apply command with saved-plan drift verification and JSON result (complete 2026-07-30)
     CLI rollback command from persisted source-move journal (complete 2026-07-30)
     shared Gradle Wrapper validation and CLI validate command (complete 2026-07-30)
+    script-backed SDK version candidates included in conversion plans (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference
