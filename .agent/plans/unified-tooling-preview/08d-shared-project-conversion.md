@@ -52,13 +52,13 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.
 - [x] (2026-07-30 18:48Z) Apply hash-verified source/resource moves with backup and rollback.
 - [ ] Extend the transaction to generated Gradle files and Wrapper assets.
-- [ ] Validate the resulting Gradle project through its wrapper.
+- [x] (2026-07-30 18:58Z) Validate a generated Gradle project through its wrapper without a shell.
 
 ### Gradle and CLI entry points
 
 - [ ] Add `totalcrossConvertProject` to the Gradle plugin.
 - [ ] Make the task use only the shared conversion engine.
-- [ ] Add CLI `convert-project validate` (analysis, apply, and rollback are complete).
+- [x] (2026-07-30 18:58Z) Add CLI `convert-project validate` (analysis, apply, and rollback are complete).
 - [x] (2026-07-30 18:52Z) Add CLI `convert-project rollback` from a persisted transaction journal.
 - [x] (2026-07-30 18:48Z) Add CLI `convert-project apply` with saved-plan fingerprint revalidation.
 - [x] (2026-07-30 18:35Z) Add CLI `convert-project analyze` and emit a versioned JSON-line conversion plan.
@@ -128,6 +128,12 @@ The CLI can now reverse a completed move operation with
 `convert-project rollback --journal <file>`. The journal's fixed generated
 location identifies its project root and matching backup without accepting a
 separate mutable root argument. Module and CLI focused tests passed.
+
+`GradleProjectValidator` requires the project-local Wrapper and invokes
+`classes totalcrossProjectModel --console=plain` through the shared process
+runner. `convert-project validate --project <path>` reports its successful
+completion as a versioned JSON line. The wrapper invocation and failure path
+are covered without using a shell.
 
 
 ## Cross-plan safety and size policy

@@ -9,6 +9,7 @@ import com.totalcross.tooling.conversion.inference.ProjectConversionAnalyzer;
 import com.totalcross.tooling.conversion.plan.ConversionPlan;
 import com.totalcross.tooling.conversion.plan.ConversionPlanCodec;
 import com.totalcross.tooling.conversion.transaction.ProjectConversionTransaction;
+import com.totalcross.tooling.conversion.validation.GradleProjectValidator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -20,6 +21,12 @@ final class ConvertProjectCommand {
 
   static void execute(String[] args) throws Exception {
     if (args.length < 2) throw new IllegalArgumentException(usage());
+    if ("validate".equals(args[1])) {
+      Path project = requiredPath(args, "--project");
+      new GradleProjectValidator().validate(project);
+      System.out.println("{\"schemaVersion\":1,\"event\":\"conversion-validated\",\"project\":" + quote(project) + "}");
+      return;
+    }
     if ("rollback".equals(args[1])) {
       Path journal = requiredPath(args, "--journal");
       int moved = new ProjectConversionTransaction().rollback(journal);
@@ -85,5 +92,5 @@ final class ConvertProjectCommand {
 
   private static String quote(Path value) { return "\"" + value.toString().replace("\\", "\\\\").replace("\"", "\\\"") + "\""; }
 
-  private static String usage() { return "usage: convert-project analyze --project <path> [--plan <file>] | convert-project apply --plan <file> | convert-project rollback --journal <file>"; }
+  private static String usage() { return "usage: convert-project analyze --project <path> [--plan <file>] | convert-project apply --plan <file> | convert-project validate --project <path> | convert-project rollback --journal <file>"; }
 }
