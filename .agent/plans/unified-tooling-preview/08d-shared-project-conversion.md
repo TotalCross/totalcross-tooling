@@ -53,7 +53,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.
 - [x] (2026-07-30 21:14Z) Render conventional Gradle settings and build files from unambiguous evidence.
 - [x] (2026-07-30 18:48Z) Apply hash-verified source/resource moves with backup and rollback.
-- [ ] Extend the transaction to generated Gradle files and Wrapper assets.
+- [ ] Add Wrapper assets; generated Gradle files now use an atomic rollback transaction.
 - [x] (2026-07-30 18:58Z) Validate a generated Gradle project through its wrapper without a shell.
 
 ### Gradle and CLI entry points
@@ -108,12 +108,9 @@ evidence ahead of that ceiling and rejects a script target unsupported by the
 selected SDK. `./gradlew :tooling-core:test :tooling-project-conversion:test`
 passed for this policy and inference slice.
 
-The initial transaction layer now verifies the analyzed inventory fingerprint,
-rejects collisions and ambiguous `MainWindow` selection, writes unique backup
-and journal paths, uses atomic moves where supported, verifies copy fallback
-hashes, and restores completed moves when a later operation fails. It currently
-covers reviewed source/resource moves; generated Gradle files and wrapper
-validation remain subsequent transaction work. Its focused module suite passed.
+The transaction verifies fingerprints, rejects collisions/ambiguity, journals
+atomic moves, and restores failures. Generated Gradle files now have atomic
+creation and rollback; Wrapper delivery remains pending.
 
 The CLI `apply` command reads the saved plan's project and fingerprint, repeats
 analysis to reject drift, then invokes that transaction and returns a versioned
