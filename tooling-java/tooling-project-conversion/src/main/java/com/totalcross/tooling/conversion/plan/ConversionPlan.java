@@ -13,7 +13,7 @@ import java.util.List;
 
 /** Immutable dry-run result; an apply operation must verify its fingerprint before mutation. */
 public record ConversionPlan(int schemaVersion, Path project, String inventoryFingerprint,
-    List<Move> moves, List<MainWindowCandidate> mainWindowCandidates, List<LegacyScriptEvidence> scriptEvidence,
+    List<Move> moves, List<GeneratedFile> generatedFiles, List<MainWindowCandidate> mainWindowCandidates, List<LegacyScriptEvidence> scriptEvidence,
     List<SdkVersionInference.Candidate> sdkCandidates, List<LegacyArgumentMapping> launcherArguments,
     List<LegacyArgumentMapping> deployArguments, List<String> warnings) {
   public static final int SCHEMA_VERSION = 1;
@@ -22,6 +22,7 @@ public record ConversionPlan(int schemaVersion, Path project, String inventoryFi
     if (schemaVersion != SCHEMA_VERSION) throw new IllegalArgumentException("unsupported conversion plan schema: " + schemaVersion);
     project = project.toAbsolutePath().normalize();
     moves = List.copyOf(moves);
+    generatedFiles = List.copyOf(generatedFiles);
     mainWindowCandidates = List.copyOf(mainWindowCandidates);
     scriptEvidence = List.copyOf(scriptEvidence);
     sdkCandidates = List.copyOf(sdkCandidates);
@@ -32,6 +33,9 @@ public record ConversionPlan(int schemaVersion, Path project, String inventoryFi
 
   public record Move(Path source, Path destination, String kind) {
     public Move { source = source.normalize(); destination = destination.normalize(); }
+  }
+  public record GeneratedFile(Path destination, String kind) {
+    public GeneratedFile { destination = destination.normalize(); }
   }
   public record MainWindowCandidate(String className, Path source, String evidence) {
     public MainWindowCandidate { source = source.normalize(); }

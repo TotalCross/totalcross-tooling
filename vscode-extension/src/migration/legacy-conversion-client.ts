@@ -8,6 +8,7 @@ import * as path from 'path';
 
 export interface LegacyConversionPlan {
     moves: Array<{source: string; destination: string; kind: string}>;
+    generatedFiles: Array<{destination: string; kind: string}>;
     mainWindowCandidates: Array<{className: string; source: string; evidence: string}>;
     sdkCandidates: Array<{version: string; script: string; line: number; evidenceKind: string}>;
     scriptEvidence: Array<{script: string; line: number; kind: string; arguments: string[]; secretPresent: boolean}>;
@@ -25,7 +26,7 @@ export function companionCommand(extensionPath: string, javaCommand: string, arg
 
 export function conversionPlanFromOutput(output: string): LegacyConversionPlan {
     const event = conversionEventFromOutput(output, 'conversion-plan');
-    if (!event || !event.plan || !Array.isArray(event.plan.moves) || !Array.isArray(event.plan.scriptEvidence) || !Array.isArray(event.plan.warnings)) {
+    if (!event || !event.plan || !Array.isArray(event.plan.moves) || !Array.isArray(event.plan.generatedFiles) || !Array.isArray(event.plan.scriptEvidence) || !Array.isArray(event.plan.warnings)) {
         throw new Error('The TotalCross conversion companion did not return a valid conversion plan.');
     }
     return event.plan as LegacyConversionPlan;
@@ -44,7 +45,8 @@ export function conversionPlanSummary(plan: LegacyConversionPlan): string[] {
     lines.push('Launcher and Deploy mappings:');
     append(lines, [...plan.launcherArguments, ...plan.deployArguments], (item) =>
         `  ${item.script}:${item.line} platforms=[${item.platforms.join(', ')}] arguments=[${item.arguments.join(' ')}]`);
-    lines.push('Generated files on Apply: settings.gradle, build.gradle, gradlew, gradlew.bat, gradle/wrapper/.');
+    lines.push('Generated files on Apply:');
+    append(lines, plan.generatedFiles, (file) => `  ${file.kind}: ${file.destination}`);
     lines.push('Warnings and conflicts:');
     append(lines, plan.warnings, (warning) => `  ${warning}`);
     return lines;

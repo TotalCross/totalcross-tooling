@@ -54,12 +54,21 @@ public final class ProjectConversionAnalyzer {
     }
     if (sdkCandidates.isEmpty()) warnings.add("No SDK version was detected; apply will resolve the latest stable SDK from the shared catalog.");
     if (sdkCandidates.size() > 1) warnings.add("Multiple SDK versions were detected; select one before apply.");
-    return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, candidates,
+    return new ConversionPlan(ConversionPlan.SCHEMA_VERSION, inventory.root(), inventory.fingerprint(), moves, generatedFiles(), candidates,
         scriptEvidence, sdkCandidates, new LegacyArgumentInference().infer(scriptEvidence, "launcher"),
         new LegacyArgumentInference().infer(scriptEvidence, "deploy"), warnings);
   }
 
   private static void append(List<ConversionPlan.Move> moves, List<JavaSourceClassifier.Source> sources, String kind) {
     sources.forEach(source -> moves.add(new ConversionPlan.Move(source.source(), source.destination(), kind)));
+  }
+
+  private static List<ConversionPlan.GeneratedFile> generatedFiles() {
+    return List.of(new ConversionPlan.GeneratedFile(Path.of("settings.gradle"), "gradle-settings"),
+        new ConversionPlan.GeneratedFile(Path.of("build.gradle"), "gradle-build"),
+        new ConversionPlan.GeneratedFile(Path.of("gradlew"), "gradle-wrapper-script"),
+        new ConversionPlan.GeneratedFile(Path.of("gradlew.bat"), "gradle-wrapper-script"),
+        new ConversionPlan.GeneratedFile(Path.of("gradle/wrapper/gradle-wrapper.jar"), "gradle-wrapper"),
+        new ConversionPlan.GeneratedFile(Path.of("gradle/wrapper/gradle-wrapper.properties"), "gradle-wrapper"));
   }
 }

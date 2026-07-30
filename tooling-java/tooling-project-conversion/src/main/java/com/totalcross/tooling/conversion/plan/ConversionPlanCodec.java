@@ -15,6 +15,8 @@ public final class ConversionPlanCodec {
         + ",\"inventoryFingerprint\":" + quote(plan.inventoryFingerprint()) + ",\"moves\":"
         + array(plan.moves(), move -> "{\"source\":" + quote(move.source().toString()) + ",\"destination\":"
             + quote(move.destination().toString()) + ",\"kind\":" + quote(move.kind()) + "}")
+        + ",\"generatedFiles\":" + array(plan.generatedFiles(), file -> "{\"destination\":" + quote(file.destination().toString())
+            + ",\"kind\":" + quote(file.kind()) + "}")
         + ",\"mainWindowCandidates\":" + array(plan.mainWindowCandidates(), candidate -> "{\"className\":"
             + quote(candidate.className()) + ",\"source\":" + quote(candidate.source().toString()) + ",\"evidence\":"
             + quote(candidate.evidence()) + "}") + ",\"scriptEvidence\":"
