@@ -45,7 +45,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:31Z) Implement streaming inventory and ignored-path rules.
 - [x] (2026-07-30 18:31Z) Infer main sources, tests, resources, and package paths.
 - [x] (2026-07-30 18:31Z) Locate direct concrete public `MainWindow` candidates and preserve candidate ambiguity for the plan.
-- [ ] Parse supported Unix and Windows legacy command evidence.
+- [x] (2026-07-30 18:39Z) Parse supported Unix and Windows literal command evidence without execution.
 - [ ] Infer SDK, Java target, Launcher arguments, and Deploy arguments.
 - [ ] Resolve missing SDK dynamically from the shared stable catalog.
 - [ ] Resolve missing Java from highest target accepted by that SDK.
@@ -91,6 +91,12 @@ passed from `tooling-java`.
 JSON and `totalcross-tooling convert-project analyze --project <path>` exposes
 the identical engine for folders that cannot apply Gradle plugins. The focused
 CLI suite passed with `./gradlew :tooling-cli:test`.
+
+The legacy script reader accepts root Unix/Windows scripts and Makefiles as
+evidence only. It supports same-file literal variables, skips command
+substitution and sourcing, recognizes compiler, Launcher, Deploy, and JAR
+commands, and redacts secret-bearing options before exposing arguments. Its
+focused module suite passed from `tooling-java`.
 
 
 ## Cross-plan safety and size policy
