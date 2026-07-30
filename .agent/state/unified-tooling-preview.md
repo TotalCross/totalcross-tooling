@@ -121,6 +121,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     Java target inference from literal `javac --release` evidence and shared SDK ceiling (complete 2026-07-30)
     fingerprint-checked source-move transaction with rollback journal (complete 2026-07-30)
     CLI apply command with saved-plan drift verification and JSON result (complete 2026-07-30)
+    CLI rollback command from persisted source-move journal (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

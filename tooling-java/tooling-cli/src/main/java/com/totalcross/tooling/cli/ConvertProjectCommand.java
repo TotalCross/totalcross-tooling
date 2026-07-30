@@ -20,6 +20,13 @@ final class ConvertProjectCommand {
 
   static void execute(String[] args) throws Exception {
     if (args.length < 2) throw new IllegalArgumentException(usage());
+    if ("rollback".equals(args[1])) {
+      Path journal = requiredPath(args, "--journal");
+      int moved = new ProjectConversionTransaction().rollback(journal);
+      System.out.println("{\"schemaVersion\":1,\"event\":\"conversion-rolled-back\",\"journal\":" + quote(journal)
+          + ",\"restoredFiles\":" + moved + "}");
+      return;
+    }
     if ("apply".equals(args[1])) {
       ProjectConversionTransaction.Result result = apply(requiredPath(args, "--plan"));
       System.out.println("{\"schemaVersion\":1,\"event\":\"conversion-applied\",\"backup\":"
@@ -78,5 +85,5 @@ final class ConvertProjectCommand {
 
   private static String quote(Path value) { return "\"" + value.toString().replace("\\", "\\\\").replace("\"", "\\\"") + "\""; }
 
-  private static String usage() { return "usage: convert-project analyze --project <path> [--plan <file>] | convert-project apply --plan <file>"; }
+  private static String usage() { return "usage: convert-project analyze --project <path> [--plan <file>] | convert-project apply --plan <file> | convert-project rollback --journal <file>"; }
 }

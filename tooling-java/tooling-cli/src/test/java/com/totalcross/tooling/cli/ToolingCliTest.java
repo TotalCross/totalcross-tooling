@@ -56,6 +56,8 @@ class ToolingCliTest {
       var result = ConvertProjectCommand.apply(plan);
       assertEquals(1, result.movedFiles());
       assertEquals(false, Files.exists(source));
+      assertEquals(1, new com.totalcross.tooling.conversion.transaction.ProjectConversionTransaction().rollback(result.journal()));
+      assertEquals(true, Files.exists(source));
       Files.deleteIfExists(plan);
     } finally {
       try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }

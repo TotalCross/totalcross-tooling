@@ -25,7 +25,7 @@ class ProjectConversionTransactionTest {
     Path destination = directory.resolve("src/main/java/app/App.java");
     assertFalse(Files.exists(source));
     assertTrue(Files.exists(destination));
-    transaction.rollback(result, directory);
+    assertEquals(1, transaction.rollback(result.journal()));
     assertTrue(Files.exists(source));
     assertFalse(Files.exists(destination));
   }

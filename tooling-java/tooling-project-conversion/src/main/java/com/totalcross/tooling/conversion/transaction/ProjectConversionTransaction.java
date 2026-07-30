@@ -63,6 +63,22 @@ public final class ProjectConversionTransaction {
 
   public void rollback(Result result, Path project) throws IOException { rollback(project, result.backup(), journal(result.journal())); }
 
+  /** Reverses a completed operation from its persisted journal without re-analyzing the project. */
+  public int rollback(Path journal) throws IOException {
+    Path file = journal.toAbsolutePath().normalize();
+    Path journalDirectory = file.getParent();
+    if (journalDirectory == null || !JOURNALS.equals(journalDirectory.getFileName().toString())) {
+      throw new IOException("not a TotalCross conversion journal: " + journal);
+    }
+    Path root = journalDirectory.getParent();
+    if (root == null) throw new IOException("conversion journal has no project root: " + journal);
+    String name = file.getFileName().toString();
+    if (!name.endsWith(".journal")) throw new IOException("invalid conversion journal name: " + journal);
+    List<ConversionPlan.Move> moves = journal(file);
+    rollback(root, root.resolve(BACKUPS).resolve(name.substring(0, name.length() - ".journal".length())), moves);
+    return moves.size();
+  }
+
   private void verifyDestinations(Path root, List<ConversionPlan.Move> moves) throws IOException {
     var destinations = new java.util.HashSet<Path>();
     for (ConversionPlan.Move move : moves) {

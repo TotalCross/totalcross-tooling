@@ -58,7 +58,8 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 
 - [ ] Add `totalcrossConvertProject` to the Gradle plugin.
 - [ ] Make the task use only the shared conversion engine.
-- [ ] Add CLI `convert-project validate` and `rollback` (analysis and apply are complete).
+- [ ] Add CLI `convert-project validate` (analysis, apply, and rollback are complete).
+- [x] (2026-07-30 18:52Z) Add CLI `convert-project rollback` from a persisted transaction journal.
 - [x] (2026-07-30 18:48Z) Add CLI `convert-project apply` with saved-plan fingerprint revalidation.
 - [x] (2026-07-30 18:35Z) Add CLI `convert-project analyze` and emit a versioned JSON-line conversion plan.
 - [x] (2026-07-30 18:35Z) Emit versioned JSON lines suitable for IDE consumption.
@@ -122,6 +123,11 @@ The CLI `apply` command reads the saved plan's project and fingerprint, repeats
 analysis to reject drift, then invokes that transaction and returns a versioned
 JSON-line containing its backup and journal locations. Plan files must be
 outside the project so analysis does not mutate the selected folder.
+
+The CLI can now reverse a completed move operation with
+`convert-project rollback --journal <file>`. The journal's fixed generated
+location identifies its project root and matching backup without accepting a
+separate mutable root argument. Module and CLI focused tests passed.
 
 
 ## Cross-plan safety and size policy
