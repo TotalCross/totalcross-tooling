@@ -137,6 +137,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     MainWindow classification follows unambiguous local inheritance (complete 2026-07-30)
     Java target inference accepts consistent javac source/target evidence and rejects conflicts (complete 2026-07-30)
     Java target inference falls back to compiled class-file majors after compiler flags (complete 2026-07-30)
+    Java target inference reads literal existing Gradle/Maven build targets before classfiles (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

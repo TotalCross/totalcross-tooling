@@ -15,26 +15,33 @@ import java.util.OptionalInt;
 /** Chooses a Java application target from explicit compiler evidence before SDK defaults. */
 public final class JavaTargetInference {
   public Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence) {
-    return infer(sdkVersion, evidence, OptionalInt.empty());
+    return resolve(sdkVersion, compilerTarget(evidence), OptionalInt.empty(), OptionalInt.empty());
   }
 
   /** Uses compiled output only after the explicit compiler flags have been considered. */
   public Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence, Path project) throws IOException {
-    return infer(sdkVersion, evidence, new ClassfileTargetInference().infer(project));
+    OptionalInt compiler = compilerTarget(evidence);
+    if (compiler.isPresent()) return resolve(sdkVersion, compiler, OptionalInt.empty(), OptionalInt.empty());
+    OptionalInt build = new ExistingBuildTargetInference().infer(project);
+    if (build.isPresent()) return resolve(sdkVersion, compiler, build, OptionalInt.empty());
+    return resolve(sdkVersion, compiler, build, new ClassfileTargetInference().infer(project));
   }
 
-  private Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence, OptionalInt classfileTarget) {
+  private static OptionalInt compilerTarget(List<LegacyScriptEvidence> evidence) {
     int[] releases = targets(evidence, JavaTargetInference::release);
     int[] sourceTargets = targets(evidence, JavaTargetInference::sourceTarget);
     if (releases.length > 1 || sourceTargets.length > 1 || (releases.length == 1 && sourceTargets.length == 1 && releases[0] != sourceTargets[0])) {
       throw new IllegalArgumentException("conflicting Java compiler targets require explicit selection");
     }
-    OptionalInt release = releases.length == 1 ? OptionalInt.of(releases[0]) : OptionalInt.empty();
-    OptionalInt sourceTarget = sourceTargets.length == 1 ? OptionalInt.of(sourceTargets[0]) : OptionalInt.empty();
-    int target = release.orElseGet(() -> sourceTarget.orElseGet(
+    return releases.length == 1 ? OptionalInt.of(releases[0])
+        : sourceTargets.length == 1 ? OptionalInt.of(sourceTargets[0]) : OptionalInt.empty();
+  }
+
+  private static Result resolve(String sdkVersion, OptionalInt compilerTarget, OptionalInt buildTarget, OptionalInt classfileTarget) {
+    int target = compilerTarget.orElseGet(() -> buildTarget.orElseGet(
         () -> classfileTarget.orElseGet(() -> JavaCompatibilityPolicy.highestApplicationTarget(sdkVersion))));
     JavaCompatibilityPolicy.validate(sdkVersion, target);
-    String source = release.isPresent() ? "javac --release" : sourceTarget.isPresent() ? "javac -source/-target"
+    String source = compilerTarget.isPresent() ? "javac compiler target" : buildTarget.isPresent() ? "existing build target"
         : classfileTarget.isPresent() ? "compiled class-file target" : "SDK compatibility default";
     return new Result(target, source);
   }
