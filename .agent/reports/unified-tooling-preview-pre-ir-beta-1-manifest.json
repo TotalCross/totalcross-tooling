@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "planned",
+  "publicPublicationApproved": false,
+  "release": {
+    "sdk": {"version": "7.2.3-beta.1", "coordinate": "com.totalcross:totalcross-sdk"},
+    "tooling": {"version": "0.1.0-beta.1", "coordinatePrefix": "com.totalcross.tooling"},
+    "gradlePlugin": {"version": "0.1.0-beta.1", "coordinate": "com.totalcross:totalcross-gradle-plugin"},
+    "mavenPlugin": {"version": "2.0.4-beta.1", "coordinate": "com.totalcross:totalcross-maven-plugin"},
+    "vscode": {"version": "0.1.0-beta.1", "publisher": "TotalCross", "name": "vscode-totalcross"}
+  },
+  "commits": {
+    "totalcross": "9a36178ef185cc3986a446e7cdefdcb0451c402d",
+    "totalcrossTooling": "a59b4ed6d11a072fcd45be99b2eaa57ac74b3603"
+  },
+  "schemas": {
+    "protocol": 1,
+    "projectModel": 1,
+    "conversionPlan": 1,
+    "jdkCatalog": 1
+  },
+  "jdkCatalog": {
+    "resource": "tooling-java/tooling-core/src/main/resources/com/totalcross/tooling/jdk/jdk-catalog-v1.properties",
+    "sha256": "76463d482c938051dffaedb70333aef3a0d202d17e71a065c9b8f91b885e6b8f",
+    "entries": [
+      "temurin-11.0.28-6-macos-arm64",
+      "temurin-11.0.28-6-macos-x64",
+      "temurin-11.0.28-6-linux-x64",
+      "temurin-11.0.28-6-windows-x64",
+      "temurin-17.0.16-8-macos-arm64",
+      "temurin-17.0.16-8-macos-x64",
+      "temurin-17.0.16-8-linux-x64",
+      "temurin-17.0.16-8-windows-x64"
+    ]
+  },
+  "publication": {
+    "staging": "not started",
+    "public": "blocked until explicit approval",
+    "cleanRoom": "not started",
+    "catalogUrlsAndArchives": "pending per-entry verification"
+  }
+}

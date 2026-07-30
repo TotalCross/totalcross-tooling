@@ -54,7 +54,7 @@ implementation commit. Do not copy stale SHAs from historical state entries.
 
 Verified 2026-07-30 before Plan 08R preparation:
 
-    totalcross-tooling local: 27e807848ed6ac3345730958d7c635a14fe0ef15
+    totalcross-tooling local: a59b4ed6d11a072fcd45be99b2eaa57ac74b3603
     totalcross-tooling origin/feature/unify-tooling-and-preview: 718eb450ca5e05099dafb1b59d0ccde5378642b2
     totalcross local and origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d
 
@@ -114,6 +114,11 @@ Completed Plan 08D:
     deterministic companion JAR delivery and installed-VSIX conversion E2E
 
 Plan 08B remains evidence, not the final release gate.
+
+Plan 08R preparation started 2026-07-30. Candidate versions and the catalog
+resource checksum are recorded in
+`.agent/reports/unified-tooling-preview-pre-ir-beta-1-manifest.json`. The
+release still has no branch, staging publication, public tag, or public release.
 
 ## Active blockers
 

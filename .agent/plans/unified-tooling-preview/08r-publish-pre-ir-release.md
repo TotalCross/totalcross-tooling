@@ -23,12 +23,12 @@ Do not merge IR or move source ownership.
 
 ## Progress
 
-- [ ] Verify every Plan-08C and Plan-08D gate against exact feature commits.
-- [ ] Choose coordinated non-SNAPSHOT beta versions.
+- [x] (2026-07-30) Verify every Plan-08C and Plan-08D gate against exact feature commits.
+- [x] (2026-07-30) Choose coordinated non-SNAPSHOT beta versions.
 - [ ] Create release branches from accepted feature commits.
 - [ ] Freeze scope and allow only release fixes.
-- [ ] Create one release manifest.
-- [ ] Record JDK catalog schema, entries, platforms, and resource checksum.
+- [x] (2026-07-30) Create one release manifest.
+- [x] (2026-07-30) Record JDK catalog schema, entries, platforms, and resource checksum.
 - [ ] Verify every catalog URL, SHA-256, and declared JAVA_HOME.
 - [ ] Configure Java metadata, sources, Javadocs, signing, and staging.
 - [ ] Configure Maven plugin Central publication and Invoker tests.
@@ -62,6 +62,11 @@ Release branches:
       release/<tooling-release-version>
 
 Feature branches remain available for Plan 09.
+
+The candidate versions and exact feature-branch commits are recorded in
+`.agent/reports/unified-tooling-preview-pre-ir-beta-1-manifest.json`. The
+manifest is planning evidence only: no release branch, staging publication, or
+public publication has been created.
 
 
 ## Cross-plan safety and size policy
@@ -258,6 +263,10 @@ Not started.
 offline-reuse, and publication gates.
 
 2026-07-29: added Plans 08C and 08D as release prerequisites.
+
+2026-07-30: verified the accepted 08C/08D feature heads, selected beta
+coordinates, and recorded the immutable catalog resource checksum and host
+entries in the pre-IR planning manifest.
 
 
 ## Editorial Report
