@@ -109,6 +109,13 @@ evidence ahead of that ceiling and rejects a script target unsupported by the
 selected SDK. `./gradlew :tooling-core:test :tooling-project-conversion:test`
 passed for this policy and inference slice.
 
+The initial transaction layer now verifies the analyzed inventory fingerprint,
+rejects collisions and ambiguous `MainWindow` selection, writes unique backup
+and journal paths, uses atomic moves where supported, verifies copy fallback
+hashes, and restores completed moves when a later operation fails. It currently
+covers reviewed source/resource moves; generated Gradle files and wrapper
+validation remain subsequent transaction work. Its focused module suite passed.
+
 
 ## Cross-plan safety and size policy
 
