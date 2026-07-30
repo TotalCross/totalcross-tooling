@@ -76,6 +76,10 @@ public class TotalCrossPlugin implements Plugin<Project> {
             task.getPresentationMode().set("run");
         });
         project.getTasks().register("totalcrossPreviewStop", TotalCrossPreviewStopTask.class);
+        project.getTasks().register("totalcrossConvertProject", TotalCrossConvertProjectTask.class, task -> {
+            task.setGroup("totalcross");
+            task.setDescription("Analyzes or converts this project through the shared TotalCross conversion engine.");
+        });
     }
 
     protected boolean isLibraryPlugin() {

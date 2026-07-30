@@ -57,8 +57,8 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 
 ### Gradle and CLI entry points
 
-- [ ] Add `totalcrossConvertProject` to the Gradle plugin.
-- [ ] Make the task use only the shared conversion engine.
+- [x] (2026-07-30 19:14Z) Add `totalcrossConvertProject` to the Gradle plugin.
+- [x] (2026-07-30 19:14Z) Make the task use only the shared conversion engine.
 - [x] (2026-07-30 18:58Z) Add CLI `convert-project validate` (analysis, apply, and rollback are complete).
 - [x] (2026-07-30 18:52Z) Add CLI `convert-project rollback` from a persisted transaction journal.
 - [x] (2026-07-30 18:48Z) Add CLI `convert-project apply` with saved-plan fingerprint revalidation.
@@ -79,11 +79,8 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [ ] Pass unit, fixture, integration, and installed-VSIX E2E tests.
 - [ ] Commit and update state to Plan 08R.
 
-Milestone 1 is complete. `vscode-extension/src/migration/reminder-state.ts`
-stores the preference exclusively in VS Code workspace state with a normalized
-folder URI and Maven group/artifact identity. This keeps different folders
-independent even when their coordinates match. The reminder suite and the full
-extension-host suite passed with 34 tests on VS Code 1.131.0.
+Milestone 1 is complete. VS Code workspace state stores the normalized folder
+URI plus Maven group/artifact identity; 34 tests passed.
 
 The first shared-engine slice is also complete. `ProjectInventoryReader` streams
 SHA-256 hashes without following symlinks and ignores generated/cache trees;
@@ -140,6 +137,13 @@ SDK versions present in Launcher or Deploy evidence are now exposed as typed
 plan candidates, with script and line provenance. Multiple distinct versions
 remain an explicit warning rather than a hidden selection. The dynamic catalog
 fallback and final SDK choice are still pending.
+
+The Gradle plugin now registers `totalcrossConvertProject` with ANALYZE, APPLY,
+VALIDATE, and ROLLBACK modes. Its implementation delegates directly to
+`tooling-project-conversion`; a Gradle TestKit scenario verified that ANALYZE
+creates the same schema-versioned plan for a legacy Java source. The plugin
+test suite passed after publishing only the local conversion module required by
+its existing development dependency model.
 
 
 ## Cross-plan safety and size policy

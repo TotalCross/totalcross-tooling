@@ -23,6 +23,7 @@ e de uma Zulu JDK 17. O exemplo em `examples/basic-app` prova o fluxo com uma
 - [x] (2026-07-10) Executado o exemplo com SDK 7.2.2 e Zulu JDK 17; gerado `build/totalcross/MainWindow.tcz`.
 - [x] (2026-07-11) Priorizada a release GitHub do SDK, com fallback S3 e testes unitários e de rede opt-in para as versões 7.2.0 e 5.8.4.
 - [x] (2026-07-13) Adaptados os plugins de aplicação e biblioteca, documentação e testes aos IDs e ao artefato definidos no build.
+- [x] (2026-07-30) Adicionada a task `totalcrossConvertProject` como adaptador do motor de conversão compartilhado.
 
 ## Surprises & Discoveries
 
@@ -57,6 +58,10 @@ e de uma Zulu JDK 17. O exemplo em `examples/basic-app` prova o fluxo com uma
 - Decision: expor plugins distintos para aplicação e biblioteca, com `totalcrossLib` falso e verdadeiro por padrão, respectivamente.
   Rationale: os IDs novos expressam modos de empacotamento diferentes; apontar ambos para o mesmo default faria o plugin de biblioteca gerar uma aplicação.
   Date/Author: 2026-07-13 / Codex.
+
+- Decision: a task de conversão delega ao módulo `tooling-project-conversion` publicado localmente em vez de classificar arquivos no plugin.
+  Rationale: preserva o mesmo plano, as mesmas verificações de fingerprint e a mesma transação para Gradle e CLI.
+  Date/Author: 2026-07-30 / OpenAI.
 
 ## Outcomes & Retrospective
 
