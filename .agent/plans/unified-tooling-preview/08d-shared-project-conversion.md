@@ -78,7 +78,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 22:42Z) Display evidence, conflicts, moves, generated files, and warnings.
 - [x] (2026-07-30 21:38Z) Require explicit Apply before mutation.
 - [x] (2026-07-30 21:38Z) Present rollback and validation results.
-- [ ] Pass unit, fixture, integration, and installed-VSIX E2E tests.
+- [ ] Complete installed-VSIX conversion E2E (packaged suite passes).
 - [ ] Commit and update state to Plan 08R.
 
 Milestone 1 is complete. VS Code workspace state stores the normalized folder
