@@ -6,17 +6,18 @@
 package com.totalcross.tooling.conversion.plan;
 
 import com.totalcross.tooling.conversion.inference.JavaTargetInference;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Renders the minimal conventional Gradle files from a reviewed, unambiguous plan. */
 public final class GradleProjectRenderer {
-  public Map<Path, String> render(ConversionPlan plan, String pluginVersion) {
+  public Map<Path, String> render(ConversionPlan plan, String pluginVersion) throws IOException {
     if (plan.mainWindowCandidates().size() != 1) throw new IllegalArgumentException("select exactly one MainWindow before generating Gradle files");
     if (plan.sdkCandidates().size() != 1) throw new IllegalArgumentException("select exactly one SDK version before generating Gradle files");
     String sdk = plan.sdkCandidates().get(0).version();
-    int target = new JavaTargetInference().infer(sdk, plan.scriptEvidence()).target();
+    int target = new JavaTargetInference().infer(sdk, plan.scriptEvidence(), plan.project()).target();
     String mainClass = plan.mainWindowCandidates().get(0).className();
     String projectName = plan.project().getFileName() == null ? "totalcross-project" : plan.project().getFileName().toString();
     Map<Path, String> files = new LinkedHashMap<>();

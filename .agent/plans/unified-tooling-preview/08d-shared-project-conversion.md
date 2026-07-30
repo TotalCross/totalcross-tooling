@@ -47,7 +47,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 21:45Z) Locate direct or unambiguous-local concrete public `MainWindow` candidates.
 - [x] (2026-07-30 18:39Z) Parse supported Unix and Windows literal command evidence without execution.
 - [x] (2026-07-30 19:05Z) Extract script-backed SDK-version candidates into the versioned plan and report ambiguity.
-- [ ] Infer SDK, Java target, Launcher arguments, and Deploy arguments.
+- [ ] Infer SDK, Java, Launcher, and Deploy arguments (compiler flags/classfiles complete).
 - [ ] Resolve missing SDK dynamically from the shared stable catalog.
 - [ ] Resolve missing Java from highest target accepted by that SDK.
 - [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.

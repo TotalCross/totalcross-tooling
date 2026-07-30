@@ -7,12 +7,23 @@ package com.totalcross.tooling.conversion.inference;
 
 import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
 import com.totalcross.tooling.conversion.script.LegacyScriptEvidence;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.OptionalInt;
 
 /** Chooses a Java application target from explicit compiler evidence before SDK defaults. */
 public final class JavaTargetInference {
   public Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence) {
+    return infer(sdkVersion, evidence, OptionalInt.empty());
+  }
+
+  /** Uses compiled output only after the explicit compiler flags have been considered. */
+  public Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence, Path project) throws IOException {
+    return infer(sdkVersion, evidence, new ClassfileTargetInference().infer(project));
+  }
+
+  private Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence, OptionalInt classfileTarget) {
     int[] releases = targets(evidence, JavaTargetInference::release);
     int[] sourceTargets = targets(evidence, JavaTargetInference::sourceTarget);
     if (releases.length > 1 || sourceTargets.length > 1 || (releases.length == 1 && sourceTargets.length == 1 && releases[0] != sourceTargets[0])) {
@@ -20,9 +31,11 @@ public final class JavaTargetInference {
     }
     OptionalInt release = releases.length == 1 ? OptionalInt.of(releases[0]) : OptionalInt.empty();
     OptionalInt sourceTarget = sourceTargets.length == 1 ? OptionalInt.of(sourceTargets[0]) : OptionalInt.empty();
-    int target = release.orElseGet(() -> sourceTarget.orElseGet(() -> JavaCompatibilityPolicy.highestApplicationTarget(sdkVersion)));
+    int target = release.orElseGet(() -> sourceTarget.orElseGet(
+        () -> classfileTarget.orElseGet(() -> JavaCompatibilityPolicy.highestApplicationTarget(sdkVersion))));
     JavaCompatibilityPolicy.validate(sdkVersion, target);
-    String source = release.isPresent() ? "javac --release" : sourceTarget.isPresent() ? "javac -source/-target" : "SDK compatibility default";
+    String source = release.isPresent() ? "javac --release" : sourceTarget.isPresent() ? "javac -source/-target"
+        : classfileTarget.isPresent() ? "compiled class-file target" : "SDK compatibility default";
     return new Result(target, source);
   }
 
