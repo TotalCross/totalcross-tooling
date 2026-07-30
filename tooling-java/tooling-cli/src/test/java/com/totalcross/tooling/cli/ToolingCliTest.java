@@ -4,7 +4,11 @@
 package com.totalcross.tooling.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.totalcross.tooling.build.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -69,4 +73,38 @@ class ToolingCliTest {
       try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }
     }
   }
+
+  @Test
+  void bootstraps_a_non_gradle_project_through_the_public_cli_commands() throws Exception {
+    Path project = Files.createTempDirectory("totalcross-cli-bootstrap-");
+    Path plan = Files.createTempFile("totalcross-cli-bootstrap-plan-", ".json");
+    try {
+      Path source = project.resolve("App.java");
+      Files.writeString(source, "public class App extends totalcross.ui.MainWindow {}");
+      Files.writeString(project.resolve("legacy.sh"), "java totalcross.Launcher 7.6.0\n");
+      String analysis = capture(() -> ToolingCli.main(new String[] {"convert-project", "analyze", "--project", project.toString(), "--plan", plan.toString()}));
+      assertTrue(analysis.contains("\"event\":\"conversion-plan\""));
+      String applied = capture(() -> ToolingCli.main(new String[] {"convert-project", "apply", "--plan", plan.toString()}));
+      String journal = applied.replaceFirst(".*\\\"journal\\\":\\\"([^\\\"]+)\\\".*", "$1").trim();
+      assertTrue(applied.contains("\"event\":\"conversion-applied\""));
+      assertFalse(Files.exists(source));
+      assertTrue(Files.isRegularFile(project.resolve("build.gradle")));
+      String rollback = capture(() -> ToolingCli.main(new String[] {"convert-project", "rollback", "--journal", journal}));
+      assertTrue(rollback.contains("\"event\":\"conversion-rolled-back\""));
+      assertTrue(Files.isRegularFile(source));
+      assertFalse(Files.exists(project.resolve("build.gradle")));
+    } finally {
+      Files.deleteIfExists(plan);
+      try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }
+    }
+  }
+
+  private static String capture(ThrowingRunnable command) throws Exception {
+    PrintStream previous = System.out;
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    try { System.setOut(new PrintStream(output)); command.run(); return output.toString(); }
+    finally { System.setOut(previous); }
+  }
+
+  @FunctionalInterface private interface ThrowingRunnable { void run() throws Exception; }
 }

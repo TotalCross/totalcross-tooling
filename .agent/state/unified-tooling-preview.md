@@ -149,6 +149,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     conversion-plan JSON declares the exact conventional Gradle and Wrapper files to be generated (complete 2026-07-30)
     installed VSIX executes its bundled companion against a temporary legacy project (complete 2026-07-30)
     Gradle conversion task accepts reviewed MainWindow, SDK, and Java target selections (complete 2026-07-30)
+    public CLI bootstrap analyze/apply/rollback works in a non-Gradle directory (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

@@ -66,7 +66,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:48Z) Add CLI `convert-project apply` with saved-plan fingerprint revalidation.
 - [x] (2026-07-30 18:35Z) Add CLI `convert-project analyze` and emit a versioned JSON-line conversion plan.
 - [x] (2026-07-30 18:35Z) Emit versioned JSON lines suitable for IDE consumption.
-- [ ] Keep CLI as the bootstrap path when no Gradle build exists.
+- [x] (2026-07-30 23:17Z) Keep CLI bootstrap path without Gradle.
 
 ### VS Code consumer
 
