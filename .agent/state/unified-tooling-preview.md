@@ -118,7 +118,9 @@ Plan 08B remains evidence, not the final release gate.
 Plan 08R preparation started 2026-07-30. Candidate versions and the catalog
 resource checksum are recorded in
 `.agent/reports/unified-tooling-preview-pre-ir-beta-1-manifest.json`. The
-release still has no branch, staging publication, public tag, or public release.
+release still has no branch, public tag, or public release. Version plumbing
+for Gradle/Maven staging is complete; clean-room publication and consumption
+remain open.
 
 ## Active blockers
 

@@ -11,12 +11,15 @@
 
     <groupId>com.totalcross</groupId>
     <artifactId>totalcross-maven-plugin</artifactId>
-    <version>2.0.3</version>
+    <version>${revision}</version>
     <name>totalcross-maven-plugin</name>
     <url>http://maven.apache.org</url>
     <packaging>maven-plugin</packaging>
 
     <properties>
+		<revision>2.0.3</revision>
+		<tooling.version>0.1.0-SNAPSHOT</tooling.version>
+		<tooling.repository></tooling.repository>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
@@ -28,13 +31,13 @@
         <dependency>
             <groupId>com.totalcross.tooling</groupId>
             <artifactId>tooling-core</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${tooling.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.totalcross.tooling</groupId>
             <artifactId>tooling-cli</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${tooling.version}</version>
             <classifier>all</classifier>
         </dependency>
 
@@ -72,6 +75,24 @@
             <version>2.5.7</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>release-staging</id>
+            <activation>
+                <property>
+                    <name>releaseMode</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>totalcross-tooling-staging</id>
+                    <url>${tooling.repository}</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

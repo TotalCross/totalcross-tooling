@@ -29,6 +29,7 @@ Do not merge IR or move source ownership.
 - [ ] Freeze scope and allow only release fixes.
 - [x] (2026-07-30) Create one release manifest.
 - [x] (2026-07-30) Record JDK catalog schema, entries, platforms, and resource checksum.
+- [x] (2026-07-30) Parameterize Gradle and Maven release versions and staging repositories.
 - [ ] Verify every catalog URL, SHA-256, and declared JAVA_HOME.
 - [ ] Configure Java metadata, sources, Javadocs, signing, and staging.
 - [ ] Configure Maven plugin Central publication and Invoker tests.
@@ -267,6 +268,10 @@ offline-reuse, and publication gates.
 2026-07-30: verified the accepted 08C/08D feature heads, selected beta
 coordinates, and recorded the immutable catalog resource checksum and host
 entries in the pre-IR planning manifest.
+
+2026-07-30: Gradle release mode now resolves the beta tooling chain from a
+staging repository without `mavenLocal`; Maven uses the same configurable
+tooling version and an opt-in staging profile.
 
 
 ## Editorial Report

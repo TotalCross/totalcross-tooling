@@ -9,7 +9,11 @@ plugins {
 }
 
 group = 'com.totalcross'
-version = '0.1.0-SNAPSHOT'
+def pluginVersion = providers.gradleProperty('pluginVersion').orElse('0.1.0-SNAPSHOT')
+def toolingVersion = providers.gradleProperty('toolingVersion').orElse('0.1.0-SNAPSHOT')
+def releaseMode = providers.gradleProperty('releaseMode').map { it.toBoolean() }.orElse(false)
+def toolingRepository = providers.gradleProperty('toolingRepository')
+version = pluginVersion.get()
 
 java {
     toolchain {
@@ -18,14 +22,19 @@ java {
 }
 
 repositories {
-    mavenLocal()
+    if (!releaseMode.get()) {
+        mavenLocal()
+    }
+    if (toolingRepository.isPresent()) {
+        maven { url = uri(toolingRepository.get()) }
+    }
     mavenCentral()
 }
 
 dependencies {
-    implementation 'com.totalcross.tooling:tooling-core:0.1.0-SNAPSHOT'
-    implementation 'com.totalcross.tooling:tooling-cli:0.1.0-SNAPSHOT'
-    implementation 'com.totalcross.tooling:tooling-project-conversion:0.1.0-SNAPSHOT'
+    implementation "com.totalcross.tooling:tooling-core:${toolingVersion.get()}"
+    implementation "com.totalcross.tooling:tooling-cli:${toolingVersion.get()}"
+    implementation "com.totalcross.tooling:tooling-project-conversion:${toolingVersion.get()}"
     testImplementation gradleTestKit()
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
