@@ -24,6 +24,7 @@ e de uma Zulu JDK 17. O exemplo em `examples/basic-app` prova o fluxo com uma
 - [x] (2026-07-11) Priorizada a release GitHub do SDK, com fallback S3 e testes unitários e de rede opt-in para as versões 7.2.0 e 5.8.4.
 - [x] (2026-07-13) Adaptados os plugins de aplicação e biblioteca, documentação e testes aos IDs e ao artefato definidos no build.
 - [x] (2026-07-30) Adicionada a task `totalcrossConvertProject` como adaptador do motor de conversão compartilhado.
+- [x] (2026-07-30) Alinhado o modo APPLY da task com o renderizador e a transação usados pelo CLI.
 
 ## Surprises & Discoveries
 

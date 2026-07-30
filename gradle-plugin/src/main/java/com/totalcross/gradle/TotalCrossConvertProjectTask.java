@@ -8,6 +8,7 @@ package com.totalcross.gradle;
 import com.totalcross.tooling.conversion.inference.ProjectConversionAnalyzer;
 import com.totalcross.tooling.conversion.plan.ConversionPlan;
 import com.totalcross.tooling.conversion.plan.ConversionPlanCodec;
+import com.totalcross.tooling.conversion.plan.GradleProjectRenderer;
 import com.totalcross.tooling.conversion.transaction.ProjectConversionTransaction;
 import com.totalcross.tooling.conversion.validation.GradleProjectValidator;
 import java.io.IOException;
@@ -42,7 +43,8 @@ public abstract class TotalCrossConvertProjectTask extends DefaultTask {
             case "APPLY" -> {
                 ConversionPlan plan = analyze(project);
                 writePlan(plan);
-                ProjectConversionTransaction.Result result = new ProjectConversionTransaction().apply(plan);
+                ProjectConversionTransaction.Result result = new ProjectConversionTransaction().apply(plan,
+                    new GradleProjectRenderer().render(plan, "0.1.0"));
                 getLogger().lifecycle("TotalCross conversion applied: {} files; journal {}", result.movedFiles(), result.journal());
             }
             case "VALIDATE" -> new GradleProjectValidator().validate(project);
