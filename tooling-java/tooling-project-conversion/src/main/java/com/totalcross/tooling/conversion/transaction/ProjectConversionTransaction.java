@@ -54,14 +54,34 @@ public final class ProjectConversionTransaction {
         completed.add(move);
         append(journal, move);
       }
-      return new Result(backup, journal, completed.size());
+      return new Result(backup, journal, completed.size(), List.of());
     } catch (Exception failure) {
       rollback(root, backup, completed);
       throw failure instanceof IOException io ? io : new IOException("conversion transaction failed", failure);
     }
   }
 
-  public void rollback(Result result, Path project) throws IOException { rollback(project, result.backup(), journal(result.journal())); }
+  /** Applies reviewed source moves and generated build files as one reversible operation. */
+  public Result apply(ConversionPlan plan, java.util.Map<Path, String> generated) throws IOException {
+    GeneratedFileTransaction generatedFiles = new GeneratedFileTransaction();
+    Result moved = apply(plan);
+    List<Path> created = List.of();
+    try {
+      created = generatedFiles.apply(plan.project(), generated);
+      for (Path file : created) Files.writeString(moved.journal(), "G\t" + plan.project().relativize(file) + System.lineSeparator(),
+          java.nio.file.StandardOpenOption.APPEND);
+      return new Result(moved.backup(), moved.journal(), moved.movedFiles(), created);
+    } catch (Exception failure) {
+      generatedFiles.rollback(created);
+      rollback(moved, plan.project());
+      throw failure instanceof IOException io ? io : new IOException("conversion transaction failed", failure);
+    }
+  }
+
+  public void rollback(Result result, Path project) throws IOException {
+    rollback(project, result.backup(), journal(result.journal()));
+    new GeneratedFileTransaction().rollback(result.generatedFiles());
+  }
 
   /** Reverses a completed operation from its persisted journal without re-analyzing the project. */
   public int rollback(Path journal) throws IOException {
@@ -76,6 +96,7 @@ public final class ProjectConversionTransaction {
     if (!name.endsWith(".journal")) throw new IOException("invalid conversion journal name: " + journal);
     List<ConversionPlan.Move> moves = journal(file);
     rollback(root, root.resolve(BACKUPS).resolve(name.substring(0, name.length() - ".journal".length())), moves);
+    new GeneratedFileTransaction().rollback(journalGenerated(root, file));
     return moves.size();
   }
 
@@ -121,6 +142,11 @@ public final class ProjectConversionTransaction {
     return moves;
   }
 
+  private static List<Path> journalGenerated(Path root, Path file) throws IOException {
+    return Files.readAllLines(file).stream().filter(line -> line.startsWith("G\t")).map(line -> line.substring(2))
+        .map(Path::of).map(root::resolve).toList();
+  }
+
   private static void append(Path journal, ConversionPlan.Move move) throws IOException {
     Files.writeString(journal, move.source() + "\t" + move.destination() + "\t" + move.kind() + System.lineSeparator(),
         java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
@@ -141,5 +167,7 @@ public final class ProjectConversionTransaction {
     } catch (java.security.NoSuchAlgorithmException impossible) { throw new IOException(impossible); }
   }
 
-  public record Result(Path backup, Path journal, int movedFiles) { }
+  public record Result(Path backup, Path journal, int movedFiles, List<Path> generatedFiles) {
+    public Result { generatedFiles = List.copyOf(generatedFiles); }
+  }
 }

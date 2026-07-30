@@ -38,6 +38,7 @@ class ToolingCliTest {
     try {
       Path source = project.resolve("App.java");
       Files.writeString(source, "public class App extends totalcross.ui.MainWindow {}");
+      Files.writeString(project.resolve("legacy.sh"), "java totalcross.Launcher 7.6.0\n");
       assertEquals(1, ConvertProjectCommand.analyze(project).mainWindowCandidates().size());
       assertEquals(0, Files.list(project).filter(path -> path.getFileName().toString().equals("src")).count());
     } finally {
@@ -51,13 +52,16 @@ class ToolingCliTest {
     try {
       Path source = project.resolve("App.java");
       Files.writeString(source, "public class App extends totalcross.ui.MainWindow {}");
+      Files.writeString(project.resolve("legacy.sh"), "java totalcross.Launcher 7.6.0\n");
       Path plan = Files.createTempFile("totalcross-convert-apply-plan-", ".json");
       Files.writeString(plan, new com.totalcross.tooling.conversion.plan.ConversionPlanCodec().toJson(ConvertProjectCommand.analyze(project)));
       var result = ConvertProjectCommand.apply(plan);
       assertEquals(1, result.movedFiles());
       assertEquals(false, Files.exists(source));
+      assertEquals(true, Files.exists(project.resolve("build.gradle")));
       assertEquals(1, new com.totalcross.tooling.conversion.transaction.ProjectConversionTransaction().rollback(result.journal()));
       assertEquals(true, Files.exists(source));
+      assertEquals(false, Files.exists(project.resolve("build.gradle")));
       Files.deleteIfExists(plan);
     } finally {
       try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }

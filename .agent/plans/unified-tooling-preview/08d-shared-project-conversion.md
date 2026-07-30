@@ -52,6 +52,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [ ] Resolve missing Java from highest target accepted by that SDK.
 - [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.
 - [x] (2026-07-30 21:14Z) Render conventional Gradle settings and build files from unambiguous evidence.
+- [x] (2026-07-30 21:20Z) Include rendered Gradle files in apply and journal-backed rollback.
 - [x] (2026-07-30 18:48Z) Apply hash-verified source/resource moves with backup and rollback.
 - [ ] Add Wrapper assets; generated Gradle files now use an atomic rollback transaction.
 - [x] (2026-07-30 18:58Z) Validate a generated Gradle project through its wrapper without a shell.
@@ -111,6 +112,9 @@ passed for this policy and inference slice.
 The transaction verifies fingerprints, rejects collisions/ambiguity, journals
 atomic moves, and restores failures. Generated Gradle files now have atomic
 creation and rollback; Wrapper delivery remains pending.
+
+CLI apply now renders and creates `settings.gradle` and `build.gradle` in the
+same operation; its journal rollback removes those generated files too.
 
 The CLI `apply` command reads the saved plan's project and fingerprint, repeats
 analysis to reject drift, then invokes that transaction and returns a versioned

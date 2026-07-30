@@ -68,7 +68,7 @@ final class ConvertProjectCommand {
     if (!fingerprint.equals(current.inventoryFingerprint())) {
       throw new IllegalArgumentException("saved conversion plan does not match the current project; analyze again before apply");
     }
-    return new ProjectConversionTransaction().apply(current);
+    return new ProjectConversionTransaction().apply(current, new ConversionPlanRenderer().render(current));
   }
 
   private static Path requiredPath(String[] args, String option) {
