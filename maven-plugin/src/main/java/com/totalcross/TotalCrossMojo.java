@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.totalcross.exception.SDKVersionNotFoundException;
 import com.totalcross.tooling.deploy.DeployLogLevel;
 import com.totalcross.tooling.deploy.DeployPlatform;
 import com.totalcross.tooling.deploy.DeployRequest;
@@ -25,6 +24,7 @@ import com.totalcross.tooling.compatibility.JavaCompatibilityPolicy;
 import com.totalcross.tooling.environment.*;
 import com.totalcross.tooling.jdk.*;
 import com.totalcross.tooling.platform.HostPlatform;
+import com.totalcross.tooling.sdk.SdkDistributionResolver;
 import com.totalcross.tooling.store.ExternalToolResolver;
 
 import org.apache.maven.artifact.Artifact;
@@ -127,19 +127,8 @@ public class TotalCrossMojo extends AbstractMojo {
 
         // Setup environment variable
         boolean configuredSdkHome = totalcrossHome != null;
-        if (!configuredSdkHome) { // check if SDK path is provided, if not
-                                      // totalCrossDownloader will check if SDK
-                                      // exists, if not, will download it.
-            Artifact totalcrossArtifact = mavenProject.getArtifactMap()
-                    .get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
-            TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager(totalcrossArtifact.getVersion());
-            try {
-                totalCrossSDKDownloader.init();
-            } catch (SDKVersionNotFoundException e) {
-                getLog().error(e);
-            }
-            totalcrossHome = totalCrossSDKDownloader.getPath().getAbsolutePath();
-        }
+        if (!configuredSdkHome) totalcrossHome = new SdkDistributionResolver(mavenCacheRoot())
+                .resolve(sdk.getVersion(), null).toString();
         try {
             JdkInstallation selectedJdk = JdkCatalogResolver.production().resolve(
                     new JdkRequest(JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17",
@@ -147,7 +136,7 @@ public class TotalCrossMojo extends AbstractMojo {
             ToolingEnvironment environment = new ToolingEnvironmentResolver(
                     new JdkSelector(new JdkCapabilityProbe(HostPlatform.detect()))).resolve(
                     new ToolingEnvironmentRequest(sdk.getVersion(), Paths.get(totalcrossHome),
-                            configuredSdkHome ? "totalcrossHome" : "Maven legacy SDK manager",
+                            configuredSdkHome ? "totalcrossHome" : "Maven shared SDK cache",
                             JavaCompatibilityPolicy.targetVersion(Paths.get(outputDirectory, finalName + "." + packaging)),
                             new JdkRequest(JavaCompatibilityPolicy.usesJdk11(sdk.getVersion()) ? "11" : "17",
                                     selectedJdk.home(), null), List.of()));
@@ -156,6 +145,10 @@ public class TotalCrossMojo extends AbstractMojo {
         } catch (JdkSelectionException | IllegalArgumentException failure) {
             throw new IOException("TotalCross tooling environment is not usable: " + failure.getMessage(), failure);
         }
+    }
+
+    private Path mavenCacheRoot() {
+        return Paths.get(System.getProperty("user.home"), ".totalcross", "sdk");
     }
 
     private void deployThroughSharedService() throws MojoExecutionException {

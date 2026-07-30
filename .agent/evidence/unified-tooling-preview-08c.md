@@ -111,3 +111,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   live-preview server are documented as internal compatibility surfaces only;
   the Gradle description now also distinguishes streamed preview from native
   `run` presentation.
+- 2026-07-30: Maven packaging now resolves a full SDK distribution through the
+  shared-core `SdkDistributionResolver`, preserving explicit `totalcrossHome`,
+  versioned cache reuse, GitHub-to-S3 fallback, safe ZIP extraction, and the
+  compatibility `etc` layout. The Maven-only AWS/AppDirs/ProgressBar downloader
+  and its network tests were removed; Maven tests passed. `mojo-executor`
+  remains because the Retrolambda goal still uses it.
