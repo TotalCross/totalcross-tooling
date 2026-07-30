@@ -59,9 +59,11 @@ class ToolingCliTest {
       assertEquals(1, result.movedFiles());
       assertEquals(false, Files.exists(source));
       assertEquals(true, Files.exists(project.resolve("build.gradle")));
+      assertEquals(true, Files.isExecutable(project.resolve("gradlew")));
       assertEquals(1, new com.totalcross.tooling.conversion.transaction.ProjectConversionTransaction().rollback(result.journal()));
       assertEquals(true, Files.exists(source));
       assertEquals(false, Files.exists(project.resolve("build.gradle")));
+      assertEquals(false, Files.exists(project.resolve("gradlew")));
       Files.deleteIfExists(plan);
     } finally {
       try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }

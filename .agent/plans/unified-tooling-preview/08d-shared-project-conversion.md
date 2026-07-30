@@ -54,8 +54,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 21:14Z) Render conventional Gradle settings and build files from unambiguous evidence.
 - [x] (2026-07-30 21:20Z) Include rendered Gradle files in apply and journal-backed rollback.
 - [x] (2026-07-30 18:48Z) Apply hash-verified source/resource moves with backup and rollback.
-- [ ] Add Wrapper assets; generated Gradle files now use an atomic rollback transaction.
-- [x] (2026-07-30 21:27Z) Bundle and atomically write official Gradle Wrapper assets.
+- [x] (2026-07-30 21:30Z) Apply official Wrapper assets and remove them in journal-backed rollback.
 - [x] (2026-07-30 18:58Z) Validate a generated Gradle project through its wrapper without a shell.
 
 ### Gradle and CLI entry points

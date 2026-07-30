@@ -65,9 +65,10 @@ public final class ProjectConversionTransaction {
   public Result apply(ConversionPlan plan, java.util.Map<Path, String> generated) throws IOException {
     GeneratedFileTransaction generatedFiles = new GeneratedFileTransaction();
     Result moved = apply(plan);
-    List<Path> created = List.of();
+    List<Path> created = new ArrayList<>();
     try {
-      created = generatedFiles.apply(plan.project(), generated);
+      created.addAll(generatedFiles.apply(plan.project(), generated));
+      created.addAll(new GradleWrapperAssets().write(plan.project()));
       for (Path file : created) Files.writeString(moved.journal(), "G\t" + plan.project().relativize(file) + System.lineSeparator(),
           java.nio.file.StandardOpenOption.APPEND);
       return new Result(moved.backup(), moved.journal(), moved.movedFiles(), created);

@@ -131,6 +131,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     atomic generated-file transaction rejects collisions and rolls back owned files (complete 2026-07-30)
     CLI apply transacts rendered Gradle files and journal rollback removes them (complete 2026-07-30)
     conversion module bundles and writes official Gradle Wrapper assets (complete 2026-07-30)
+    CLI apply and journal rollback transact Gradle Wrapper assets (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference
