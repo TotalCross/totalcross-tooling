@@ -29,16 +29,29 @@ suite('Legacy conversion companion client', () => {
         const jar = extension && path.join(extension.extensionPath, 'companion', 'totalcross-tooling.jar');
         if (!jar || !existsSync(jar)) { this.skip(); return; }
         const project = await fs.mkdtemp(path.join(os.tmpdir(), 'totalcross-installed-conversion-'));
+        const planFile = path.join(os.tmpdir(), `${path.basename(project)}.json`);
         try {
             await fs.writeFile(path.join(project, 'App.java'), 'public class App extends totalcross.ui.MainWindow {}');
             await fs.writeFile(path.join(project, 'legacy.sh'), 'java totalcross.Launcher 7.6.0\njava tc.Deploy App -android /q\n');
-            const output = await runConversion(companionCommand(extension.extensionPath, 'java', ['analyze', '--project', project]), project);
+            const output = await runConversion(companionCommand(extension.extensionPath, 'java', ['analyze', '--project', project, '--plan', planFile]), project);
             const plan = conversionPlanFromOutput(output);
             assert.equal(plan.mainWindowCandidates[0].className, 'App');
             assert.deepEqual(plan.deployArguments[0].platforms, ['-android']);
             assert.ok(plan.generatedFiles.some((file) => file.destination === 'build.gradle'));
+            const applied = await runConversion(companionCommand(extension.extensionPath, 'java', ['apply', '--plan', planFile]), project);
+            const event = conversionEventFromOutput(applied, 'conversion-applied');
+            assert.ok(event && typeof event.journal === 'string');
+            assert.equal(existsSync(path.join(project, 'App.java')), false);
+            await fs.writeFile(path.join(project, 'gradlew'), '#!/bin/sh\nexit 0\n', {mode: 0o755});
+            await fs.chmod(path.join(project, 'gradlew'), 0o755);
+            const validated = await runConversion(companionCommand(extension.extensionPath, 'java', ['validate', '--project', project]), project);
+            assert.ok(conversionEventFromOutput(validated, 'conversion-validated'));
+            const rolledBack = await runConversion(companionCommand(extension.extensionPath, 'java', ['rollback', '--journal', event.journal]), project);
+            assert.ok(conversionEventFromOutput(rolledBack, 'conversion-rolled-back'));
+            assert.equal(existsSync(path.join(project, 'App.java')), true);
         } finally {
             await fs.rm(project, {recursive: true, force: true});
+            await fs.rm(planFile, {force: true});
         }
     });
 });

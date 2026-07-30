@@ -47,9 +47,9 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 21:45Z) Locate direct or unambiguous-local concrete public `MainWindow` candidates.
 - [x] (2026-07-30 18:39Z) Parse supported Unix and Windows literal command evidence without execution.
 - [x] (2026-07-30 19:05Z) Extract script-backed SDK-version candidates into the versioned plan and report ambiguity.
-- [ ] Infer SDK, Java, Launcher, and Deploy arguments (SDK/Java/mapping catalog complete).
-- [ ] Resolve missing SDK dynamically from the shared stable catalog.
-- [ ] Resolve missing Java from highest target accepted by that SDK.
+- [x] (2026-07-30 23:30Z) Infer SDK, Java, Launcher, and Deploy arguments.
+- [x] (2026-07-30 23:30Z) Resolve missing SDK from the shared stable catalog.
+- [x] (2026-07-30 23:30Z) Resolve missing Java from the SDK target policy.
 - [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.
 - [x] (2026-07-30 21:14Z) Render conventional Gradle settings and build files from unambiguous evidence.
 - [x] (2026-07-30 21:20Z) Include rendered Gradle files in apply and journal-backed rollback.
@@ -78,7 +78,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 22:42Z) Display evidence, conflicts, moves, generated files, and warnings.
 - [x] (2026-07-30 21:38Z) Require explicit Apply before mutation.
 - [x] (2026-07-30 21:38Z) Present rollback and validation results.
-- [x] (2026-07-30 23:00Z) Complete installed-VSIX conversion analysis E2E.
+- [x] (2026-07-30 23:30Z) Exercise installed VSIX companion full E2E.
 - [ ] Commit and update state to Plan 08R.
 
 Milestone 1 is complete. VS Code workspace state stores the normalized folder
@@ -110,8 +110,8 @@ selected SDK. `./gradlew :tooling-core:test :tooling-project-conversion:test`
 passed for this policy and inference slice.
 
 The transaction verifies fingerprints, rejects collisions/ambiguity, journals
-atomic moves, and restores failures. Generated Gradle files now have atomic
-creation and rollback; Wrapper delivery remains pending.
+atomic moves, and restores failures. Generated Gradle and Wrapper files have
+atomic creation and rollback.
 
 CLI apply creates Gradle files and journal rollback removes them.
 
@@ -132,7 +132,7 @@ completion as a versioned JSON line. The wrapper invocation and failure path
 are covered without using a shell.
 
 Launcher/Deploy SDK versions are typed plan candidates with script provenance;
-multiple versions remain a warning. Dynamic catalog selection is pending.
+multiple versions remain a warning; catalog selection occurs at apply.
 
 The Gradle plugin now registers `totalcrossConvertProject` with ANALYZE, APPLY,
 VALIDATE, and ROLLBACK modes. Its implementation delegates directly to
