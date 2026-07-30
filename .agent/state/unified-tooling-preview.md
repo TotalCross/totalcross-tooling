@@ -13,7 +13,7 @@ size limit.
 
 Active plan:
 
-    Plan 08C — correct pre-IR preview and plugin architecture
+    Plan 08D — shared project conversion
 
 Reason:
 
@@ -22,7 +22,8 @@ Reason:
     Process-backed promotion and immutable catalog installation are now
     implemented. Catalog selection is authoritative across Gradle, Maven, CLI,
     and the companion path; remaining work corrects the release-facing preview
-    contract, model, and VS Code behavior.
+    contract, model, and VS Code behavior. Plan 08C is complete; Plan 08D
+    begins the shared project-conversion implementation.
 
 Next command:
 
@@ -102,19 +103,14 @@ Completed Plan 08C slices:
     VS Code reload builds before control promotion and preserves the active frame on failure
     focused and installed-VSIX extension-host suites pass on VS Code 1.131.0
     preview protocol documentation distinguishes external integration from internal compatibility APIs
+    Maven and Gradle SDK distribution resolution unified in tooling-core
 
 Plan 08B remains evidence, not the final release gate.
 
 ## Active blockers
 
-Current Plan 08C milestone:
-
-    resolver cleanup and preview-contract documentation
-
-Remaining Plan 08C blockers:
-
-    obsolete resolver/download dependency removal after equivalence tests
-
+Plan 08C is complete. Begin Plan 08D from its migration reminder and shared
+conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
 Plan 08D after Plan 08C:
 
     project-scoped Maven reminder suppression and reset

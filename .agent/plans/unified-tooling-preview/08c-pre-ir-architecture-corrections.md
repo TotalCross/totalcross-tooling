@@ -71,7 +71,7 @@ converter source, create tags, or publish publicly.
 - [x] Serialize and parse the complete versioned ProjectModel.
 - [x] Include real roots, outputs, dependencies, SDK, targets, and arguments.
 - [x] Remove or internalize `totalcrossTypedPackage`.
-- [ ] Remove obsolete resolver/download dependencies after equivalence tests.
+- [x] Remove obsolete resolver/download dependencies after equivalence tests.
 - [x] Clarify internal versus external preview contract documentation.
 
 ### VS Code corrections
@@ -84,7 +84,7 @@ converter source, create tags, or publish publicly.
 - [x] Bundle production dependencies deterministically into the VSIX.
 - [x] Remove SNAPSHOT and `publishToMavenLocal` from release defaults.
 - [x] Pass focused and installed-VSIX E2E tests.
-- [ ] Commit focused slices and update state to Plan 08D.
+- [x] Commit focused slices and update state to Plan 08D.
 
 
 ## Cross-plan safety and size policy

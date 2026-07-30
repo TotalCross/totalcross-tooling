@@ -117,3 +117,7 @@ reached the text-file size limit. Full command output remains outside the repo.
   compatibility `etc` layout. The Maven-only AWS/AppDirs/ProgressBar downloader
   and its network tests were removed; Maven tests passed. `mojo-executor`
   remains because the Retrolambda goal still uses it.
+- 2026-07-30: Gradle packaging now uses the same core SDK distribution resolver.
+  Its superseded SDK resolver, release locator, and SDK-source tests were
+  removed; the remaining archive downloader is retained only by the legacy JDK
+  helper. Gradle plugin tests passed. This completes Plan 08C.

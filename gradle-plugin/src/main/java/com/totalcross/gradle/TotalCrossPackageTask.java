@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -304,7 +305,7 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
         Path work = output.resolve("retrolambda");
         Path input = work.resolve("input");
         Path transformed = work.resolve("output");
-        SdkResolver.deleteTree(work);
+        deleteTree(work);
         Files.createDirectories(input);
         unpackJar(stagedJar, input);
         String classpath = getRuntimeClasspath().getFiles().stream()
@@ -353,6 +354,13 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
                     output.closeEntry();
                 }
             }
+        }
+    }
+
+    private static void deleteTree(Path path) throws IOException {
+        if (!Files.exists(path)) return;
+        try (var paths = Files.walk(path)) {
+            for (Path item : paths.sorted(Comparator.reverseOrder()).toList()) Files.deleteIfExists(item);
         }
     }
 

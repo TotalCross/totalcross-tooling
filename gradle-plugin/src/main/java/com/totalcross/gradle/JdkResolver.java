@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 
 /** Resolves a runnable Zulu JDK 17 for tc.Deploy. */
 public final class JdkResolver {
@@ -57,7 +59,7 @@ public final class JdkResolver {
         String cacheName = cache.getFileName().toString();
         Path archive = parent.resolve(cacheName + ".zip");
         Path staging = parent.resolve(cacheName + ".extracting");
-        SdkResolver.deleteTree(staging);
+        deleteTree(staging);
         downloader.download(downloadUri(), archive);
         downloader.extract(archive, staging);
         Path javaHome;
@@ -66,9 +68,9 @@ public final class JdkResolver {
                     .orElseThrow(() -> new IOException("The downloaded Zulu archive does not contain bin/java"));
         }
         Path cacheSource = isMac() ? javaHome.getParent().getParent() : javaHome;
-        SdkResolver.deleteTree(cache);
-        SdkResolver.move(cacheSource, cache);
-        SdkResolver.deleteTree(staging);
+        deleteTree(cache);
+        move(cacheSource, cache);
+        deleteTree(staging);
         Files.deleteIfExists(archive);
         cachedHome = cacheJavaHome();
         makeBinariesExecutable(cachedHome);
@@ -119,5 +121,17 @@ public final class JdkResolver {
 
     private boolean isMac() {
         return osName.toLowerCase().startsWith("mac");
+    }
+
+    private static void move(Path source, Path target) throws IOException {
+        try { Files.move(source, target, StandardCopyOption.ATOMIC_MOVE); }
+        catch (IOException ignored) { Files.move(source, target, StandardCopyOption.REPLACE_EXISTING); }
+    }
+
+    private static void deleteTree(Path path) throws IOException {
+        if (!Files.exists(path)) return;
+        try (var paths = Files.walk(path)) {
+            for (Path item : paths.sorted(Comparator.reverseOrder()).toList()) Files.deleteIfExists(item);
+        }
     }
 }
