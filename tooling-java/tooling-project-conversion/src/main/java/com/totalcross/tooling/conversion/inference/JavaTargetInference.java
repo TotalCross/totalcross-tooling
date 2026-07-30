@@ -13,12 +13,16 @@ import java.util.OptionalInt;
 /** Chooses a Java application target from explicit compiler evidence before SDK defaults. */
 public final class JavaTargetInference {
   public Result infer(String sdkVersion, List<LegacyScriptEvidence> evidence) {
-    OptionalInt release = evidence.stream().filter(item -> item.kind().equals("javac"))
-        .map(LegacyScriptEvidence::arguments).map(JavaTargetInference::release).filter(OptionalInt::isPresent)
-        .mapToInt(OptionalInt::getAsInt).findFirst();
-    int target = release.orElseGet(() -> JavaCompatibilityPolicy.highestApplicationTarget(sdkVersion));
+    int[] releases = targets(evidence, JavaTargetInference::release);
+    int[] sourceTargets = targets(evidence, JavaTargetInference::sourceTarget);
+    if (releases.length > 1 || sourceTargets.length > 1 || (releases.length == 1 && sourceTargets.length == 1 && releases[0] != sourceTargets[0])) {
+      throw new IllegalArgumentException("conflicting Java compiler targets require explicit selection");
+    }
+    OptionalInt release = releases.length == 1 ? OptionalInt.of(releases[0]) : OptionalInt.empty();
+    OptionalInt sourceTarget = sourceTargets.length == 1 ? OptionalInt.of(sourceTargets[0]) : OptionalInt.empty();
+    int target = release.orElseGet(() -> sourceTarget.orElseGet(() -> JavaCompatibilityPolicy.highestApplicationTarget(sdkVersion)));
     JavaCompatibilityPolicy.validate(sdkVersion, target);
-    String source = release.isPresent() ? "javac --release" : "SDK compatibility default";
+    String source = release.isPresent() ? "javac --release" : sourceTarget.isPresent() ? "javac -source/-target" : "SDK compatibility default";
     return new Result(target, source);
   }
 
@@ -28,6 +32,24 @@ public final class JavaTargetInference {
         try { return OptionalInt.of(Integer.parseInt(arguments.get(index + 1).replaceFirst("^1\\.", ""))); }
         catch (NumberFormatException ignored) { return OptionalInt.empty(); }
       }
+    }
+    return OptionalInt.empty();
+  }
+
+  private static int[] targets(List<LegacyScriptEvidence> evidence, java.util.function.Function<List<String>, OptionalInt> finder) {
+    return evidence.stream().filter(item -> item.kind().equals("javac")).map(LegacyScriptEvidence::arguments).map(finder)
+        .filter(OptionalInt::isPresent).mapToInt(OptionalInt::getAsInt).distinct().toArray();
+  }
+
+  private static OptionalInt sourceTarget(List<String> arguments) {
+    OptionalInt source = option(arguments, "-source"), target = option(arguments, "-target");
+    return source.isPresent() && target.isPresent() && source.getAsInt() == target.getAsInt() ? source : OptionalInt.empty();
+  }
+
+  private static OptionalInt option(List<String> arguments, String option) {
+    for (int index = 0; index + 1 < arguments.size(); index++) if (option.equals(arguments.get(index))) {
+      try { return OptionalInt.of(Integer.parseInt(arguments.get(index + 1).replaceFirst("^1\\.", ""))); }
+      catch (NumberFormatException ignored) { return OptionalInt.empty(); }
     }
     return OptionalInt.empty();
   }

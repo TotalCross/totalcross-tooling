@@ -22,4 +22,11 @@ class JavaTargetInferenceTest {
     var javac = new LegacyScriptEvidence(Path.of("build.sh"), 1, "javac", List.of("javac", "--release", "17"), false);
     assertThrows(IllegalArgumentException.class, () -> new JavaTargetInference().infer("7.2.2", List.of(javac)));
   }
+
+  @Test void accepts_consistent_source_and_target_and_rejects_conflicting_compilers() {
+    var legacy = new LegacyScriptEvidence(Path.of("build.bat"), 1, "javac", List.of("javac", "-source", "1.8", "-target", "8"), false);
+    assertEquals(8, new JavaTargetInference().infer("7.2.2", List.of(legacy)).target());
+    var release = new LegacyScriptEvidence(Path.of("build.sh"), 2, "javac", List.of("javac", "--release", "17"), false);
+    assertThrows(IllegalArgumentException.class, () -> new JavaTargetInference().infer("7.6.0", List.of(legacy, release)));
+  }
 }
