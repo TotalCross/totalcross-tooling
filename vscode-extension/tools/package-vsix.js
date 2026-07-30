@@ -6,11 +6,13 @@
 'use strict';
 
 const {execFileSync} = require('child_process');
+const crypto = require('crypto');
 const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
+const TOOLING_ROOT = path.resolve(ROOT, '..', 'tooling-java');
 const output = path.resolve(ROOT, process.argv[2] || 'totalcross-preview.vsix');
 const epoch = new Date('1980-01-01T00:00:00.000Z');
 
@@ -45,6 +47,20 @@ async function copyRuntimePackage(name, sourceRoot, extensionRoot, copied) {
             await copyRuntimePackage(dependency, ROOT, extensionRoot, copied);
         }
     }
+}
+
+async function buildCompanion(extensionRoot) {
+    const wrapper = process.platform === 'win32' ? 'gradlew.bat' : './gradlew';
+    execFileSync(wrapper, [':tooling-cli:fatJar'], {cwd: TOOLING_ROOT, stdio: 'inherit'});
+    const libraries = path.join(TOOLING_ROOT, 'tooling-cli', 'build', 'libs');
+    const names = await fs.readdir(libraries);
+    const name = names.find((entry) => /^tooling-cli-.+-all\.jar$/.test(entry));
+    if (!name) { throw new Error('Unable to locate the TotalCross tooling companion JAR.'); }
+    const source = path.join(libraries, name);
+    const target = path.join(extensionRoot, 'companion', 'totalcross-tooling.jar');
+    await copy(source, target);
+    const sha256 = crypto.createHash('sha256').update(await fs.readFile(source)).digest('hex');
+    await fs.writeFile(path.join(extensionRoot, 'companion', 'totalcross-tooling.sha256'), `${sha256}  totalcross-tooling.jar\n`);
 }
 
 async function filesBelow(root, relative = '') {
@@ -85,6 +101,7 @@ async function main() {
         for (const dependency of Object.keys(extension.dependencies || {}).sort()) {
             await copyRuntimePackage(dependency, ROOT, extensionRoot, copied);
         }
+        await buildCompanion(extensionRoot);
         await fs.writeFile(path.join(staging, 'extension.vsixmanifest'), manifest(extension));
         await fs.writeFile(path.join(staging, '[Content_Types].xml'), '<?xml version="1.0" encoding="utf-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="json" ContentType="application/json"/><Default Extension="vsixmanifest" ContentType="text/xml"/><Default Extension="png" ContentType="image/png"/></Types>');
         await normalizeTimes(staging);

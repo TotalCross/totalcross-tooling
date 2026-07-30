@@ -16,6 +16,8 @@ const entries = new Set(execFileSync('unzip', ['-Z1', archive], {encoding: 'utf8
 const required = [
     'extension/package.json',
     'extension/out/extension.js',
+    'extension/companion/totalcross-tooling.jar',
+    'extension/companion/totalcross-tooling.sha256',
     'extension/node_modules/env-paths/package.json',
     'extension/node_modules/fs-extra/package.json',
     'extension/node_modules/jsonfile/package.json',

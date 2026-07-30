@@ -133,10 +133,8 @@ runner. `convert-project validate --project <path>` reports its successful
 completion as a versioned JSON line. The wrapper invocation and failure path
 are covered without using a shell.
 
-SDK versions present in Launcher or Deploy evidence are now exposed as typed
-plan candidates, with script and line provenance. Multiple distinct versions
-remain an explicit warning rather than a hidden selection. The dynamic catalog
-fallback and final SDK choice are still pending.
+Launcher/Deploy SDK versions are typed plan candidates with script provenance;
+multiple versions remain a warning. Dynamic catalog selection is pending.
 
 The Gradle plugin now registers `totalcrossConvertProject` with ANALYZE, APPLY,
 VALIDATE, and ROLLBACK modes. Its implementation delegates directly to
@@ -144,6 +142,9 @@ VALIDATE, and ROLLBACK modes. Its implementation delegates directly to
 creates the same schema-versioned plan for a legacy Java source. The plugin
 test suite passed after publishing only the local conversion module required by
 its existing development dependency model.
+
+VSIX packaging now builds and includes the executable CLI companion plus a
+SHA-256 file. Two consecutive packages had the same archive hash.
 
 
 ## Cross-plan safety and size policy
