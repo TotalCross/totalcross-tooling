@@ -16,6 +16,13 @@ dependencies {
 
 tasks.withType(Test).configureEach { useJUnitPlatform() }
 
+tasks.named('processResources') {
+    from(rootProject.file('gradlew')) { into 'gradle-wrapper'; rename { 'gradlew' } }
+    from(rootProject.file('gradlew.bat')) { into 'gradle-wrapper'; rename { 'gradlew.bat' } }
+    from(rootProject.file('gradle/wrapper/gradle-wrapper.jar')) { into 'gradle-wrapper/gradle/wrapper' }
+    from(rootProject.file('gradle/wrapper/gradle-wrapper.properties')) { into 'gradle-wrapper/gradle/wrapper' }
+}
+
 publishing {
     publications { maven(MavenPublication) { from components.java } }
 }
