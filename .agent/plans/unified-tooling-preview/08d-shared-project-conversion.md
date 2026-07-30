@@ -41,10 +41,10 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 
 ### Shared engine
 
-- [ ] Add a small `tooling-project-conversion` Java module.
-- [ ] Implement streaming inventory and ignored-path rules.
-- [ ] Infer main sources, tests, resources, and package paths.
-- [ ] Locate MainWindow candidates and report ambiguity.
+- [x] (2026-07-30 18:31Z) Add a small `tooling-project-conversion` Java module.
+- [x] (2026-07-30 18:31Z) Implement streaming inventory and ignored-path rules.
+- [x] (2026-07-30 18:31Z) Infer main sources, tests, resources, and package paths.
+- [x] (2026-07-30 18:31Z) Locate direct concrete public `MainWindow` candidates and preserve candidate ambiguity for the plan.
 - [ ] Parse supported Unix and Windows legacy command evidence.
 - [ ] Infer SDK, Java target, Launcher arguments, and Deploy arguments.
 - [ ] Resolve missing SDK dynamically from the shared stable catalog.
@@ -79,6 +79,12 @@ stores the preference exclusively in VS Code workspace state with a normalized
 folder URI and Maven group/artifact identity. This keeps different folders
 independent even when their coordinates match. The reminder suite and the full
 extension-host suite passed with 34 tests on VS Code 1.131.0.
+
+The first shared-engine slice is also complete. `ProjectInventoryReader` streams
+SHA-256 hashes without following symlinks and ignores generated/cache trees;
+`JavaSourceClassifier` produces conservative source/test/resource moves and
+direct public `MainWindow` candidates. `./gradlew :tooling-project-conversion:test`
+passed from `tooling-java`.
 
 
 ## Cross-plan safety and size policy
