@@ -44,7 +44,9 @@ public final class ProjectConversionAnalyzer {
     if (candidates.isEmpty()) warnings.add("No concrete public MainWindow candidate was detected; select one before apply.");
     if (candidates.size() > 1) warnings.add("Multiple MainWindow candidates were detected; select one before apply.");
     List<LegacyScriptEvidence> scriptEvidence = scriptAnalyzer.analyze(inventory.root());
-    List<SdkVersionInference.Candidate> sdkCandidates = new SdkVersionInference().infer(scriptEvidence);
+    List<SdkVersionInference.Candidate> existingSdkCandidates = new ExistingSdkVersionInference().infer(inventory.root());
+    List<SdkVersionInference.Candidate> sdkCandidates = existingSdkCandidates.isEmpty()
+        ? new SdkVersionInference().infer(scriptEvidence) : existingSdkCandidates;
     if (scriptEvidence.stream().anyMatch(LegacyScriptEvidence::secretPresent)) {
       warnings.add("Legacy script secrets were redacted and must be configured locally after conversion.");
     }

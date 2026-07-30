@@ -33,4 +33,13 @@ class ProjectConversionAnalyzerTest {
     assertTrue(new ConversionPlanCodec().toJson(plan).contains("scriptEvidence"));
     assertTrue(new ConversionPlanCodec().toJson(plan).contains("deployArguments"));
   }
+
+  @Test void prefers_an_existing_sdk_coordinate_to_legacy_script_evidence() throws Exception {
+    Files.writeString(directory.resolve("App.java"), "public class App extends totalcross.ui.MainWindow {}");
+    Files.writeString(directory.resolve("build.gradle"), "implementation 'com.totalcross:totalcross-sdk:7.6.0'");
+    Files.writeString(directory.resolve("legacy.sh"), "java totalcross.Launcher 7.3.0");
+    var plan = new ProjectConversionAnalyzer().analyze(directory);
+    assertEquals("7.6.0", plan.sdkCandidates().get(0).version());
+    assertEquals("existing-gradle", plan.sdkCandidates().get(0).evidenceKind());
+  }
 }
