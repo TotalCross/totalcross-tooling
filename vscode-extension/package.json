@@ -28,6 +28,7 @@
 		"onCommand:extension.deploy",
 		"onCommand:extension.deployAndRun",
 		"onCommand:extension.convertMavenProjectToGradle",
+		"onCommand:extension.enableMavenConversionReminder",
 		"onCommand:extension.preview",
 		"onCommand:extension.run",
 		"onCommand:extension.previewStop",
@@ -55,6 +56,10 @@
 			{
 				"command": "extension.convertMavenProjectToGradle",
 				"title": "TotalCross: Convert Maven Project to Gradle"
+			},
+			{
+				"command": "extension.enableMavenConversionReminder",
+				"title": "TotalCross: Enable Maven Conversion Reminder"
 			},
 			{
 				"command": "extension.preview",

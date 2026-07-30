@@ -5,10 +5,11 @@
 
 import * as vscode from 'vscode';
 import {classifyProject} from './project-classifier';
-import {postponeMigrationReminder, shouldShowMigrationReminder} from './reminder-state';
+import {postponeMigrationReminder, shouldShowMigrationReminder, suppressMigrationReminder} from './reminder-state';
 
 export const CONVERT_NOW = 'Convert Now';
 export const REMIND_TOMORROW = 'Remind Me Tomorrow';
+export const DONT_ASK_AGAIN = "Don't Ask Again for This Project";
 export const MIGRATION_MESSAGE = 'This TotalCross project uses Maven. Convert it to Gradle to use the TotalCross Gradle plugin?';
 
 interface CommandExecutor {
@@ -20,6 +21,7 @@ export async function handleMigrationReminderResponse(
     context: vscode.ExtensionContext,
     folder: vscode.WorkspaceFolder,
     response: string | undefined,
+    projectIdentity: string,
     now: number,
     executeCommand: CommandExecutor
 ): Promise<void> {
@@ -27,7 +29,11 @@ export async function handleMigrationReminderResponse(
         await executeCommand('extension.convertMavenProjectToGradle', folder.uri);
         return;
     }
-    await postponeMigrationReminder(context, folder.uri.toString(), now);
+    if (response === DONT_ASK_AGAIN) {
+        await suppressMigrationReminder(context, folder.uri.toString(), projectIdentity);
+        return;
+    }
+    await postponeMigrationReminder(context, folder.uri.toString(), projectIdentity, now);
 }
 
 /** Shows at most one actionable recommendation during an extension activation. */
@@ -37,10 +43,6 @@ export async function showMigrationReminderIfNeeded(
 ): Promise<void> {
     const folders = vscode.workspace.workspaceFolders || [];
     for (const folder of folders) {
-        const timestamp = now();
-        if (!shouldShowMigrationReminder(context, folder.uri.toString(), timestamp)) {
-            continue;
-        }
         let classification;
         try {
             classification = await classifyProject(folder.uri.fsPath);
@@ -56,9 +58,13 @@ export async function showMigrationReminderIfNeeded(
         if (classification.kind !== 'eligible') {
             continue;
         }
+        const timestamp = now();
+        if (!shouldShowMigrationReminder(context, folder.uri.toString(), classification.projectIdentity, timestamp)) {
+            continue;
+        }
         const message = folders.length > 1 ? `${MIGRATION_MESSAGE} (${folder.name})` : MIGRATION_MESSAGE;
-        const response = await vscode.window.showInformationMessage(message, CONVERT_NOW, REMIND_TOMORROW);
-        await handleMigrationReminderResponse(context, folder, response, timestamp, vscode.commands.executeCommand);
+        const response = await vscode.window.showInformationMessage(message, CONVERT_NOW, REMIND_TOMORROW, DONT_ASK_AGAIN);
+        await handleMigrationReminderResponse(context, folder, response, classification.projectIdentity, timestamp, vscode.commands.executeCommand);
         return;
     }
 }

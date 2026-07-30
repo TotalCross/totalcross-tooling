@@ -14,7 +14,7 @@ export type ProjectClassification =
     | {kind: 'not-maven'}
     | {kind: 'gradle-present'}
     | {kind: 'non-totalcross-maven'}
-    | {kind: 'eligible'; pomPath: string}
+    | {kind: 'eligible'; pomPath: string; projectIdentity: string}
     | {kind: 'invalid-pom'; error: Error};
 
 function asArray(value: any): any[] {
@@ -42,6 +42,16 @@ export function isTotalCrossPom(contents: string): boolean {
         || hasCoordinates(plugins, 'com.totalcross', 'totalcross-maven-plugin');
 }
 
+/** A Maven coordinate is stable project evidence without writing project settings. */
+export function mavenProjectIdentity(contents: string): string {
+    const document = JSON.parse(xmlParser.xml2json(contents, {compact: true}));
+    const project = document && document.project;
+    const parent = project && project.parent;
+    const groupId = text(project && project.groupId) || text(parent && parent.groupId) || 'unknown-group';
+    const artifactId = text(project && project.artifactId) || 'unknown-artifact';
+    return `${groupId}:${artifactId}`;
+}
+
 /** Inspects only root-level build files; nested Maven modules never affect this result. */
 export async function classifyProject(rootPath: string): Promise<ProjectClassification> {
     const pomPath = path.join(rootPath, 'pom.xml');
@@ -61,8 +71,9 @@ export async function classifyProject(rootPath: string): Promise<ProjectClassifi
     }
 
     try {
-        return isTotalCrossPom(await fs.readFile(pomPath, 'utf8'))
-            ? {kind: 'eligible', pomPath}
+        const contents = await fs.readFile(pomPath, 'utf8');
+        return isTotalCrossPom(contents)
+            ? {kind: 'eligible', pomPath, projectIdentity: mavenProjectIdentity(contents)}
             : {kind: 'non-totalcross-maven'};
     } catch (error) {
         return {kind: 'invalid-pom', error: error instanceof Error ? error : new Error(String(error))};

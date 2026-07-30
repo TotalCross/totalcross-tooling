@@ -13,6 +13,8 @@ import {packageProject} from './packager';
 import {ConfigChecker} from './config-checker';
 import {showMigrationReminderIfNeeded} from './migration/migration-reminder';
 import {convertMavenProjectToGradle} from './migration/convert-project';
+import {clearMigrationReminder} from './migration/reminder-state';
+import {classifyProject} from './migration/project-classifier';
 import {registerPreviewCommands} from './preview-commands';
 
 // this method is called when your extension is activated
@@ -55,6 +57,23 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 		await convertMavenProjectToGradle(context, folder);
+	});
+	context.subscriptions.push(disposable);
+
+	/** Re-enables the Maven migration suggestion only for the selected workspace folder. */
+	disposable = vscode.commands.registerCommand('extension.enableMavenConversionReminder', async (uri?: vscode.Uri) => {
+		const folder = uri ? vscode.workspace.getWorkspaceFolder(uri) : (vscode.workspace.workspaceFolders || [])[0];
+		if (!folder) {
+			vscode.window.showErrorMessage('TotalCross project not found in this VS Code instance.');
+			return;
+		}
+		const classification = await classifyProject(folder.uri.fsPath);
+		if (classification.kind !== 'eligible') {
+			vscode.window.showInformationMessage('This workspace does not have a TotalCross Maven conversion reminder to enable.');
+			return;
+		}
+		await clearMigrationReminder(context, folder.uri.toString(), classification.projectIdentity);
+		vscode.window.showInformationMessage('TotalCross Maven conversion reminder enabled for this project.');
 	});
 	context.subscriptions.push(disposable);
 

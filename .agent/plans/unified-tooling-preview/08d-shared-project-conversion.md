@@ -63,9 +63,9 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 
 ### VS Code consumer
 
-- [ ] Add “Don't Ask Again for This Project” to the Maven reminder.
-- [ ] Store suppression per workspace folder without changing project files.
-- [ ] Add `TotalCross: Enable Maven Conversion Reminder`.
+- [x] (2026-07-30 18:28Z) Add “Don't Ask Again for This Project” to the Maven reminder.
+- [x] (2026-07-30 18:28Z) Store suppression per workspace folder without changing project files.
+- [x] (2026-07-30 18:28Z) Add `TotalCross: Enable Maven Conversion Reminder`.
 - [ ] Add `TotalCross: Convert to TotalCross Project`.
 - [ ] Call the shared CLI; do not classify or move files in TypeScript.
 - [ ] Display detected evidence, conflicts, moves, generated files, and warnings.
@@ -73,6 +73,12 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [ ] Present rollback and validation results.
 - [ ] Pass unit, fixture, integration, and installed-VSIX E2E tests.
 - [ ] Commit and update state to Plan 08R.
+
+Milestone 1 is complete. `vscode-extension/src/migration/reminder-state.ts`
+stores the preference exclusively in VS Code workspace state with a normalized
+folder URI and Maven group/artifact identity. This keeps different folders
+independent even when their coordinates match. The reminder suite and the full
+extension-host suite passed with 34 tests on VS Code 1.131.0.
 
 
 ## Cross-plan safety and size policy

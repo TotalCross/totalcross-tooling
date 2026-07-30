@@ -37,11 +37,11 @@ suite('Maven to Gradle migration classification', () => {
             update: (key: string, value: any) => { values[key] = value; return Promise.resolve(); }
         }};
         const now = 1000;
-        await postponeMigrationReminder(context, 'file:///one', now);
+        await postponeMigrationReminder(context, 'file:///one', 'com.example:one', now);
         assert.equal(Object.keys(values).length, 1);
         assert.equal(Object.keys(values).map((key) => values[key])[0], now + MIGRATION_REMINDER_DELAY_MS);
-        assert.equal(shouldShowMigrationReminder(context, 'file:///one', now + MIGRATION_REMINDER_DELAY_MS - 1), false);
-        assert.equal(shouldShowMigrationReminder(context, 'file:///one', now + MIGRATION_REMINDER_DELAY_MS), true);
-        assert.equal(shouldShowMigrationReminder(context, 'file:///other', now), true);
+        assert.equal(shouldShowMigrationReminder(context, 'file:///one', 'com.example:one', now + MIGRATION_REMINDER_DELAY_MS - 1), false);
+        assert.equal(shouldShowMigrationReminder(context, 'file:///one', 'com.example:one', now + MIGRATION_REMINDER_DELAY_MS), true);
+        assert.equal(shouldShowMigrationReminder(context, 'file:///other', 'com.example:one', now), true);
     });
 });

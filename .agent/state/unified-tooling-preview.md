@@ -13,7 +13,7 @@ size limit.
 
 Active plan:
 
-    Plan 08D — shared project conversion
+    Plan 08D — shared project conversion (Milestone 1 complete)
 
 Reason:
 
@@ -111,9 +111,9 @@ Plan 08B remains evidence, not the final release gate.
 
 Plan 08C is complete. Begin Plan 08D from its migration reminder and shared
 conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
-Plan 08D after Plan 08C:
+    Plan 08D after Plan 08C:
 
-    project-scoped Maven reminder suppression and reset
+    project-scoped Maven reminder suppression and reset (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference
