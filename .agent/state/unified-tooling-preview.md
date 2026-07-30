@@ -141,6 +141,7 @@ conversion milestones; installed-VSIX conversion E2E remains an 08D gate.
     Launcher/Deploy plans separate recognized platforms, ordered arguments, and redacted secrets (complete 2026-07-30)
     shared Gradle renderer maps legacy deploy platforms and retained switches (complete 2026-07-30)
     literal root Gradle/Maven TotalCross SDK coordinates take precedence over scripts (complete 2026-07-30)
+    project metadata supplies SDK evidence only after coordinates and legacy scripts (complete 2026-07-30)
     shared Java legacy-conversion engine
     Gradle conversion task and CLI bootstrap conversion
     dynamic SDK and application-Java inference

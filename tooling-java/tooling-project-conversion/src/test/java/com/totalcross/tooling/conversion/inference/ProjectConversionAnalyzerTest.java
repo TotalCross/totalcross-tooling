@@ -42,4 +42,14 @@ class ProjectConversionAnalyzerTest {
     assertEquals("7.6.0", plan.sdkCandidates().get(0).version());
     assertEquals("existing-gradle", plan.sdkCandidates().get(0).evidenceKind());
   }
+
+  @Test void uses_project_metadata_only_after_script_sdk_evidence_is_absent() throws Exception {
+    Files.writeString(directory.resolve("App.java"), "public class App extends totalcross.ui.MainWindow {}");
+    Path metadata = directory.resolve(".totalcross/project.json");
+    Files.createDirectories(metadata.getParent());
+    Files.writeString(metadata, "{\"sdkVersion\":\"7.6.0\"}");
+    assertEquals("7.6.0", new ProjectConversionAnalyzer().analyze(directory).sdkCandidates().get(0).version());
+    Files.writeString(directory.resolve("legacy.sh"), "java totalcross.Launcher 7.3.0");
+    assertEquals("7.3.0", new ProjectConversionAnalyzer().analyze(directory).sdkCandidates().get(0).version());
+  }
 }
