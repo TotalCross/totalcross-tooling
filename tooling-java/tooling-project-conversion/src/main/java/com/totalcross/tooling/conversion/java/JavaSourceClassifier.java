@@ -27,7 +27,7 @@ public final class JavaSourceClassifier {
       Path relative = entry.relativePath();
       String name = relative.getFileName().toString();
       if (!name.endsWith(".java")) {
-        if (resourceLike(relative)) resources.add(new Source(relative, relative, false));
+        if (resourceLike(relative)) resources.add(new Source(relative, resourceDestination(relative), false));
         continue;
       }
       String source = Files.readString(inventory.root().resolve(relative));
@@ -65,6 +65,12 @@ public final class JavaSourceClassifier {
   private static Path destination(Path source, String name, String packageName, boolean test) {
     Path root = Path.of("src", test ? "test" : "main", "java");
     return packageName == null ? root.resolve(name) : root.resolve(packageName.replace('.', '/')).resolve(name);
+  }
+
+  private static Path resourceDestination(Path source) {
+    Path destination = Path.of("src", "main", "resources");
+    for (Path part : source) destination = destination.resolve(part.toString());
+    return destination;
   }
 
   private static String qualified(String packageName, String className) {

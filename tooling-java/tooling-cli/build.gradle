@@ -11,6 +11,7 @@ java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
 
 dependencies {
     implementation project(':tooling-core')
+    implementation project(':tooling-project-conversion')
     implementation project(':preview-host')
     implementation project(':preview-worker')
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'

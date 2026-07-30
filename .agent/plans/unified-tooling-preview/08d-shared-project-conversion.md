@@ -49,7 +49,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [ ] Infer SDK, Java target, Launcher arguments, and Deploy arguments.
 - [ ] Resolve missing SDK dynamically from the shared stable catalog.
 - [ ] Resolve missing Java from highest target accepted by that SDK.
-- [ ] Generate a versioned conversion plan and diagnostic report.
+- [x] (2026-07-30 18:35Z) Generate a versioned read-only conversion plan with inventory fingerprint and diagnostics.
 - [ ] Apply a hash-verified transaction with backup and rollback.
 - [ ] Validate the resulting Gradle project through its wrapper.
 
@@ -57,8 +57,9 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 
 - [ ] Add `totalcrossConvertProject` to the Gradle plugin.
 - [ ] Make the task use only the shared conversion engine.
-- [ ] Add CLI `convert-project analyze`, `apply`, `validate`, and `rollback`.
-- [ ] Emit versioned JSON lines suitable for IDE consumption.
+- [ ] Add CLI `convert-project apply`, `validate`, and `rollback` (analysis is complete).
+- [x] (2026-07-30 18:35Z) Add CLI `convert-project analyze` and emit a versioned JSON-line conversion plan.
+- [x] (2026-07-30 18:35Z) Emit versioned JSON lines suitable for IDE consumption.
 - [ ] Keep CLI as the bootstrap path when no Gradle build exists.
 
 ### VS Code consumer
@@ -85,6 +86,11 @@ SHA-256 hashes without following symlinks and ignores generated/cache trees;
 `JavaSourceClassifier` produces conservative source/test/resource moves and
 direct public `MainWindow` candidates. `./gradlew :tooling-project-conversion:test`
 passed from `tooling-java`.
+
+`ProjectConversionAnalyzer` now turns that inventory into schema version 1 plan
+JSON and `totalcross-tooling convert-project analyze --project <path>` exposes
+the identical engine for folders that cannot apply Gradle plugins. The focused
+CLI suite passed with `./gradlew :tooling-cli:test`.
 
 
 ## Cross-plan safety and size policy

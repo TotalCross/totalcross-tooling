@@ -5,6 +5,7 @@ package com.totalcross.tooling.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.totalcross.tooling.build.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -29,5 +30,18 @@ class ToolingCliTest {
 
     assertEquals(String.join(java.io.File.pathSeparator, project.resolve("classes").toString(), project.resolve("resources").toString(),
         project.resolve("dependency.jar").toString()), ToolingCli.modelClasspath(model));
+  }
+
+  @Test
+  void analyzes_a_non_gradle_project_through_the_shared_conversion_module() throws Exception {
+    Path project = Files.createTempDirectory("totalcross-convert-cli-");
+    try {
+      Path source = project.resolve("App.java");
+      Files.writeString(source, "public class App extends totalcross.ui.MainWindow {}");
+      assertEquals(1, ConvertProjectCommand.analyze(project).mainWindowCandidates().size());
+      assertEquals(0, Files.list(project).filter(path -> path.getFileName().toString().equals("src")).count());
+    } finally {
+      try (var files = Files.walk(project)) { files.sorted(java.util.Comparator.reverseOrder()).forEach(path -> path.toFile().delete()); }
+    }
   }
 }

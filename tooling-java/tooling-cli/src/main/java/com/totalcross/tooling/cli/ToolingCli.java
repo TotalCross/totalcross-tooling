@@ -44,6 +44,7 @@ public final class ToolingCli {
 
   public static void main(String[] args) throws Exception {
     if (args.length == 0 || "--help".equals(args[0])) { usage(); return; }
+    if ("convert-project".equals(args[0])) { ConvertProjectCommand.execute(args); return; }
     if ("stop".equals(args[0])) { stop(args); return; }
     if (!List.of("preview", "run").contains(args[0])) throw new IllegalArgumentException("unknown command: " + args[0]);
     boolean runWindow = "run".equals(args[0]);
@@ -244,7 +245,7 @@ public final class ToolingCli {
   private static String escape(String value) { return value.replace("\\", "\\\\").replace("\"", "\\\""); }
 
   private static void usage() {
-    System.out.println("usage: totalcross-tooling preview|run [--model <file>] [--project <path>] [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file>");
+    System.out.println("usage: totalcross-tooling preview|run [--model <file>] [--project <path>] [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file> | convert-project analyze --project <path> [--plan <file>]");
   }
 
   private static final class ControlLoop implements AutoCloseable {
