@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.totalcross.tooling.conversion.java.JavaSourceClassifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -28,6 +29,13 @@ class ProjectInventoryReaderTest {
     assertEquals(Path.of("src/test/java/demo/AppTest.java"), classification.testSources().get(0).destination());
     assertEquals("demo.App", classification.mainWindowCandidates().get(0).className());
     assertEquals(1, classification.resources().size());
+  }
+
+  @Test void recognizes_an_unambiguous_local_mainwindow_superclass() throws Exception {
+    write("Base.java", "package demo; public abstract class Base extends totalcross.ui.MainWindow {}");
+    write("App.java", "package demo; public class App extends Base {}");
+    var classification = new JavaSourceClassifier().classify(new ProjectInventoryReader().read(directory));
+    assertEquals(List.of("demo.App"), classification.mainWindowCandidates().stream().map(JavaSourceClassifier.MainWindowCandidate::className).toList());
   }
 
   private void write(String relative, String contents) throws Exception {

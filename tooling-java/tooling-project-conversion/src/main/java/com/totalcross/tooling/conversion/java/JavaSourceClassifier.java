@@ -10,19 +10,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Conservative Java source and resource classification for a conversion dry run. */
 public final class JavaSourceClassifier {
   private static final Pattern PACKAGE = Pattern.compile("(?m)^\\s*package\\s+([A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)\\s*;");
-  private static final Pattern MAIN_WINDOW = Pattern.compile(
-      "(?m)\\bpublic\\s+(?!abstract\\b)class\\s+([A-Za-z_$][\\w$]*)\\s+extends\\s+(?:[\\w$.]*\\.)?MainWindow\\b");
+  private static final Pattern CLASS = Pattern.compile(
+      "(?m)\\bpublic\\s+(?:(abstract)\\s+)?class\\s+([A-Za-z_$][\\w$]*)\\s+extends\\s+([A-Za-z_$][\\w$.]*)\\b");
 
   public Classification classify(ProjectInventory inventory) throws IOException {
     List<Source> main = new ArrayList<>(), tests = new ArrayList<>(), resources = new ArrayList<>();
     List<MainWindowCandidate> mainWindows = new ArrayList<>(), warnings = new ArrayList<>();
+    Map<String, ClassDeclaration> declarations = new LinkedHashMap<>();
     for (ProjectInventory.Entry entry : inventory.entries()) {
       Path relative = entry.relativePath();
       String name = relative.getFileName().toString();
@@ -38,11 +41,26 @@ public final class JavaSourceClassifier {
       (test ? tests : main).add(classified);
       if (packageName == null) warnings.add(new MainWindowCandidate(relative, name.substring(0, name.length() - 5), false,
           "default-package source; it will be preserved and may not be portable"));
-      Matcher candidates = MAIN_WINDOW.matcher(source);
-      while (candidates.find()) mainWindows.add(new MainWindowCandidate(relative, qualified(packageName, candidates.group(1)), true,
-          "concrete class directly extends totalcross.ui.MainWindow"));
+      Matcher classes = CLASS.matcher(source);
+      while (classes.find()) {
+        String className = qualified(packageName, classes.group(2));
+        declarations.put(className, new ClassDeclaration(relative, className, classes.group(3), packageName, classes.group(1) == null));
+      }
+    }
+    for (ClassDeclaration declaration : declarations.values()) if (declaration.concrete() && extendsMainWindow(declaration, declarations, new java.util.HashSet<>())) {
+      boolean direct = declaration.parent().endsWith("MainWindow");
+      mainWindows.add(new MainWindowCandidate(declaration.source(), declaration.className(), true,
+          direct ? "concrete class directly extends totalcross.ui.MainWindow" : "concrete class extends an unambiguous local MainWindow superclass"));
     }
     return new Classification(main, tests, resources, mainWindows, warnings);
+  }
+
+  private static boolean extendsMainWindow(ClassDeclaration declaration, Map<String, ClassDeclaration> declarations, java.util.Set<String> visited) {
+    if (!visited.add(declaration.className())) return false;
+    if (declaration.parent().endsWith("MainWindow")) return true;
+    String parent = declaration.parent().contains(".") ? declaration.parent() : qualified(declaration.packageName(), declaration.parent());
+    ClassDeclaration local = declarations.get(parent);
+    return local != null && extendsMainWindow(local, declarations, visited);
   }
 
   private static boolean resourceLike(Path relative) {
@@ -79,6 +97,7 @@ public final class JavaSourceClassifier {
 
   public record Source(Path source, Path destination, boolean test) { }
   public record MainWindowCandidate(Path source, String className, boolean selectable, String evidence) { }
+  private record ClassDeclaration(Path source, String className, String parent, String packageName, boolean concrete) { }
   public record Classification(List<Source> mainSources, List<Source> testSources, List<Source> resources,
       List<MainWindowCandidate> mainWindowCandidates, List<MainWindowCandidate> warnings) {
     public Classification { mainSources = List.copyOf(mainSources); testSources = List.copyOf(testSources);

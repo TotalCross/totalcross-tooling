@@ -44,7 +44,7 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:31Z) Add a small `tooling-project-conversion` Java module.
 - [x] (2026-07-30 18:31Z) Implement streaming inventory and ignored-path rules.
 - [x] (2026-07-30 18:31Z) Infer main sources, tests, resources, and package paths.
-- [x] (2026-07-30 18:31Z) Locate direct concrete public `MainWindow` candidates and preserve candidate ambiguity for the plan.
+- [x] (2026-07-30 21:45Z) Locate direct or unambiguous-local concrete public `MainWindow` candidates.
 - [x] (2026-07-30 18:39Z) Parse supported Unix and Windows literal command evidence without execution.
 - [x] (2026-07-30 19:05Z) Extract script-backed SDK-version candidates into the versioned plan and report ambiguity.
 - [ ] Infer SDK, Java target, Launcher arguments, and Deploy arguments.
