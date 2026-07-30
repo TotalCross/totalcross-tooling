@@ -105,3 +105,9 @@ reached the text-file size limit. Full command output remains outside the repo.
   Focused assertions prove reload emits success only after its build and sends
   no candidate-reload control after build failure. Both the development and
   installed-VSIX extension-host runs passed all 33 tests on VS Code 1.131.0.
+- 2026-07-30: Gradle and Maven plugin documentation now identifies the
+  versioned ProjectModel and frame/control protocol as the stable external
+  integration boundary. SDK `totalcross.preview.*` APIs and the legacy
+  live-preview server are documented as internal compatibility surfaces only;
+  the Gradle description now also distinguishes streamed preview from native
+  `run` presentation.

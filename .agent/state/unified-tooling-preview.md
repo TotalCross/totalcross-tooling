@@ -101,6 +101,7 @@ Completed Plan 08C slices:
     release-facing VS Code defaults use Gradle plugin 0.1.0 without Maven Local
     VS Code reload builds before control promotion and preserves the active frame on failure
     focused and installed-VSIX extension-host suites pass on VS Code 1.131.0
+    preview protocol documentation distinguishes external integration from internal compatibility APIs
 
 Plan 08B remains evidence, not the final release gate.
 
@@ -113,7 +114,6 @@ Current Plan 08C milestone:
 Remaining Plan 08C blockers:
 
     obsolete resolver/download dependency removal after equivalence tests
-    internal versus external preview-contract documentation
 
 Plan 08D after Plan 08C:
 

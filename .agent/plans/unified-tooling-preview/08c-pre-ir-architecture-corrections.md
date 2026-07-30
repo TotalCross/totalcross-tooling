@@ -72,7 +72,7 @@ converter source, create tags, or publish publicly.
 - [x] Include real roots, outputs, dependencies, SDK, targets, and arguments.
 - [x] Remove or internalize `totalcrossTypedPackage`.
 - [ ] Remove obsolete resolver/download dependencies after equivalence tests.
-- [ ] Clarify internal versus external preview contract documentation.
+- [x] Clarify internal versus external preview contract documentation.
 
 ### VS Code corrections
 
