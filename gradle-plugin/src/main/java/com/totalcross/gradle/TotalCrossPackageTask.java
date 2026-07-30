@@ -15,6 +15,7 @@ import com.totalcross.tooling.environment.*;
 import com.totalcross.tooling.jdk.*;
 import com.totalcross.tooling.platform.HostPlatform;
 import com.totalcross.tooling.store.ExternalToolResolver;
+import com.totalcross.tooling.sdk.SdkDistributionResolver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,8 +111,9 @@ public abstract class TotalCrossPackageTask extends org.gradle.api.DefaultTask {
         Path output = getOutputDirectory().get().getAsFile().toPath();
         Files.createDirectories(output);
         File configuredSdkHome = optionalDirectory(getTotalcrossHome());
-        File sdkHome = new SdkResolver(getProject().getGradle().getGradleUserHomeDir().toPath(), new ArchiveDownloader())
-                .resolve(sdkVersion, configuredSdkHome);
+        File sdkHome = new SdkDistributionResolver(getProject().getGradle().getGradleUserHomeDir().toPath()
+                .resolve("caches/totalcross/sdk")).resolve(sdkVersion,
+                configuredSdkHome == null ? null : configuredSdkHome.toPath()).toFile();
         boolean useJdk11 = JavaTargetCompatibility.usesJdk11(sdkVersion);
         File configuredJdkHome = optionalDirectory(getJdkPath());
         ToolingEnvironment environment;
