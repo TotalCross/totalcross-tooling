@@ -29,6 +29,7 @@
 		"onCommand:extension.deployAndRun",
 		"onCommand:extension.convertMavenProjectToGradle",
 		"onCommand:extension.enableMavenConversionReminder",
+		"onCommand:extension.convertToTotalCrossProject",
 		"onCommand:extension.preview",
 		"onCommand:extension.run",
 		"onCommand:extension.previewStop",
@@ -60,6 +61,10 @@
 			{
 				"command": "extension.enableMavenConversionReminder",
 				"title": "TotalCross: Enable Maven Conversion Reminder"
+			},
+			{
+				"command": "extension.convertToTotalCrossProject",
+				"title": "TotalCross: Convert to TotalCross Project"
 			},
 			{
 				"command": "extension.preview",

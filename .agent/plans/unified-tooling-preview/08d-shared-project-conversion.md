@@ -71,8 +71,8 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 - [x] (2026-07-30 18:28Z) Add “Don't Ask Again for This Project” to the Maven reminder.
 - [x] (2026-07-30 18:28Z) Store suppression per workspace folder without changing project files.
 - [x] (2026-07-30 18:28Z) Add `TotalCross: Enable Maven Conversion Reminder`.
-- [ ] Add `TotalCross: Convert to TotalCross Project`.
-- [ ] Call the shared CLI; do not classify or move files in TypeScript.
+- [x] (2026-07-30 21:10Z) Add `TotalCross: Convert to TotalCross Project` analysis command.
+- [x] (2026-07-30 21:10Z) Call the packaged shared CLI; do not classify or move files in TypeScript.
 - [ ] Display detected evidence, conflicts, moves, generated files, and warnings.
 - [ ] Require explicit Apply before mutation.
 - [ ] Present rollback and validation results.
@@ -82,11 +82,8 @@ or batch scripts. Do not merge IR, create release branches, or publish.
 Milestone 1 is complete. VS Code workspace state stores the normalized folder
 URI plus Maven group/artifact identity; 34 tests passed.
 
-The first shared-engine slice is also complete. `ProjectInventoryReader` streams
-SHA-256 hashes without following symlinks and ignores generated/cache trees;
-`JavaSourceClassifier` produces conservative source/test/resource moves and
-direct public `MainWindow` candidates. `./gradlew :tooling-project-conversion:test`
-passed from `tooling-java`.
+`ProjectInventoryReader` streams hashes without symlinks; `JavaSourceClassifier`
+produces conservative moves and candidates. Its focused test passed.
 
 `ProjectConversionAnalyzer` now turns that inventory into schema version 1 plan
 JSON and `totalcross-tooling convert-project analyze --project <path>` exposes

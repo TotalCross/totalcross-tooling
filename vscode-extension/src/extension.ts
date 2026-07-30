@@ -15,6 +15,7 @@ import {showMigrationReminderIfNeeded} from './migration/migration-reminder';
 import {convertMavenProjectToGradle} from './migration/convert-project';
 import {clearMigrationReminder} from './migration/reminder-state';
 import {classifyProject} from './migration/project-classifier';
+import {analyzeLegacyProject} from './migration/legacy-conversion-command';
 import {registerPreviewCommands} from './preview-commands';
 
 // this method is called when your extension is activated
@@ -28,6 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 	 */
 	let disposable = vscode.commands.registerCommand('extension.createNewProject', function() {
 		createNewProject(context);
+	});
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.convertToTotalCrossProject', async (uri?: vscode.Uri) => {
+		await analyzeLegacyProject(context, uri ? vscode.workspace.getWorkspaceFolder(uri) : undefined);
 	});
 	context.subscriptions.push(disposable);
 	
