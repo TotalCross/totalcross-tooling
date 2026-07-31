@@ -35,7 +35,13 @@
       "temurin-17.0.16-8-macos-x64",
       "temurin-17.0.16-8-linux-x64",
       "temurin-17.0.16-8-windows-x64"
-    ]
+    ],
+    "verification": {
+      "urls": "all eight returned HTTP 200",
+      "sha256": "all eight catalog hashes verified 2026-07-30",
+      "declaredJavaHome": "all eight archive paths verified",
+      "capabilityProbes": "macOS ARM64 Java 11/17 passed; six x64/Windows entries require matching hosts"
+    }
   },
   "artifactChecksums": {
     "com.totalcross:totalcross-sdk:7.2.3": "f0e2f813cf7ea760827273b5d6455069f398d71c326e505136c615f53daa4032",
@@ -56,6 +62,6 @@
     "staging": "local file repositories prepared for SDK, tooling, Gradle, and Maven; no public staging",
     "public": "blocked until explicit approval",
     "cleanRoom": "Gradle and Maven pass with empty caches; SDK passes with the published annotations repository; Central-only SDK resolution is blocked by that external dependency",
-    "catalogUrlsAndArchives": "all URLs HTTP 200; macOS ARM64 bytes/probes verified; six non-local entries pending"
+    "catalogUrlsAndArchives": "all URLs, hashes, and declared archive homes verified; macOS ARM64 probes pass; six matching-host probes pending"
   }
 }

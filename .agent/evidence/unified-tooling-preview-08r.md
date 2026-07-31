@@ -51,3 +51,10 @@ SPDX-License-Identifier: Apache-2.0
   `totalcross-annotations:1.0.0`. A Central-only attempt failed on that
   external dependency; this is recorded as a supported repository requirement,
   not hidden by copying it into the SDK release artifact.
+- 2026-07-30: the six non-local catalog archives were downloaded from their
+  committed URLs and all matched the catalog SHA-256 values: macOS x64
+  Temurin 11/17 (187,862,376 / 180,154,703 bytes), Linux x64 Temurin 11/17
+  (195,406,004 / 192,062,472 bytes), and Windows x64 Temurin 11/17
+  (199,277,242 / 190,520,081 bytes). Tar/ZIP listings contain every declared
+  `JAVA_HOME` entry. Matching-host capability probes remain unavailable here;
+  macOS ARM64 probes are the capability evidence currently available.
