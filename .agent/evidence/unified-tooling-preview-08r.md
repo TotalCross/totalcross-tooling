@@ -67,3 +67,10 @@ SPDX-License-Identifier: Apache-2.0
   sources and Javadoc JARs, and zero `SNAPSHOT` matches. Javadoc emitted
   warnings for undocumented task properties but completed successfully.
   Plugin Portal metadata/validation remains open.
+- 2026-07-30: VS Code release metadata was aligned in tooling commit
+  `67567f7a`: extension version and Gradle plugin default are both
+  `0.1.0-beta.1`. `npm run verify:vsix` passed after compiling and bundling
+  the companion. The 574-file VSIX SHA-256 is
+  `79f2287dbef407412efafeb24abf43420183dba44fa90f07b3c497589924756d`; the
+  embedded companion SHA-256 is `7c696230d9ebcdc97e34edc4043fc5ea71a844a0206ab21c89ac173bd44938f5`.
+  Governance validation and its 17 tests passed.
