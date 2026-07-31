@@ -13,8 +13,33 @@
     <artifactId>totalcross-maven-plugin</artifactId>
     <version>${revision}</version>
     <name>totalcross-maven-plugin</name>
+    <description>TotalCross Maven build and preview integration plugin.</description>
     <url>http://maven.apache.org</url>
     <packaging>maven-plugin</packaging>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>totalcross</id>
+            <name>TotalCross maintainers</name>
+            <organization>Amalgam Solucoes em TI Ltda.</organization>
+            <organizationUrl>https://totalcross.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/TotalCross/totalcross-tooling.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/TotalCross/totalcross-tooling.git</developerConnection>
+        <url>https://github.com/TotalCross/totalcross-tooling/tree/release/0.1.0-beta.1</url>
+        <tag>release/0.1.0-beta.1</tag>
+    </scm>
 
     <properties>
 		<revision>2.0.4-beta.1</revision>
@@ -91,6 +116,37 @@
                     <url>${tooling.repository}</url>
                 </repository>
             </repositories>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals><goal>jar-no-fork</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.10.1</version>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>package</phase>
+                                <goals><goal>jar</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
