@@ -2,7 +2,7 @@
 	"name": "vscode-totalcross",
 	"displayName": "TotalCross Extension",
 	"description": "This is TotalCross plugin extension for vs code. ",
-	"version": "0.1.0",
+	"version": "0.1.0-beta.1",
 	"publisher": "TotalCross",
 	"icon": "icon.png",
 	"engines": {
@@ -88,7 +88,7 @@
 			"properties": {
 				"totalcross.gradlePluginVersion": {
 					"type": "string",
-					"default": "0.1.0",
+					"default": "0.1.0-beta.1",
 					"description": "Released version of com.totalcross.application used in new projects."
 				},
 				"totalcross.livePreview.javaCommand": {
