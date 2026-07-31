@@ -30,6 +30,8 @@ Do not merge IR or move source ownership.
 - [x] (2026-07-30) Create one release manifest.
 - [x] (2026-07-30) Record JDK catalog schema, entries, platforms, and resource checksum.
 - [x] (2026-07-30) Parameterize Gradle and Maven release versions and staging repositories.
+- [x] (2026-07-30) Configure local file staging destinations for the SDK,
+  tooling modules, Gradle plugin, and Maven plugin.
 - [ ] Verify every catalog URL, SHA-256, and declared JAVA_HOME.
 - [ ] Configure Java metadata, sources, Javadocs, signing, and staging.
 - [ ] Configure Maven plugin Central publication and Invoker tests.
@@ -64,10 +66,10 @@ Release branches:
 
 Feature branches remain available for Plan 09.
 
-The candidate versions and exact feature-branch commits are recorded in
-`.agent/reports/unified-tooling-preview-pre-ir-beta-1-manifest.json`. The
-manifest is planning evidence only: no release branch, staging publication, or
-public publication has been created.
+The candidate versions and exact release-branch commits are recorded in
+`.agent/reports/unified-tooling-preview-pre-ir-beta-1-manifest.json`. Local
+release branches and file staging exist for the SDK, tooling, Gradle, and
+Maven candidates; public publication remains blocked until explicit approval.
 
 
 ## Cross-plan safety and size policy

@@ -58,9 +58,10 @@ implementation commit. Do not copy stale SHAs from historical state entries.
 
 Verified 2026-07-30 before Plan 08R preparation:
 
-    totalcross-tooling local: a59b4ed6d11a072fcd45be99b2eaa57ac74b3603
+    totalcross-tooling local: 8c1f1fe9dfd261f814eeae079d623b06e2a80b83
     totalcross-tooling origin/feature/unify-tooling-and-preview: 718eb450ca5e05099dafb1b59d0ccde5378642b2
-    totalcross local and origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d
+    totalcross local: cbee198886438ed80d0305d5ee9334e291c903bb
+    totalcross origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d
 
 ## Completed checkpoints
 
@@ -122,15 +123,17 @@ Plan 08B remains evidence, not the final release gate.
 Plan 08R preparation started 2026-07-30. Candidate versions and the catalog
 resource checksum are recorded in
 `.agent/reports/unified-tooling-preview-pre-ir-beta-1-manifest.json`. The
-release still has no branch, public tag, or public release. Version plumbing
-for Gradle/Maven staging is complete; clean-room publication and consumption
-remain open.
+local release branches exist for the candidate versions, with no public tag or
+public release. Version plumbing and local file staging for SDK, Java tooling,
+Gradle, and Maven are complete; clean-room publication and consumption remain
+open.
 
 ## Active blockers
 
 Plans 08C and 08D gates pass. Plan 08R remains open for release assembly,
 clean-room staging, six non-local catalog byte/capability checks, and explicit
-approval before any public publication. Local macOS ARM64 catalog installation
+approval before any public publication. Local SDK, Java tooling, Gradle, and
+Maven file staging passes the no-`SNAPSHOT` check. Local macOS ARM64 catalog installation
 and offline reuse pass. All eight
 catalog URLs respond HTTP 200; both local macOS ARM64 entries match their
 committed hashes and declared homes. The official VSIX runner was observed to
@@ -211,8 +214,9 @@ Verify its current head during Plan 09. Do not merge or modify it in Plans 08C,
 
 ## Release status
 
-No release branch, public publication, public tag, or IR merge is authorized by
-this state. Plan 08R starts only after Plans 08C and 08D complete.
+Local release branches exist for the candidate versions. No public publication,
+public tag, or IR merge is authorized by this state. Plan 08R continues only
+after Plans 08C and 08D complete.
 
 ## Resume rules
 
@@ -228,4 +232,5 @@ this state. Plan 08R starts only after Plans 08C and 08D complete.
 ## Deferrals and exclusions
 
 Do not merge IR, move converter/deployer source, rewrite history, push, create
-release branches, tag, publish, or delete caches unless separately authorized.
+additional release branches, tag, publish publicly, or delete caches unless
+separately authorized.

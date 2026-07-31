@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "planned",
+  "status": "staged-locally",
   "publicPublicationApproved": false,
   "release": {
     "sdk": {"version": "7.2.3", "coordinate": "com.totalcross:totalcross-sdk"},
@@ -10,8 +10,8 @@
     "vscode": {"version": "0.1.0-beta.1", "publisher": "TotalCross", "name": "vscode-totalcross"}
   },
   "commits": {
-    "totalcross": "4b6bb643def497509aa1c25b1da60c1ea3add892",
-    "totalcrossTooling": "88868ae968d39ebb03c988f7244a191574c9b6b8"
+    "totalcross": "cbee198886438ed80d0305d5ee9334e291c903bb",
+    "totalcrossTooling": "8c1f1fe9dfd261f814eeae079d623b06e2a80b83"
   },
   "branches": {
     "totalcross": "release/7.2.3-beta.1",
@@ -37,10 +37,18 @@
       "temurin-17.0.16-8-windows-x64"
     ]
   },
+  "artifactChecksums": {
+    "com.totalcross:totalcross-sdk:7.2.3": "f0e2f813cf7ea760827273b5d6455069f398d71c326e505136c615f53daa4032",
+    "com.totalcross.tooling:tooling-core:0.1.0-beta.1": "8fc545c8d0ea90e175c28a97b8bc8c0162ed65018645c4d48c348f981ff67347",
+    "com.totalcross.tooling:tooling-cli:0.1.0-beta.1:all": "7c696230d9ebcdc97e34edc4043fc5ea71a844a0206ab21c89ac173bd44938f5",
+    "com.totalcross:totalcross-gradle-plugin:0.1.0-beta.1": "b3ba0e2dc7c2c0fd94fab8c2820af0a0124a44394c409f8e5478437654168a7c",
+    "com.totalcross:totalcross-maven-plugin:2.0.4-beta.1": "b14af57065c200e68baeebd66d002ace7420ebcb346d723cdf2d50cd5252fc73",
+    "vscode-totalcross/totalcross-preview.vsix:0.1.0-beta.1": "720b9b265567165108e6243f736dcd5bae590e5e9339ca00811109edfb4aab83"
+  },
   "publication": {
-    "staging": "not started",
+    "staging": "local file repositories prepared for SDK, tooling, Gradle, and Maven; no public staging",
     "public": "blocked until explicit approval",
     "cleanRoom": "not started",
-    "catalogUrlsAndArchives": "pending per-entry verification"
+    "catalogUrlsAndArchives": "all URLs HTTP 200; macOS ARM64 bytes/probes verified; six non-local entries pending"
   }
 }

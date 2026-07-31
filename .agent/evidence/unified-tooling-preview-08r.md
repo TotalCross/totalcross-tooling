@@ -27,3 +27,17 @@ SPDX-License-Identifier: Apache-2.0
 - 2026-07-30: local release branches `release/7.2.3-beta.1` (SDK) and
   `release/0.1.0-beta.1` (tooling) were created. The SDK branch commit
   `4b6bb643d` sets the numeric SDK line to 7.2.3; its compileJava check passed.
+- 2026-07-30: the SDK release branch commit `cbee19888` parameterized its
+  Maven repository with `-PstagingRepo`. Publishing all six SDK publications
+  to an isolated file repository succeeded with 95 files and no `SNAPSHOT`
+  matches.
+- 2026-07-30: local file staging succeeded for tooling (125 files), the
+  Gradle plugin (40 files), and the Maven plugin (12 files). The release POM
+  fix in `8c1f1fe9` pins the candidate defaults to `2.0.4-beta.1` and
+  `0.1.0-beta.1`; the staged Maven POM now has zero `SNAPSHOT` matches.
+  Release-mode Maven packaging and deployment resolve tooling from the local
+  staging repository. Plain packaging without that profile is intentionally
+  not a public-consumption test because the beta is not published to Central.
+- 2026-07-30: representative staged artifact SHA-256 values were recorded in
+  the release manifest for the SDK aggregate, tooling core and CLI bundle,
+  Gradle plugin, Maven plugin, and VSIX. Public publication remains disabled.
