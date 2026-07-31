@@ -74,3 +74,6 @@ SPDX-License-Identifier: Apache-2.0
   `79f2287dbef407412efafeb24abf43420183dba44fa90f07b3c497589924756d`; the
   embedded companion SHA-256 is `7c696230d9ebcdc97e34edc4043fc5ea71a844a0206ab21c89ac173bd44938f5`.
   Governance validation and its 17 tests passed.
+- 2026-07-30: release scope is frozen on the local release branches; remaining
+  changes are limited to release fixes or evidence updates. No tag, push,
+  public staging, or public publication was performed.

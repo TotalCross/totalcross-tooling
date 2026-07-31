@@ -26,7 +26,7 @@ Do not merge IR or move source ownership.
 - [x] (2026-07-30) Verify every Plan-08C and Plan-08D gate against exact feature commits.
 - [x] (2026-07-30) Choose coordinated non-SNAPSHOT beta versions.
 - [x] (2026-07-30) Create local release branches from accepted feature commits.
-- [ ] Freeze scope and allow only release fixes.
+- [x] (2026-07-30) Freeze scope and allow only release fixes.
 - [x] (2026-07-30) Create one release manifest.
 - [x] (2026-07-30) Record JDK catalog schema, entries, platforms, and resource checksum.
 - [x] (2026-07-30) Parameterize Gradle and Maven release versions and staging repositories.

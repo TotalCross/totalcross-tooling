@@ -142,6 +142,9 @@ catalog URLs respond HTTP 200 and all eight hashes and declared archive homes
 match. Both local macOS ARM64 entries pass capability probes. The official VSIX runner was observed to
 block while installing external Java Pack dependencies; the equivalent
 unpacked release payload ran the installed-extension suite successfully.
+Maven Invoker/Central publication, Gradle Plugin Portal validation, signing,
+full dependency-chain staging, matching-host probes, and public approval remain
+open. No public tag, push, or publication was performed.
 
 Historical Plan 08D evidence:
 
