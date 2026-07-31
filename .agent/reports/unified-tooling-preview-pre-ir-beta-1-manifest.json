@@ -11,7 +11,7 @@
   },
   "commits": {
     "totalcross": "cbee198886438ed80d0305d5ee9334e291c903bb",
-    "totalcrossTooling": "3820f9d2e4701e4b169afb9c08bca3bb661de4ed"
+    "totalcrossTooling": "3795cfa956ecfdd20c5a852c2a52afdcb6836a7b"
   },
   "branches": {
     "totalcross": "release/7.2.3-beta.1",
@@ -48,6 +48,8 @@
     "com.totalcross.tooling:tooling-core:0.1.0-beta.1": "8fc545c8d0ea90e175c28a97b8bc8c0162ed65018645c4d48c348f981ff67347",
     "com.totalcross.tooling:tooling-cli:0.1.0-beta.1:all": "7c696230d9ebcdc97e34edc4043fc5ea71a844a0206ab21c89ac173bd44938f5",
     "com.totalcross:totalcross-gradle-plugin:0.1.0-beta.1": "b3ba0e2dc7c2c0fd94fab8c2820af0a0124a44394c409f8e5478437654168a7c",
+    "com.totalcross:totalcross-gradle-plugin:0.1.0-beta.1:sources": "46dd033f7374320d35a504edd309ac1e23f97095a67ad213cdcbbc9490951e13",
+    "com.totalcross:totalcross-gradle-plugin:0.1.0-beta.1:javadoc": "d811d648a0056baacd261c0913d25bf14bc39babd6f1ab374182d7fdef6138f5",
     "com.totalcross:totalcross-maven-plugin:2.0.4-beta.1": "b14af57065c200e68baeebd66d002ace7420ebcb346d723cdf2d50cd5252fc73",
     "com.totalcross:totalcross-maven-plugin:2.0.4-beta.1:sources": "109ba2d1f8b4df3cd586895113ac7bc056ab8d3ab40b5f8a51ba7a6893117b71",
     "com.totalcross:totalcross-maven-plugin:2.0.4-beta.1:javadoc": "8790099b906a251652125ecc347b787064afa90f41e3e52e4c66090f4f947254",

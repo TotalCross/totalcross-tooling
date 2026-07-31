@@ -38,6 +38,7 @@ Do not merge IR or move source ownership.
 - [x] (2026-07-30) Configure Maven release POM metadata and sources/Javadocs.
 - [ ] Configure Maven plugin Central publication and Invoker tests.
 - [ ] Configure Gradle Plugin Portal metadata and validation.
+- [x] (2026-07-30) Configure Gradle plugin POM metadata and sources/Javadocs.
 - [ ] Configure companion archive checksums and release metadata.
 - [x] (2026-07-30) Bundle and inspect the VS Code extension.
 - [ ] Replace extension defaults with released plugin coordinates.

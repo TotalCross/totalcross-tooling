@@ -62,3 +62,8 @@ SPDX-License-Identifier: Apache-2.0
   Release-mode tests passed; local deployment produced the main, sources, and
   Javadoc JARs plus metadata (18 files total) with zero `SNAPSHOT` matches.
   Signing credentials, Central publication, and Invoker coverage remain open.
+- 2026-07-30: Gradle plugin metadata was added in tooling commit `3795cfa9`.
+  Release-mode tests and local publication passed with 50 files, including
+  sources and Javadoc JARs, and zero `SNAPSHOT` matches. Javadoc emitted
+  warnings for undocumented task properties but completed successfully.
+  Plugin Portal metadata/validation remains open.
