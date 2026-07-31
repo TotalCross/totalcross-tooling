@@ -19,6 +19,8 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 repositories {
@@ -47,6 +49,34 @@ publishing {
             url = providers.gradleProperty('stagingRepo')
                     .map { uri(it) }
                     .orElse(layout.buildDirectory.dir('staging-repository'))
+        }
+    }
+    publications.withType(MavenPublication).configureEach {
+        pom {
+            name = 'TotalCross Gradle Plugin'
+            description = 'Gradle integration for building TotalCross applications and libraries.'
+            url = 'https://github.com/TotalCross/totalcross-tooling'
+            licenses {
+                license {
+                    name = 'Apache License, Version 2.0'
+                    url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution = 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id = 'totalcross'
+                    name = 'TotalCross maintainers'
+                    organization = 'Amalgam Solucoes em TI Ltda.'
+                    organizationUrl = 'https://totalcross.com'
+                }
+            }
+            scm {
+                connection = 'scm:git:https://github.com/TotalCross/totalcross-tooling.git'
+                developerConnection = 'scm:git:ssh://git@github.com/TotalCross/totalcross-tooling.git'
+                url = 'https://github.com/TotalCross/totalcross-tooling/tree/release/0.1.0-beta.1'
+                tag = 'release/0.1.0-beta.1'
+            }
         }
     }
 }
