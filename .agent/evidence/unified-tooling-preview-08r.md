@@ -41,3 +41,13 @@ SPDX-License-Identifier: Apache-2.0
 - 2026-07-30: representative staged artifact SHA-256 values were recorded in
   the release manifest for the SDK aggregate, tooling core and CLI bundle,
   Gradle plugin, Maven plugin, and VSIX. Public publication remains disabled.
+- 2026-07-30: Gradle plugin tests passed with a new `GRADLE_USER_HOME` and
+  tooling resolved from the local file staging repository. Maven release-mode
+  packaging also passed with a new `maven.repo.local` and the same staging
+  repository.
+- 2026-07-30: SDK dependency resolution from a new Maven repository resolved
+  `totalcross-sdk:7.2.3` when the already-published
+  `maven.totalcross.com/artifactory/repo1` repository was supplied for
+  `totalcross-annotations:1.0.0`. A Central-only attempt failed on that
+  external dependency; this is recorded as a supported repository requirement,
+  not hidden by copying it into the SDK release artifact.

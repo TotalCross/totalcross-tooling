@@ -45,10 +45,17 @@
     "com.totalcross:totalcross-maven-plugin:2.0.4-beta.1": "b14af57065c200e68baeebd66d002ace7420ebcb346d723cdf2d50cd5252fc73",
     "vscode-totalcross/totalcross-preview.vsix:0.1.0-beta.1": "720b9b265567165108e6243f736dcd5bae590e5e9339ca00811109edfb4aab83"
   },
+  "externalDependencies": {
+    "com.totalcross.annotations:totalcross-annotations:1.0.0": {
+      "repository": "https://maven.totalcross.com/artifactory/repo1",
+      "sha256": "86810c4e64e8ff677e2a2db7131528c85dabd59883cf459f226e551c9ee9ebe4",
+      "status": "published dependency required for SDK clean-room consumption"
+    }
+  },
   "publication": {
     "staging": "local file repositories prepared for SDK, tooling, Gradle, and Maven; no public staging",
     "public": "blocked until explicit approval",
-    "cleanRoom": "not started",
+    "cleanRoom": "Gradle and Maven pass with empty caches; SDK passes with the published annotations repository; Central-only SDK resolution is blocked by that external dependency",
     "catalogUrlsAndArchives": "all URLs HTTP 200; macOS ARM64 bytes/probes verified; six non-local entries pending"
   }
 }

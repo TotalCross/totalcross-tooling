@@ -130,10 +130,13 @@ open.
 
 ## Active blockers
 
-Plans 08C and 08D gates pass. Plan 08R remains open for release assembly,
-clean-room staging, six non-local catalog byte/capability checks, and explicit
-approval before any public publication. Local SDK, Java tooling, Gradle, and
-Maven file staging passes the no-`SNAPSHOT` check. Local macOS ARM64 catalog installation
+Plans 08C and 08D gates pass. Plan 08R remains open for release assembly, the
+six non-local catalog byte/capability checks, and explicit approval before any
+public publication. Gradle and Maven clean-room consumption pass with empty
+caches. SDK clean-room consumption passes when the already-published
+annotations repository is configured; Central-only consumption is blocked by
+that external dependency. Local SDK, Java tooling, Gradle, and Maven file
+staging passes the no-`SNAPSHOT` check. Local macOS ARM64 catalog installation
 and offline reuse pass. All eight
 catalog URLs respond HTTP 200; both local macOS ARM64 entries match their
 committed hashes and declared homes. The official VSIX runner was observed to
