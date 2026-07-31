@@ -58,7 +58,7 @@ implementation commit. Do not copy stale SHAs from historical state entries.
 
 Verified 2026-07-30 before Plan 08R preparation:
 
-    totalcross-tooling local: 8c1f1fe9dfd261f814eeae079d623b06e2a80b83
+    totalcross-tooling local: 3820f9d2e4701e4b169afb9c08bca3bb661de4ed
     totalcross-tooling origin/feature/unify-tooling-and-preview: 718eb450ca5e05099dafb1b59d0ccde5378642b2
     totalcross local: cbee198886438ed80d0305d5ee9334e291c903bb
     totalcross origin/feature/392-feature-request-live-ui-preview-for-ides: 9a36178ef185cc3986a446e7cdefdcb0451c402d

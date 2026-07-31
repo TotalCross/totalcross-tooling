@@ -35,6 +35,7 @@ Do not merge IR or move source ownership.
 - [x] (2026-07-30) Verify every catalog URL, SHA-256, and declared JAVA_HOME.
 - [ ] Run matching-host capability probes for the six non-local catalog entries.
 - [ ] Configure Java metadata, sources, Javadocs, signing, and staging.
+- [x] (2026-07-30) Configure Maven release POM metadata and sources/Javadocs.
 - [ ] Configure Maven plugin Central publication and Invoker tests.
 - [ ] Configure Gradle Plugin Portal metadata and validation.
 - [ ] Configure companion archive checksums and release metadata.

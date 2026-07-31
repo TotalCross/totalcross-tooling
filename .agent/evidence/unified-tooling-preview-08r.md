@@ -58,3 +58,7 @@ SPDX-License-Identifier: Apache-2.0
   (199,277,242 / 190,520,081 bytes). Tar/ZIP listings contain every declared
   `JAVA_HOME` entry. Matching-host capability probes remain unavailable here;
   macOS ARM64 probes are the capability evidence currently available.
+- 2026-07-30: Maven release metadata was added in tooling commit `3820f9d2`.
+  Release-mode tests passed; local deployment produced the main, sources, and
+  Javadoc JARs plus metadata (18 files total) with zero `SNAPSHOT` matches.
+  Signing credentials, Central publication, and Invoker coverage remain open.
