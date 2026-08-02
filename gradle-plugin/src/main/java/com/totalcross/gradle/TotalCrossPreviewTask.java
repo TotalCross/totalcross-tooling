@@ -52,7 +52,7 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
             getLogger().lifecycle("TotalCross preview coordinator deferred until compiled application classes exist");
             return;
         }
-        if (!Boolean.parseBoolean(String.valueOf(getProject().findProperty("totalcross.preview.noLaunch")))) {
+        if (!Boolean.parseBoolean(String.valueOf(getProject().findProperty("totalcross-preview.noLaunch")))) {
             launchSharedPreview(session);
         }
     }

@@ -30,7 +30,7 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
     private String buildDirectory = "target";
     @Parameter(property = "totalcross.mainClass")
     private String mainClass;
-    @Parameter(property = "totalcross.preview.noLaunch", defaultValue = "false")
+    @Parameter(property = "totalcross-preview.noLaunch", defaultValue = "false")
     private boolean noLaunch;
     @Parameter(property = "totalcross.jdkPath")
     private String jdkPath;

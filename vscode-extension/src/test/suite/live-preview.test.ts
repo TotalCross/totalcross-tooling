@@ -31,13 +31,13 @@ suite('Live Preview Test Suite', () => {
 		const args = livePreviewTest.buildJavaArguments(
 			jvmArgs,
 			'/tmp/SDK With Spaces/totalcross-sdk.jar',
-			'/tmp/workspace with spaces/totalcross.preview.json',
+			'/tmp/workspace with spaces/totalcross-preview.json',
 			41234
 		);
 
 		assert.equal(jvmArgs[0], '-Dapple.awt.UIElement=true');
 		assert.ok(args.includes('/tmp/SDK With Spaces/totalcross-sdk.jar'));
-		assert.ok(args.includes('/tmp/workspace with spaces/totalcross.preview.json'));
+		assert.ok(args.includes('/tmp/workspace with spaces/totalcross-preview.json'));
 		assert.equal(args[args.indexOf('--host') + 1], '127.0.0.1');
 		assert.equal(args[args.indexOf('--port') + 1], '41234');
 	});

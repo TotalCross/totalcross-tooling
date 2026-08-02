@@ -64,11 +64,9 @@ public final class PreviewWorkerSession implements AutoCloseable {
         case RELOAD -> {
           String value = text(message);
           long previousFrames = frameCount();
-          runtime.prepareReload();
-          if (!value.isBlank()) {
-            String[] values = value.split("\\n", -1);
-            runtime.replaceMainWindow(values[0], java.util.Arrays.copyOfRange(values, 1, values.length));
-          }
+          runtime.close();
+          String[] values = value.split("\\n", -1);
+          runtime.start(values[0], java.util.Arrays.copyOfRange(values, 1, values.length), this::sendFrame);
           awaitFrameAfterReload(previousFrames);
           send(MessageType.RELOAD_READY, message.requestId(), new byte[0]);
         }

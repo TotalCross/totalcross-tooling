@@ -19,7 +19,7 @@ import {
 export {livePreviewTest} from './live-preview-utils';
 
 const VIEW_TYPE = 'totalcrossLivePreview';
-const CONFIG_FILE = 'totalcross.preview.json';
+const CONFIG_FILE = 'totalcross-preview.json';
 const PREVIEW_HOST = '127.0.0.1';
 let session: PreviewSession | undefined;
 let activation: vscode.Disposable | undefined;

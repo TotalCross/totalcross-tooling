@@ -99,7 +99,7 @@ async function mergeGitIgnore(root: string): Promise<string | undefined> {
 }
 
 async function migratePreviewConfig(root: string, files: Map<string, Buffer | string>): Promise<void> {
-    const relative = 'totalcross.preview.json';
+    const relative = 'totalcross-preview.json';
     const file = path.join(root, relative);
     if (!(await exists(file))) {
         return;
@@ -129,11 +129,11 @@ async function migratePreviewConfig(root: string, files: Map<string, Buffer | st
 export async function synchronizeGradlePreviewConfig(root: string): Promise<boolean> {
     const files = new Map<string, Buffer | string>();
     await migratePreviewConfig(root, files);
-    const contents = files.get('totalcross.preview.json');
+    const contents = files.get('totalcross-preview.json');
     if (typeof contents !== 'string') {
         return false;
     }
-    await writeAtomic(path.join(root, 'totalcross.preview.json'), contents);
+    await writeAtomic(path.join(root, 'totalcross-preview.json'), contents);
     return true;
 }
 

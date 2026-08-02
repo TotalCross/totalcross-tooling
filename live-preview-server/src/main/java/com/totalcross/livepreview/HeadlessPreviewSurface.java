@@ -3,22 +3,22 @@
 // SPDX-License-Identifier: LGPL-2.1-only
 package com.totalcross.livepreview;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
-import totalcross.preview.PreviewRuntime;
+import java.awt.image.DataBufferInt;
+import java.awt.Graphics2D;
+import tc.preview.PreviewFrame;
+import tc.preview.PreviewFrameSink;
 
 /**
  * Preview surface that retains the latest rendered frame without showing UI.
  */
-public class HeadlessPreviewSurface implements PreviewRuntime.FrameConsumer {
+public class HeadlessPreviewSurface implements PreviewFrameSink {
   private BufferedImage latestFrame;
   private long frameNumber;
 
   @Override
-  public synchronized void present(BufferedImage image) {
-    latestFrame = copy(image);
+  public synchronized void present(PreviewFrame frame) {
+    latestFrame = copy(frame);
     frameNumber++;
   }
 
@@ -26,7 +26,7 @@ public class HeadlessPreviewSurface implements PreviewRuntime.FrameConsumer {
    * Returns a copy of the latest frame, or {@code null} if no frame was rendered yet.
    */
   public synchronized BufferedImage getLatestFrame() {
-    return latestFrame == null ? null : copy(latestFrame);
+    return latestFrame == null ? null : copyImage(latestFrame);
   }
 
   public synchronized long getFrameNumber() {
@@ -38,12 +38,17 @@ public class HeadlessPreviewSurface implements PreviewRuntime.FrameConsumer {
     frameNumber++;
   }
 
-  private BufferedImage copy(BufferedImage image) {
-    if (image.getType() == BufferedImage.TYPE_CUSTOM) {
-      ColorModel colorModel = image.getColorModel();
-      WritableRaster raster = image.copyData(null);
-      return new BufferedImage(colorModel, raster, colorModel.isAlphaPremultiplied(), null);
+  private BufferedImage copy(PreviewFrame frame) {
+    BufferedImage copy = new BufferedImage(frame.getWidth(), frame.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    int[] target = ((DataBufferInt) copy.getRaster().getDataBuffer()).getData();
+    int[] pixels = frame.copyPixels();
+    for (int y = 0; y < frame.getHeight(); y++) {
+      System.arraycopy(pixels, y * frame.getStride(), target, y * frame.getWidth(), frame.getWidth());
     }
+    return copy;
+  }
+
+  private BufferedImage copyImage(BufferedImage image) {
     BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
     Graphics2D graphics = copy.createGraphics();
     graphics.drawImage(image, 0, 0, null);

@@ -102,7 +102,7 @@ ready and produces a valid first frame, so a failed candidate preserves the
 previous frame and worker. `totalcrossRun` uses the same lifecycle but presents
 the promoted frame stream in a native desktop window.
 
-SDK `totalcross.preview.*` classes and the legacy live-preview server remain
+SDK `tc.preview.*` classes and the legacy live-preview server remain
 internal compatibility surfaces. They are not a public extension API and may
 not be used as another reload owner.
 

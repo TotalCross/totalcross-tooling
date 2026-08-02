@@ -10,8 +10,6 @@ public interface WorkerRuntime extends AutoCloseable {
   void resize(int width, int height, double density);
   void pointer(int x, int y, int button, boolean pressed);
   void key(int keyCode, boolean pressed, int modifiers);
-  void prepareReload();
-  void replaceMainWindow(String mainClass, String[] args);
   @Override void close();
 
   @FunctionalInterface

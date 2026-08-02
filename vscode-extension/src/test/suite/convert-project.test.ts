@@ -19,7 +19,7 @@ suite('Maven to Gradle conversion transaction', () => {
             await fs.writeFile(path.join(root, '.project'), 'maven project');
             await fs.mkdir(path.join(root, '.settings'), {recursive: true});
             await fs.writeFile(path.join(root, '.settings/org.eclipse.m2e.core.prefs'), 'maven settings');
-            await fs.writeFile(path.join(root, 'totalcross.preview.json'), JSON.stringify({
+            await fs.writeFile(path.join(root, 'totalcross-preview.json'), JSON.stringify({
                 mainWindow: 'com.example.MainWindow',
                 buildCommand: 'mvn compile',
                 classOutputPaths: ['target/classes'],
@@ -39,7 +39,7 @@ suite('Maven to Gradle conversion transaction', () => {
             assert.equal(await exists(path.join(root, '.project')), false);
             assert.equal(await exists(path.join(root, '.settings/org.eclipse.m2e.core.prefs')), false);
             assert.equal(await fs.readFile(path.join(root, 'gradle.properties'), 'utf8'), 'other=value\ntotalcrossActivationKey=secret\n');
-            const preview = JSON.parse(await fs.readFile(path.join(root, 'totalcross.preview.json'), 'utf8'));
+            const preview = JSON.parse(await fs.readFile(path.join(root, 'totalcross-preview.json'), 'utf8'));
             assert.equal(preview.mainWindow, 'com.example.MainWindow');
             assert.equal(preview.buildCommand, './gradlew classes');
             assert.deepEqual(preview.classOutputPaths, ['build/classes/java/main']);
@@ -77,11 +77,11 @@ suite('Maven to Gradle conversion transaction', () => {
     test('repairs a stale Maven preview descriptor in an existing generated Gradle project', async () => {
         const root = await fs.mkdtemp(path.join(os.tmpdir(), 'totalcross-preview-config-repair-'));
         try {
-            await fs.writeFile(path.join(root, 'totalcross.preview.json'), JSON.stringify({
+            await fs.writeFile(path.join(root, 'totalcross-preview.json'), JSON.stringify({
                 mainWindow: 'com.example.MainWindow', buildCommand: 'mvn compile', classOutputPaths: ['target/classes']
             }));
             assert.equal(await synchronizeGradlePreviewConfig(root), true);
-            const preview = JSON.parse(await fs.readFile(path.join(root, 'totalcross.preview.json'), 'utf8'));
+            const preview = JSON.parse(await fs.readFile(path.join(root, 'totalcross-preview.json'), 'utf8'));
             assert.equal(preview.mainWindow, 'com.example.MainWindow');
             assert.equal(preview.buildCommand, './gradlew classes');
             assert.deepEqual(preview.classOutputPaths, ['build/classes/java/main']);

@@ -201,7 +201,7 @@ public class LivePreviewServer {
 
   private static void printUsage() {
     System.err.println(
-        "Usage: java com.totalcross.livepreview.LivePreviewServer --config totalcross.preview.json [--host 127.0.0.1] [--port 0]");
+        "Usage: java com.totalcross.livepreview.LivePreviewServer --config totalcross-preview.json [--host 127.0.0.1] [--port 0]");
     System.err.println(
         "   or: java com.totalcross.livepreview.LivePreviewServer --class <MainWindowClass> [--host 127.0.0.1] [--port 0] [-- <launcher args>]");
   }

@@ -9,7 +9,7 @@ This LGPL-2.1-only Java 17 project provides the local HTTP service consumed by
 older TotalCross IDE integrations. The supported release lifecycle is the
 authenticated host/worker coordinator in `tooling-java`; this server is not a
 second supported reload owner. It is separate from `totalcross-sdk` and depends
-on an SDK version exposing the `totalcross.preview.PreviewRuntime` contract.
+on an SDK version exposing the `tc.preview` contract.
 That SDK contract is internal compatibility only. New integrations use the
 versioned project model and the coordinator's frame/control protocol instead.
 

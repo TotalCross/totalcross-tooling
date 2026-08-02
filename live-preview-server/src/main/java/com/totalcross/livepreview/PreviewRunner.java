@@ -7,14 +7,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import totalcross.preview.PreviewRuntime;
-import totalcross.ui.Container;
-import totalcross.ui.Control;
-import totalcross.ui.MainWindow;
+import tc.preview.PreviewBootstrap;
+import tc.preview.PreviewSession;
 
 /**
  * Starts a TotalCross application with an IDE-agnostic preview surface.
@@ -25,7 +22,7 @@ import totalcross.ui.MainWindow;
  * ClassLoader between reloads.
  */
 public class PreviewRunner {
-  private PreviewRuntime runtime;
+  private PreviewSession runtime;
   private final HeadlessPngSurface surface;
   private PreviewConfig config;
   private final Path workspaceRoot;
@@ -35,20 +32,13 @@ public class PreviewRunner {
   private String lastShowError = "";
   private boolean blank;
 
-  private PreviewRunner(PreviewRuntime runtime, HeadlessPngSurface surface, PreviewConfig config, Path workspaceRoot,
+  private PreviewRunner(PreviewSession runtime, HeadlessPngSurface surface, PreviewConfig config, Path workspaceRoot,
       DisposableAppClassLoader appClassLoader) {
     this.runtime = runtime;
     this.surface = surface;
     this.config = config;
     this.workspaceRoot = workspaceRoot;
     this.appClassLoader = appClassLoader;
-  }
-
-  public static PreviewRunner run(Class<? extends MainWindow> clazz, String... args) {
-    if (clazz == null) {
-      throw new IllegalArgumentException("clazz cannot be null");
-    }
-    return run(clazz.getCanonicalName(), args);
   }
 
   public static PreviewRunner run(String className, String... args) {
@@ -81,7 +71,7 @@ public class PreviewRunner {
     DisposableAppClassLoader loader = useDisposableClassLoader
         ? DisposableAppClassLoader.fromConfig(workspaceRoot, config)
         : null;
-    PreviewRuntime runtime = startRuntime(config, surface, loader);
+    PreviewSession runtime = startRuntime(config, surface, loader);
     return new PreviewRunner(runtime, surface, config, workspaceRoot, loader);
   }
 
@@ -100,18 +90,8 @@ public class PreviewRunner {
       blank = false;
       this.config = config;
       newClassLoader = DisposableAppClassLoader.fromConfig(workspaceRoot, this.config);
-      closeClassLoader(displayedClassLoader);
-      displayedClassLoader = null;
-      runtime.preparePreviewMainWindowReload();
-      MainWindow mainWindow = runtime.createMainWindow(this.config.mainWindow, newClassLoader, false);
-      if (mainWindow == null) {
-        throw new IllegalStateException("Preview mainWindow did not create a MainWindow instance");
-      }
-      DisposableAppClassLoader oldClassLoader = appClassLoader;
-      appClassLoader = newClassLoader;
+      restartRuntime(newClassLoader);
       newClassLoader = null;
-      runtime.replaceMainWindow(mainWindow, currentCommandLine());
-      closeClassLoader(oldClassLoader);
       pumpEvents();
       return true;
     } catch (Throwable e) {
@@ -139,45 +119,13 @@ public class PreviewRunner {
     try {
       lastShowError = "";
       newClassLoader = DisposableAppClassLoader.fromConfig(workspaceRoot, config);
-      Class<?> previewClass = Class.forName(className, true, newClassLoader);
-      Constructor<?> constructor = previewClass.getDeclaredConstructor();
-      if (MainWindow.class.isAssignableFrom(previewClass)) {
-        closeClassLoader(displayedClassLoader);
-        displayedClassLoader = null;
-        runtime.preparePreviewMainWindowReload();
-        MainWindow mainWindow = (MainWindow) constructor.newInstance();
-        DisposableAppClassLoader oldClassLoader = appClassLoader;
-        appClassLoader = newClassLoader;
-        newClassLoader = null;
-        runtime.replaceMainWindow(mainWindow, currentCommandLine());
-        closeClassLoader(oldClassLoader);
-      } else if (Container.class.isAssignableFrom(previewClass)) {
-        Container container = (Container) constructor.newInstance();
-        runtime.showContainer(container);
-        DisposableAppClassLoader oldClassLoader = displayedClassLoader;
-        displayedClassLoader = newClassLoader;
-        newClassLoader = null;
-        closeClassLoader(oldClassLoader);
-      } else if (Control.class.isAssignableFrom(previewClass)) {
-        Control control = (Control) constructor.newInstance();
-        runtime.showControl(control);
-        DisposableAppClassLoader oldClassLoader = displayedClassLoader;
-        displayedClassLoader = newClassLoader;
-        newClassLoader = null;
-        closeClassLoader(oldClassLoader);
-      } else {
-        lastShowError = className
-            + " does not extend totalcross.ui.MainWindow, totalcross.ui.Container or totalcross.ui.Control";
-        closeClassLoader(newClassLoader);
-        return false;
-      }
+      Class.forName(className, true, newClassLoader);
+      this.config.mainWindow = className;
+      restartRuntime(newClassLoader);
+      newClassLoader = null;
       blank = false;
       pumpEvents();
       return true;
-    } catch (NoSuchMethodException e) {
-      lastShowError = className + " does not have a default constructor";
-      closeClassLoader(newClassLoader);
-      return false;
     } catch (Throwable e) {
       lastShowError = stackTrace(e);
       e.printStackTrace();
@@ -254,9 +202,20 @@ public class PreviewRunner {
     runner.stop();
   }
 
-  private static PreviewRuntime startRuntime(PreviewConfig config, HeadlessPreviewSurface surface,
+  private static PreviewSession startRuntime(PreviewConfig config, HeadlessPreviewSurface surface,
       ClassLoader appClassLoader) {
-    return PreviewRuntime.startPreview(config.mainWindow, surface, appClassLoader, config.toLauncherArgs());
+    return PreviewBootstrap.start(config.mainWindow, config.toLauncherArgs(), appClassLoader, surface);
+  }
+
+  private void restartRuntime(DisposableAppClassLoader newClassLoader) {
+    if (runtime != null) {
+      runtime.close();
+    }
+    closeClassLoader(appClassLoader);
+    closeClassLoader(displayedClassLoader);
+    displayedClassLoader = null;
+    appClassLoader = newClassLoader;
+    runtime = startRuntime(config, surface, appClassLoader);
   }
 
   private void stopRuntime() {
@@ -268,7 +227,6 @@ public class PreviewRunner {
     appClassLoader = null;
     closeClassLoader(displayedClassLoader);
     displayedClassLoader = null;
-    MainWindow.resetPreviewState();
   }
 
   private String currentCommandLine() {
@@ -292,8 +250,8 @@ public class PreviewRunner {
   }
 
   private static void printUsage() {
-    System.err.println("Usage: java totalcross.PreviewRunner --config totalcross.preview.json --headless [--output path]");
-    System.err.println("   or: java totalcross.PreviewRunner --config totalcross.preview.json --windowed --watch");
+    System.err.println("Usage: java com.totalcross.livepreview.PreviewRunner --config totalcross-preview.json --headless [--output path]");
+    System.err.println("   or: java com.totalcross.livepreview.PreviewRunner --config totalcross-preview.json --windowed --watch");
   }
 
   private static class Cli {

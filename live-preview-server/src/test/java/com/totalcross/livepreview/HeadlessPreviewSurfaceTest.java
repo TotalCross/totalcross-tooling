@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.awt.image.BufferedImage;
+import tc.preview.PreviewFrame;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +16,8 @@ class HeadlessPreviewSurfaceTest {
   @Test
   void presentStoresLatestFrameAndIncrementsFrameNumber() {
     HeadlessPreviewSurface surface = new HeadlessPreviewSurface();
-    BufferedImage frame = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
-    frame.setRGB(1, 1, 0xFF112233);
+    PreviewFrame frame = new PreviewFrame(2, 2, 2, 1, PreviewFrame.PixelFormat.ARGB_8888,
+        new int[] { 0, 0, 0, 0xFF112233 });
 
     surface.present(frame);
 
@@ -29,12 +30,11 @@ class HeadlessPreviewSurfaceTest {
   @Test
   void presentAndReadUseDefensiveCopies() {
     HeadlessPreviewSurface surface = new HeadlessPreviewSurface();
-    BufferedImage frame = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-    frame.setRGB(0, 0, 0xFF000001);
+    PreviewFrame frame = new PreviewFrame(1, 1, 1, 1, PreviewFrame.PixelFormat.ARGB_8888,
+        new int[] { 0xFF000001 });
 
     surface.present(frame);
-    frame.setRGB(0, 0, 0xFF000002);
-    BufferedImage firstRead = surface.getLatestFrame();
+    var firstRead = surface.getLatestFrame();
     firstRead.setRGB(0, 0, 0xFF000003);
     BufferedImage secondRead = surface.getLatestFrame();
 

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * Loads and writes the lightweight JSON config consumed by PreviewRunner.
  */
 public final class PreviewConfigLoader {
-  public static final String DEFAULT_FILE_NAME = "totalcross.preview.json";
+  public static final String DEFAULT_FILE_NAME = "totalcross-preview.json";
 
   private PreviewConfigLoader() {
   }

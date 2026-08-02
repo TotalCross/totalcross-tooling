@@ -49,7 +49,7 @@ visual Live Preview workflow and open the browser-like panel inside VS Code.
 
 Live Preview is a local, read-only image of a compiled TotalCross Java user
 interface. Start it from the Command Palette in a single-folder workspace. The
-extension creates `totalcross.preview.json` in the workspace if it does not
+extension creates `totalcross-preview.json` in the workspace if it does not
 exist, then finds classes extending `totalcross.ui.MainWindow` and asks which
 one to use. It opens a panel beside the editor and starts the SDK service on
 `127.0.0.1` using an automatically selected port.
@@ -81,7 +81,7 @@ project-relative paths:
     }
 
 For a Maven workspace, the generated configuration uses `target/classes` and
-`mvn compile`; an existing `totalcross.preview.json` is preserved and takes
+`mvn compile`; an existing `totalcross-preview.json` is preserved and takes
 precedence.
 
 Set `totalcross.livePreview.extraClasspath` in workspace settings to the `lib`
@@ -129,7 +129,7 @@ remain so that selecting an available released version and retrying is safe.
 The validation also checks that the installed plugin exposes the
 `totalcrossPreview` and `totalcrossRun` tasks used by the extension.
 
-When `totalcross.preview.json` already exists, conversion updates its build
+When `totalcross-preview.json` already exists, conversion updates its build
 command and Gradle output paths while preserving the selected MainWindow and
 other preview preferences. Maven compiler excludes and additional active Maven
 dependencies are carried into the generated `build.gradle`.

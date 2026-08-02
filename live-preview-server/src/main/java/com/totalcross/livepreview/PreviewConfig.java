@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Project-level live preview configuration loaded from totalcross.preview.json.
+ * Project-level live preview configuration loaded from totalcross-preview.json.
  */
 public class PreviewConfig {
   public String mainWindow = "";

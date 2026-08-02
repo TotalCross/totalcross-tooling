@@ -3,32 +3,35 @@
 package com.totalcross.tooling.worker;
 
 import com.totalcross.tooling.protocol.FrameData;
-import java.lang.reflect.*;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
-/** Binds the worker to the SDK without linking tooling APIs to SDK classes. */
+/** Binds the worker to the SDK through the stable {@code tc.preview} contract. */
 public final class ReflectiveRuntimeBridge implements WorkerRuntime {
   private final ClassLoader applicationLoader;
-  private Object runtime;
+  private Object session;
 
-  public ReflectiveRuntimeBridge(ClassLoader applicationLoader) { this.applicationLoader = applicationLoader; }
+  public ReflectiveRuntimeBridge(ClassLoader applicationLoader) {
+    this.applicationLoader = applicationLoader;
+  }
 
   @Override
   public void start(String mainClass, String[] args, FrameSink sink) {
     try {
-      Class<?> runtimeType = Class.forName("totalcross.LauncherRuntime", true, applicationLoader);
-      Class<?> consumerType = Class.forName("totalcross.preview.PreviewFrameConsumer", true, applicationLoader);
-      Object consumer = Proxy.newProxyInstance(applicationLoader, new Class<?>[] { consumerType }, (proxy, method, values) -> {
-        if (method.getName().equals("present")) sink.accept(toFrame(values[0]));
-        return null;
-      });
-      Method start = runtimeType.getMethod("startPreviewFrames", String.class, consumerType, ClassLoader.class,
-          String[].class);
-      runtime = start.invoke(null, mainClass, consumer, applicationLoader, args);
+      Class<?> bootstrapType = Class.forName("tc.preview.PreviewBootstrap", true, applicationLoader);
+      Class<?> sinkType = Class.forName("tc.preview.PreviewFrameSink", true, applicationLoader);
+      Object frameSink = Proxy.newProxyInstance(applicationLoader, new Class<?>[] { sinkType },
+          (proxy, method, values) -> {
+            if (method.getName().equals("present")) {
+              sink.accept(toFrame(values[0]));
+            }
+            return null;
+          });
+      Method start = bootstrapType.getMethod("start", String.class, String[].class, ClassLoader.class, sinkType);
+      session = start.invoke(null, mainClass, args == null ? new String[0] : args.clone(), applicationLoader, frameSink);
     } catch (ReflectiveOperationException e) {
-      Throwable cause = e instanceof InvocationTargetException && e.getCause() != null ? e.getCause() : e;
-      throw new IllegalStateException("unable to start TotalCross preview runtime (SDK preview contract requires LauncherRuntime.startPreviewFrames and PreviewFrameConsumer): "
-          + (cause.getMessage() == null ? cause.getClass().getName() : cause.getMessage()), cause);
+      throw commandFailure("unable to start TotalCross preview session", e);
     }
   }
 
@@ -43,45 +46,35 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
   }
 
   private void invoke(String name, Class<?>[] types, Object... args) {
-    if (runtime == null) return;
-    try { runtime.getClass().getMethod(name, types).invoke(runtime, args); }
-    catch (ReflectiveOperationException e) { throw commandFailure("preview runtime command failed", e); }
+    if (session == null) {
+      return;
+    }
+    try {
+      session.getClass().getMethod(name, types).invoke(session, args);
+    } catch (ReflectiveOperationException e) {
+      throw commandFailure("preview session command failed", e);
+    }
   }
 
-  public void pump() { invoke("pumpEvents", new Class<?>[0]); }
+  public void pump() {
+    invoke("pumpEvents", new Class<?>[0]);
+  }
+
   public void resize(int width, int height, double density) {
-    invokeOptional("resizePreview", new Class<?>[] { int.class, int.class, double.class }, width, height, density);
+    invoke("resize", new Class<?>[] { int.class, int.class, double.class }, width, height, density);
   }
-  public void pointer(int x, int y, int button, boolean pressed) {
-    invokeOptional("injectPreviewPointer", new Class<?>[] { int.class, int.class, int.class, boolean.class },
-        x, y, button, pressed);
-  }
-  public void key(int keyCode, boolean pressed, int modifiers) {
-    invokeOptional("injectPreviewKey", new Class<?>[] { int.class, boolean.class, int.class }, keyCode, pressed, modifiers);
-  }
-  public void prepareReload() { invoke("preparePreviewMainWindowReload", new Class<?>[0]); }
-  public void replaceMainWindow(String mainClass, String[] args) {
-    try {
-      Class<?> windowType = Class.forName("totalcross.ui.MainWindow", true, applicationLoader);
-      Method create = runtime.getClass().getMethod("createMainWindow", String.class, ClassLoader.class, boolean.class);
-      Object window = create.invoke(runtime, mainClass, applicationLoader, false);
-      Method replace = runtime.getClass().getMethod("replaceMainWindow", windowType, String.class);
-      replace.invoke(runtime, window, String.join(" ", args));
-    } catch (ReflectiveOperationException e) {
-      throw commandFailure("preview runtime replacement failed", e);
-    }
-  }
-  public void close() { invoke("close", new Class<?>[0]); }
 
-  private void invokeOptional(String name, Class<?>[] types, Object... args) {
-    if (runtime == null) return;
-    try {
-      runtime.getClass().getMethod(name, types).invoke(runtime, args);
-    } catch (NoSuchMethodException ignored) {
-      // Older SDKs expose the preview lifecycle but not input injection.
-    } catch (ReflectiveOperationException e) {
-      throw commandFailure("preview runtime command failed", e);
-    }
+  public void pointer(int x, int y, int button, boolean pressed) {
+    invoke("pointer", new Class<?>[] { int.class, int.class, int.class, boolean.class }, x, y, button, pressed);
+  }
+
+  public void key(int keyCode, boolean pressed, int modifiers) {
+    invoke("key", new Class<?>[] { int.class, boolean.class, int.class }, keyCode, pressed, modifiers);
+  }
+
+  public void close() {
+    invoke("close", new Class<?>[0]);
+    session = null;
   }
 
   private static IllegalStateException commandFailure(String message, ReflectiveOperationException error) {

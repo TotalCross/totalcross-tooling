@@ -22,7 +22,7 @@ repositories {
 
 def sdkVersion = providers.gradleProperty('totalcrossSdkVersion')
 if (!sdkVersion.present) {
-    throw new GradleException('Set -PtotalcrossSdkVersion to an SDK build that exposes PreviewRuntime.')
+    throw new GradleException('Set -PtotalcrossSdkVersion to an SDK build that exposes tc.preview.')
 }
 
 dependencies {
