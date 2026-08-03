@@ -106,17 +106,45 @@ class TotalCrossPluginFunctionalTest {
 
     @Test
     void writesEquivalentProjectAndPreviewSessionDescriptors() throws Exception {
-        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'preview-app'\n");
+        Files.createDirectories(projectDirectory.resolve("src/main/java/example"));
+        Files.writeString(projectDirectory.resolve("src/main/java/example/App.java"),
+                "package example; public class App { }\n");
+        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'App'\n");
         Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n");
 
         var result = GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
-                .withArguments("totalcrossProjectModel", "totalcrossPreview", "--stacktrace").build();
+                .withArguments("totalcrossPreview", "-Ptotalcross-preview.noLaunch=true", "--stacktrace").build();
 
         assertTrue(result.getOutput().contains("TotalCross preview session ready"));
         assertTrue(Files.isRegularFile(projectDirectory.resolve("build/totalcross/project-model.json")));
         assertTrue(Files.isRegularFile(projectDirectory.resolve("build/totalcross/preview-session.json")));
-        assertTrue(Files.readString(projectDirectory.resolve("build/totalcross/project-model.json")).contains("\"schemaVersion\":1"));
+        String model = Files.readString(projectDirectory.resolve("build/totalcross/project-model.json"));
+        assertTrue(model.contains("\"schemaVersion\":1"));
+        assertTrue(model.contains("\"mainClass\":\"example.App\""));
         assertTrue(Files.readString(projectDirectory.resolve("build/totalcross/preview-session.json")).contains("GRADLE"));
+    }
+
+    @Test
+    void ordersClassesBeforeTheProjectModelBeforePreviewAndRun() throws Exception {
+        Files.createDirectories(projectDirectory.resolve("src/main/java/example"));
+        Files.writeString(projectDirectory.resolve("src/main/java/example/App.java"),
+                "package example; public class App { }\n");
+        Files.writeString(projectDirectory.resolve("settings.gradle"), "rootProject.name = 'App'\n");
+        Files.writeString(projectDirectory.resolve("build.gradle"), "plugins { id 'com.totalcross.application' }\n");
+
+        for (String previewTask : List.of("totalcrossPreview", "totalcrossRun")) {
+            String output = GradleRunner.create().withProjectDir(projectDirectory.toFile()).withPluginClasspath()
+                    .withArguments(previewTask, "--dry-run", "--console=plain").build().getOutput();
+            assertBefore(output, ":classes", ":totalcrossProjectModel");
+            assertBefore(output, ":totalcrossProjectModel", ":" + previewTask);
+        }
+    }
+
+    private static void assertBefore(String output, String first, String second) {
+        assertTrue(output.indexOf(first) >= 0, "missing task " + first + " in:\n" + output);
+        assertTrue(output.indexOf(second) >= 0, "missing task " + second + " in:\n" + output);
+        assertTrue(output.indexOf(first) < output.indexOf(second),
+                first + " must run before " + second + " in:\n" + output);
     }
 
     @Test

@@ -24,7 +24,7 @@ export function previewCommand(layout: ProjectLayout, platform: NodeJS.Platform,
 
 export function buildCommand(layout: ProjectLayout, platform: NodeJS.Platform): PreviewCommand {
     if (layout.buildTool === 'maven') return {executable: mavenExecutable(layout.root, platform), args: ['compile']};
-    return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['classes', '--console=plain']};
+    return {executable: platform === 'win32' ? 'gradlew.bat' : './gradlew', args: ['totalcrossProjectModel', '--console=plain']};
 }
 
 export class PreviewClient {
@@ -59,7 +59,19 @@ export class PreviewClient {
 
     public async mainClass(): Promise<string> {
         const root = this.layout.buildTool === 'gradle' ? this.layout.packageOutputRoot : path.join(this.layout.packageOutputRoot, 'totalcross');
-        const model = JSON.parse(await fs.readFile(path.join(root, 'project-model.json'), 'utf8'));
+        const modelFile = path.join(root, 'project-model.json');
+        let model: any;
+        try {
+            model = JSON.parse(await fs.readFile(modelFile, 'utf8'));
+        } catch (error) {
+            if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+                const generationTask = this.layout.buildTool === 'gradle'
+                    ? 'totalcrossProjectModel'
+                    : 'compile totalcross:preview';
+                throw new Error(`Preview project model is missing at ${modelFile}; ${generationTask} did not complete successfully or was not executed.`);
+            }
+            throw error;
+        }
         if (!model || typeof model.mainClass !== 'string' || !model.mainClass.trim()) throw new Error('preview project model has no mainClass');
         return model.mainClass;
     }
