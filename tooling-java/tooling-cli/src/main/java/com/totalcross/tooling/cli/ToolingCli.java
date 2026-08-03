@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.regex.Matcher;
@@ -32,14 +33,31 @@ public final class ToolingCli {
 
   /** Returns the jars/directories needed when a build tool forks this CLI. */
   public static String runtimeClasspath() throws Exception {
-    List<Class<?>> components = List.of(ToolingCli.class,
+    LinkedHashSet<String> locations = new LinkedHashSet<>();
+    for (Class<?> component : List.of(ToolingCli.class,
+        ProjectModelCodec.class,
+        com.totalcross.tooling.conversion.inference.ProjectConversionAnalyzer.class,
         com.totalcross.tooling.host.PreviewHost.class,
         com.totalcross.tooling.worker.PreviewWorkerMain.class,
-        com.totalcross.tooling.protocol.ProtocolCodec.class);
-    return components.stream().map(type -> {
-      try { return Path.of(type.getProtectionDomain().getCodeSource().getLocation().toURI()).toString(); }
-      catch (Exception error) { throw new IllegalStateException("Unable to locate tooling component", error); }
-    }).distinct().reduce((left, right) -> left + File.pathSeparator + right).orElseThrow();
+        com.totalcross.tooling.protocol.ProtocolCodec.class)) {
+      locations.add(codeSource(component));
+    }
+    if (locations.isEmpty()) throw new IllegalStateException("Unable to resolve the TotalCross tooling runtime classpath");
+    return String.join(File.pathSeparator, locations);
+  }
+
+  private static String codeSource(Class<?> component) {
+    try {
+      if (component.getProtectionDomain() == null || component.getProtectionDomain().getCodeSource() == null
+          || component.getProtectionDomain().getCodeSource().getLocation() == null) {
+        throw new IllegalStateException("code source is unavailable");
+      }
+      return Path.of(component.getProtectionDomain().getCodeSource().getLocation().toURI())
+          .toAbsolutePath().normalize().toString();
+    } catch (Exception error) {
+      throw new IllegalStateException("Unable to resolve code source for " + component.getName()
+          + "; run the CLI with published tooling modules or exploded module outputs", error);
+    }
   }
 
   public static void main(String[] args) throws Exception {
