@@ -8,12 +8,20 @@ The public `TotalCross: Preview` command must regain the useful editor integrati
 
 The result remains based on the authenticated process protocol in `tooling-java`; the legacy `live-preview-server` HTTP endpoints are not reactivated. Each completed milestone is committed separately with an English Conventional Commit subject and an explanatory body.
 
+## Current Stop Point
+
+Implementation was deliberately paused at the user's request after the Java-side selection foundation was completed. Commit `7a2b8d7` adds the authenticated selection protocol and SDK compatibility bridge; commit `894d7ca` serializes frame promotion and writes the selected frame before its result marker. No partial TypeScript editor-selection implementation remains in the worktree.
+
+The next implementer should start with Milestone 1 below. The only expected dirty paths at this checkpoint are the maintainer-owned `tooling-java/tooling-core/src/main/java/com/totalcross/tooling/deploy/LegacyDeployService.java`, its untracked deploy tests, and generated `tooling-java` build directories. Do not stage or remove them.
+
 ## Progress
 
 - [x] (2026-08-25 19:36Z) Compared `origin/main_live_preview_original` with the active extension and inventoried capabilities that were disabled by commit `612e658`.
 - [x] (2026-08-25 19:36Z) Read repository and nested instructions, inspected both relevant worktrees, and preserved the unrelated deploy edits and generated directories in `totalcross-tooling`.
 - [x] (2026-08-25 19:48Z) Added the authenticated `SHOW`/`SHOW_READY` exchange, SDK compatibility bridge, candidate gating, CLI `show` command, selection result file, and focused Java coverage.
-- [ ] Add authenticated worker protocol support for safely presenting `MainWindow`, `Container`, and `Control` targets, then connect it to the selected VS Code editor.
+- [x] (2026-08-25 19:52Z) Serialized frame consumption with candidate promotion so a successful selection marker always follows the corresponding PNG.
+- [x] (2026-08-25 20:03Z) Stopped implementation on request, removed the uncommitted TypeScript draft, and converted this document into the handoff plan for the remaining work.
+- [ ] Connect the selected VS Code editor to the committed `show` control command and selection-result marker.
 - [ ] Stop the complete preview session when its panel closes and add deterministic lifecycle coverage.
 - [ ] Restore MainWindow discovery, project configuration, classpath overrides, and explicit configuration editing on the canonical preview path.
 - [ ] Restore explicit reload and serialized panel revival without reintroducing the legacy HTTP service.
@@ -64,7 +72,7 @@ The result remains based on the authenticated process protocol in `tooling-java`
 
 ## Outcomes & Retrospective
 
-Implementation is in progress. The initial investigation established the capability gaps and the architectural constraint that all restored behavior must use the canonical host/worker lifecycle.
+Implementation is paused after the backend selection foundation. The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, and focused Java tests are complete. Editor integration, panel lifecycle ownership, configuration, explicit reload, revival, and legacy retirement remain planned below.
 
 ## Editorial Report
 
@@ -124,21 +132,72 @@ The inactive `vscode-extension/src/live-preview.ts` contains the old editor list
 
 ## Plan of Work
 
-Milestone 1 adds a protocol message for presenting a class. `ReflectiveRuntimeBridge` will classify the selected class against SDK `MainWindow`, `Container`, and `Control` types, require a usable no-argument constructor, and invoke the simulator presentation operation. `ProcessWorkerCandidate` will optionally request the selected target and wait for the protocol acknowledgement plus a resulting frame before promotion. `ToolingCli` will accept a `show` control-file command that creates such a candidate while retaining the project MainWindow as the application root. The extension will debounce active-editor changes, derive the fully qualified Java class name, clear the webview immediately, and append `show,<class>`.
+### Milestone 1: follow the active Java editor
 
-Milestone 2 makes webview ownership authoritative. Disposing the active panel will enqueue the same bounded stop path as `TotalCross: Stop Preview`, without recursively disposing a replacement panel or issuing duplicate stops. Tests will prove that the client and watcher are released.
+Add a small canonical TypeScript module, separate from `live-preview-utils.ts`, for package/class extraction, workspace containment, compiled-class resolution, and parsing `preview-selection.json`. Extend `PreviewClient` with a typed project-model reader that exposes `mainClass` and `classOutput`; do not assume Gradle's default output when the generated model already provides the authoritative path.
 
-Milestone 3 moves the relevant configuration behavior into the canonical manager. It will read or create `totalcross-preview.json`, discover MainWindow candidates, offer a Quick Pick when configuration does not identify one, and expose `Open Preview Config`. Canonical classpath and JVM overrides will be passed through supported Gradle and Maven properties or the extension environment; server-port settings will not be retained because the canonical preview has no HTTP listener.
+The build-tool launcher currently returns before the coordinator is ready. Expose a readiness promise from `PreviewClient` that resolves only when the Gradle or Maven invocation exits successfully. Both plugins already wait for the coordinator's first frame before they return, so controls written after this promise resolves cannot be mistaken for stale control-file lines. Preserve the existing non-blocking `start`/concurrent `stop` behavior and add a rejection path for a failed launcher.
 
-Milestone 4 exposes explicit reload and registers a serializer for the canonical webview. Revival will reuse the serialized workspace identity and enter the manager lifecycle queue so it cannot overlap another start or stop. Reload will compile and re-present the active valid target, falling back to the configured MainWindow.
+While Preview is active, subscribe to `vscode.window.onDidChangeActiveTextEditor`. Cancel the prior 150 ms debounce on every editor change, but send a request only for a Java file inside the selected project. Derive the fully qualified top-level class name from the document text, verify its `.class` under the model's `classOutput`, clear the webview, remove an obsolete selection result, and append `show,<class>`. Track the pending class and suppress frame polling until `preview-selection.json` reports that same class. On success, resume frames; on failure or an unavailable class, remain blank and write a diagnostic without replacing the healthy worker.
 
-Milestone 5 removes inactive legacy activation code and updates tests, package contributions, README, changelog, and this plan. Any legacy file retained for conversion compatibility will be clearly scoped and must not advertise runtime behavior it no longer owns.
+After a watcher-triggered successful build, force the active Java class through `show` again so edits update the selected preview. If the active editor is not a project Java source, keep the existing MainWindow reload behavior. Ensure overlapping polling callbacks cannot post an old frame after a clear.
+
+Tests must cover source/FQN extraction, model-provided output paths, workspace filtering, debounce cancellation, one `show` command per selection, blanking for missing classes, class-scoped success/failure markers, stale-marker rejection, and re-presentation after build. Commit as:
+
+    feat(vscode): follow the active preview editor
+
+### Milestone 2: make panel disposal own shutdown
+
+Treat the current `WebviewPanel` as the owner of the active preview session. Its disposal callback must clear the panel reference first and enqueue `stopPreview` with panel disposal disabled, preventing recursive disposal. Manual stop, extension deactivation, start replacement, and panel close must converge on the same idempotent lifecycle promise.
+
+Dispose the source watcher, editor listener, timers, and output polling before awaiting `PreviewClient.stop`. Add tests proving a panel close requests exactly one stop, two concurrent stop paths share completion, and all owned disposables are released. Commit as:
+
+    fix(vscode): stop preview when its panel closes
+
+### Milestone 3: restore canonical MainWindow configuration
+
+Define a typed, version-tolerant preview configuration in `tooling-core` and keep the existing root filename `totalcross-preview.json`. Canonical fields are `mainWindow`, `launcherArgs`, and additional classpath entries. For compatibility, read legacy `classOutputPaths`, `resourcePaths`, and `dependencyPaths` as additional classpath inputs, but keep the generated `project-model.json` entries authoritative and deduplicated. Do not revive `port`, `previewMode`, `headlessOutput`, `buildCommand`, or HTTP control fields.
+
+Pass the configuration path from both Gradle and Maven preview launchers to `ToolingCli`. The CLI should merge classpath overrides before creating workers and use the configured MainWindow and launcher arguments for initial candidates. Replace the fixed `initialMainClass` captured by the committed `show` handler with mutable session-root state that changes only after a successful explicit MainWindow reload; selecting another MainWindow as an editor target must not silently rewrite project configuration.
+
+Port MainWindow source discovery into the canonical extension. Prefer the configured class when valid, otherwise prefer a class referenced by `TotalCrossApplication.run`, automatically select the only candidate, or show a Quick Pick for ambiguity. Add `TotalCross: Select Preview MainWindow` and `TotalCross: Open Preview Config`; write config atomically and preserve unknown user fields. Forward supported `totalcross.livePreview.jvmArgs` through the existing headless `JAVA_TOOL_OPTIONS` construction. Either map `deviceProfile` to documented launcher arguments or remove it in Milestone 5; do not leave it inert.
+
+Split this milestone into two buildable commits if needed:
+
+    feat(preview): load canonical preview configuration
+    feat(vscode): restore preview MainWindow selection
+
+Tests must cover Gradle and Maven command parity, classpath ordering/deduplication, configured MainWindow startup, mutable session-root behavior, deterministic discovery, ambiguous Quick Pick input, atomic config preservation, and paths containing spaces.
+
+### Milestone 4: explicit reload and panel revival
+
+Contribute `TotalCross: Reload Preview`. When a session is active, enqueue a build and re-present the active valid Java target; otherwise reload the configured MainWindow. Do not start a new independent manager or bypass the lifecycle queue.
+
+Register a serializer for `totalcrossPreview`. The webview must persist only the workspace-folder URI and presentation state required for recovery. Deserialization must reuse the same manager, existing panel, and lifecycle queue, then start a fresh canonical preview session for that workspace. Add the `onWebviewPanel:totalcrossPreview` activation event if required by the supported VS Code engine.
+
+Use separate commits because reload is independently testable:
+
+    feat(vscode): add explicit preview reload
+    feat(vscode): revive preview panels after reload
+
+Tests must cover queued reload versus stop, fallback to the configured MainWindow, revival of the correct multi-root workspace, failed revival cleanup, and absence of duplicate panels or processes.
+
+### Milestone 5: retire inactive legacy surfaces and document the result
+
+Once every retained capability has a canonical owner, remove the inactive `activateLivePreview` runtime and replace tests that call it directly with production `extension.activate` coverage. Remove HTTP-only command contributions and settings (`javaCommand`, `port`, and `controlTimeout`) plus any other setting proven unused. Keep `live-preview-server` only as a clearly labeled historical compatibility module unless repository scope explicitly authorizes deletion; it must not be packaged or advertised as the VS Code runtime.
+
+Update README, CHANGELOG, package metadata, evidence, and this ExecPlan. Document headless execution, active-editor type/constructor requirements, behavior for uncompiled or incompatible classes, configuration ownership, reload, revival, and panel-close shutdown. Commit code retirement separately from documentation:
+
+    refactor(vscode): retire the legacy preview runtime
+    docs(preview): document the restored editor workflow
 
 ## Concrete Steps
 
 From `tooling-java`, run focused protocol, host, worker, and CLI tests during Milestone 1:
 
     ./gradlew :tooling-protocol:test :preview-host:test :preview-worker:test :tooling-cli:test --console=plain
+
+The committed backend baseline already passed these focused tasks after `894d7ca`. Re-run them whenever the CLI session root or configuration/classpath logic changes.
 
 From `vscode-extension`, compile and run integration tests after every extension milestone:
 
@@ -150,6 +209,8 @@ When Gradle or Maven plugin command construction changes, stage tooling modules 
     python3 vscode-extension/tools/check-repository-governance.py
     python3 -m unittest discover -s vscode-extension/tests -p 'test_repository_governance.py'
     git diff --check
+
+Before every commit, use explicit `git add` paths and confirm the cached diff excludes `LegacyDeployService.java`, the untracked deploy tests, and generated build directories. Every commit subject and body must be in English, use Conventional Commits, and leave its touched modules buildable.
 
 ## Validation and Acceptance
 
@@ -182,3 +243,5 @@ Revision note (2026-08-25 19:36Z): Created after comparing the retired HTTP Live
 Revision note (2026-08-25 19:48Z): Recorded the implemented worker-selection protocol, published-SDK compatibility bridge, selection result file, and passing focused Java tests.
 
 Revision note (2026-08-25 19:52Z): Recorded and closed the cross-thread frame/promotion race discovered while designing stale-frame suppression in the extension.
+
+Revision note (2026-08-25 20:03Z): Implementation was paused at the user's request. Removed the uncommitted TypeScript draft and expanded the remaining milestones into an executable commit-by-commit handoff plan.
