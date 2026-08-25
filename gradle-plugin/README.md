@@ -97,7 +97,9 @@ libraries are added to the generated `all.pkg` file.
 host/worker coordinator. Its supported external boundary is the versioned
 project model plus frame stream and control-file commands (`reload`, `resize`,
 pointer, and key input); IDEs consume frames and send those commands rather
-than linking to SDK preview classes. A worker becomes active only after it is
+than linking to SDK preview classes. The preview coordinator and worker JVMs
+run with `java.awt.headless=true`, so Preview does not create a desktop Java
+window. A worker becomes active only after it is
 ready and produces a valid first frame, so a failed candidate preserves the
 previous frame and worker. `totalcrossRun` uses the same lifecycle but presents
 the promoted frame stream in a native desktop window.

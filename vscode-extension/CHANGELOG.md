@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Upcoming changes
 - Live UI preview
+- `TotalCross: Preview` now runs its Java coordinator and worker headlessly,
+  propagates the headless settings through the build launcher for compatibility
+  with already published plugins, serializes overlapping start/stop requests,
+  and confirms bounded process-tree shutdown before discarding the preview
+  session.
 - New projects now use the Gradle Wrapper and `com.totalcross.application`.
   The default released plugin version resolves from public repositories;
   existing Maven-only workspaces remain supported for packaging and deployment.
