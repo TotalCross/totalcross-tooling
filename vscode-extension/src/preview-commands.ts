@@ -25,6 +25,7 @@ export class PreviewManager {
     private lifecycle: Promise<void> = Promise.resolve();
     private stopCompletion?: Promise<void>;
     private pendingClass?: string;
+    private revivalClass?: string;
     private pollingGeneration = 0;
     private pollingInFlight = false;
     public constructor(private readonly output = vscode.window.createOutputChannel('TotalCross Preview')) {}
@@ -62,7 +63,14 @@ export class PreviewManager {
         this.watcher.onDidChange(() => this.scheduleReload());
         this.watcher.onDidCreate(() => this.scheduleReload());
         this.watcher.onDidDelete(() => this.scheduleReload());
-        this.scheduleActiveEditorPreview();
+        if (this.revivalClass) {
+            const className = this.revivalClass;
+            this.revivalClass = undefined;
+            const model = await this.readProjectModel(this.client);
+            await this.presentClassName(className, model.classOutput);
+        } else {
+            this.scheduleActiveEditorPreview();
+        }
     }
 
     public async run(): Promise<void> { await this.start(); }
@@ -72,6 +80,9 @@ export class PreviewManager {
         const workspace = typeof state === 'object' && state !== null && typeof (state as {workspace?: unknown}).workspace === 'string'
             ? vscode.Uri.parse((state as {workspace: string}).workspace) : undefined;
         const folder = workspace ? vscode.workspace.getWorkspaceFolder(workspace) : undefined;
+        const presentation = typeof state === 'object' && state !== null && typeof (state as {presentation?: unknown}).presentation === 'object'
+            ? (state as {presentation: {className?: unknown}}).presentation : undefined;
+        this.revivalClass = typeof presentation?.className === 'string' ? presentation.className : undefined;
         return this.enqueue(async () => {
             if (!folder) {
                 panel.dispose();
@@ -252,6 +263,12 @@ export class PreviewManager {
         const client = this.client;
         if (!client) return;
         const className = sourceClassName(editor.document.getText(), editor.document.fileName);
+        await this.presentClassName(className, classOutput);
+    }
+
+    private async presentClassName(className: string | undefined, classOutput: string): Promise<void> {
+        const client = this.client;
+        if (!client) return;
         if (!className || !(await compiledClassExists(className, classOutput))) {
             this.pendingClass = undefined;
             await this.clearPanel();

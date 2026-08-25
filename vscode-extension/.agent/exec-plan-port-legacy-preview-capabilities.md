@@ -29,6 +29,7 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 - [ ] Add deterministic coverage for configured MainWindow startup, ambiguous Quick Pick input, atomic config preservation, and paths containing spaces.
 - [x] (2026-08-25 20:20Z) Routed explicit reload through the existing lifecycle queue, added fallback startup when no session is active, and registered a `totalcrossPreview` serializer that revives the same manager for the serialized workspace.
 - [ ] Add deterministic tests for queued reload versus stop, multi-root revival, failed revival cleanup, and duplicate-panel/process avoidance.
+- [x] (2026-08-25 20:23Z) Restored the serialized presentation class during revival when its compiled output is still available, while disposing a panel whose workspace can no longer be resolved.
 - [ ] Remove or clearly retire inactive legacy activation code, stale settings, tests, and documentation after every supported capability has a canonical owner.
 - [ ] Run focused and broad validation, exercise the real sample when possible, and finalize the Editorial Report.
 
@@ -76,7 +77,7 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 
 ## Outcomes & Retrospective
 
-The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, focused Java tests, canonical configuration loading, and MainWindow selection are complete. The extension reads the generated project model, follows the active Java editor with a debounced `show` request, blanks while a matching selection marker is pending or failed, and suppresses stale frame posts. Panel disposal owns the same idempotent stop path as manual and extension shutdown. Explicit reload, revival, and legacy retirement remain planned below.
+The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, focused Java tests, canonical configuration loading, MainWindow selection, explicit reload, and serialized panel revival are complete. The extension reads the generated project model, follows the active Java editor with a debounced `show` request, blanks while a matching selection marker is pending or failed, and suppresses stale frame posts. Panel disposal owns the same idempotent stop path as manual and extension shutdown. Legacy retirement and broad validation remain planned below.
 
 ## Editorial Report
 
