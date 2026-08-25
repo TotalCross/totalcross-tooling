@@ -21,7 +21,8 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 - [x] (2026-08-25 19:48Z) Added the authenticated `SHOW`/`SHOW_READY` exchange, SDK compatibility bridge, candidate gating, CLI `show` command, selection result file, and focused Java coverage.
 - [x] (2026-08-25 19:52Z) Serialized frame consumption with candidate promotion so a successful selection marker always follows the corresponding PNG.
 - [x] (2026-08-25 20:03Z) Stopped implementation on request, removed the uncommitted TypeScript draft, and converted this document into the handoff plan for the remaining work.
-- [ ] Connect the selected VS Code editor to the committed `show` control command and selection-result marker.
+- [x] (2026-08-25 20:05Z) Connected the selected Java editor to the committed `show` control command, authoritative model class-output path, and class-scoped selection-result marker; added debounce, blanking, and stale-frame suppression.
+- [ ] Add deterministic lifecycle coverage for editor selection and re-presentation after a build.
 - [ ] Stop the complete preview session when its panel closes and add deterministic lifecycle coverage.
 - [ ] Restore MainWindow discovery, project configuration, classpath overrides, and explicit configuration editing on the canonical preview path.
 - [ ] Restore explicit reload and serialized panel revival without reintroducing the legacy HTTP service.
@@ -72,7 +73,7 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 
 ## Outcomes & Retrospective
 
-Implementation is paused after the backend selection foundation. The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, and focused Java tests are complete. Editor integration, panel lifecycle ownership, configuration, explicit reload, revival, and legacy retirement remain planned below.
+The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, and focused Java tests are complete. The extension now reads the generated project model, follows the active Java editor with a debounced `show` request, blanks while a matching selection marker is pending or failed, and suppresses stale frame posts. Panel lifecycle ownership, canonical configuration, explicit reload, revival, and legacy retirement remain planned below.
 
 ## Editorial Report
 

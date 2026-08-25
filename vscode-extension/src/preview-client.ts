@@ -8,6 +8,7 @@ import {BuildTool, ProjectLayout} from './project-layout';
 
 export interface PreviewEvent { kind: string; message?: string; [key: string]: any; }
 export interface PreviewCommand { executable: string; args: string[]; }
+export interface PreviewProjectModel { mainClass: string; classOutput: string; }
 export type PreviewProcessSpawner = (executable: string, args: readonly string[], options: SpawnOptions) => ChildProcess;
 
 export function previewEnvironment(environment: NodeJS.ProcessEnv, platform: NodeJS.Platform): NodeJS.ProcessEnv {
@@ -43,6 +44,7 @@ export function buildCommand(layout: ProjectLayout, platform: NodeJS.Platform): 
 export class PreviewClient {
     private process?: ChildProcess;
     private processCompletion?: Promise<void>;
+    private readiness?: Promise<void>;
     private stopCompletion?: Promise<void>;
     private readonly listeners: Array<(event: PreviewEvent) => void> = [];
     private lastEvent?: PreviewEvent;
@@ -68,6 +70,9 @@ export class PreviewClient {
         this.process = child;
         child.stdout!.on('data', (chunk: Buffer) => this.readOutput(chunk.toString()));
         child.stderr!.on('data', (chunk: Buffer) => this.emit({kind: 'diagnostic', message: chunk.toString()}));
+        let resolveReady: () => void = () => undefined;
+        let rejectReady: (error: Error) => void = () => undefined;
+        this.readiness = new Promise<void>((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
         this.processCompletion = new Promise((resolve) => {
             let settled = false;
             const finish = () => {
@@ -78,23 +83,28 @@ export class PreviewClient {
             child.on('close', (code: number | null) => {
                 if (this.process === child) this.process = undefined;
                 this.emit({kind: 'closed', message: `preview launcher exited with ${code}`});
+                if (code === 0) resolveReady();
+                else rejectReady(new Error(`preview launcher exited with ${code}`));
                 finish();
             });
             child.on('error', (error: Error) => {
                 if (this.process === child) this.process = undefined;
                 this.emit({kind: 'error', message: error.message});
+                rejectReady(error);
                 finish();
             });
         });
         this.emit({kind: 'start', message: command.executable});
     }
 
+    public ready(): Promise<void> { return this.readiness ?? Promise.resolve(); }
+
     public async reload(): Promise<void> {
         await this.run(buildCommand(this.layout, this.platform));
         this.emit({kind: 'build-succeeded', message: this.layout.root});
     }
 
-    public async mainClass(): Promise<string> {
+    public async projectModel(): Promise<PreviewProjectModel> {
         const root = this.layout.buildTool === 'gradle' ? this.layout.packageOutputRoot : path.join(this.layout.packageOutputRoot, 'totalcross');
         const modelFile = path.join(root, 'project-model.json');
         let model: any;
@@ -110,7 +120,15 @@ export class PreviewClient {
             throw error;
         }
         if (!model || typeof model.mainClass !== 'string' || !model.mainClass.trim()) throw new Error('preview project model has no mainClass');
-        return model.mainClass;
+        // Older generated models predate classOutput. Keep the reader tolerant for
+        // those models; when the field exists it remains the authoritative path.
+        const classOutput = typeof model.classOutput === 'string' && model.classOutput.trim()
+            ? model.classOutput : path.join(this.layout.root, this.layout.buildTool === 'gradle' ? 'build/classes/java/main' : 'target/classes');
+        return {mainClass: model.mainClass, classOutput: path.resolve(classOutput)};
+    }
+
+    public async mainClass(): Promise<string> {
+        return (await this.projectModel()).mainClass;
     }
 
     public stop(): Promise<void> {

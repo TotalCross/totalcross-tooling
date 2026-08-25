@@ -6,6 +6,7 @@ import {promises as fs} from 'fs';
 import * as path from 'path';
 import {detectProjectLayout, ProjectLayout, MixedProjectLayout} from './project-layout';
 import {PreviewClient, PreviewEvent} from './preview-client';
+import {compiledClassExists, isJavaFile, isWorkspaceFile, parseSelection, sourceClassName} from './preview-editor';
 
 function asLayout(value: ProjectLayout | MixedProjectLayout | undefined): ProjectLayout | undefined {
     return value && value.buildTool !== 'mixed' ? value : undefined;
@@ -16,9 +17,14 @@ export class PreviewManager {
     private watcher?: vscode.FileSystemWatcher;
     private reloadTimer?: NodeJS.Timeout;
     private frameTimer?: NodeJS.Timeout;
+    private editorTimer?: NodeJS.Timeout;
+    private editorListener?: vscode.Disposable;
     private panel?: vscode.WebviewPanel;
     private controlFile?: string;
     private lifecycle: Promise<void> = Promise.resolve();
+    private pendingClass?: string;
+    private pollingGeneration = 0;
+    private pollingInFlight = false;
     public constructor(private readonly output = vscode.window.createOutputChannel('TotalCross Preview')) {}
 
     public start(): Promise<void> { return this.enqueue(() => this.startPreview()); }
@@ -34,32 +40,43 @@ export class PreviewManager {
             {enableScripts: true, retainContextWhenHidden: true});
         this.panel.webview.html = previewHtml(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((message) => this.sendControl(layout.root, layout.buildTool, message));
-        this.panel.onDidDispose(() => { this.panel = undefined; this.stopFramePolling(); });
+        this.panel.onDidDispose(() => {
+            this.panel = undefined;
+            void this.enqueue(() => this.stopPreview(false)).catch((error) => this.show({kind: 'error', message: error.message}));
+        });
         const previewRoot = layout.buildTool === 'gradle' ? layout.packageOutputRoot : path.join(layout.packageOutputRoot, 'totalcross');
         this.controlFile = path.join(previewRoot, 'preview-control.txt');
         this.client = new PreviewClient(layout);
         this.client.onEvent((event) => this.show(event));
         await this.client.start();
+        await this.client.ready();
         await this.applyDeviceProfile(layout.root, layout.buildTool);
         this.startFramePolling(previewRoot);
+        this.editorListener = vscode.window.onDidChangeActiveTextEditor(() => this.scheduleActiveEditorPreview());
         this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, '**/*.{java,xml,properties,gradle,gradle.kts,pom.xml}'));
         this.watcher.onDidChange(() => this.scheduleReload());
         this.watcher.onDidCreate(() => this.scheduleReload());
         this.watcher.onDidDelete(() => this.scheduleReload());
+        this.scheduleActiveEditorPreview();
     }
 
     public async run(): Promise<void> { await this.start(); }
     public stop(): Promise<void> { return this.enqueue(() => this.stopPreview()); }
 
-    private async stopPreview(): Promise<void> {
+    private async stopPreview(disposePanel = true): Promise<void> {
         const client = this.client;
         this.client = undefined;
         if (this.reloadTimer) clearTimeout(this.reloadTimer);
         this.reloadTimer = undefined;
+        if (this.editorTimer) clearTimeout(this.editorTimer);
+        this.editorTimer = undefined;
+        this.editorListener?.dispose();
+        this.editorListener = undefined;
         if (this.watcher) this.watcher.dispose();
         this.watcher = undefined;
         this.stopFramePolling();
-        this.disposePanel();
+        this.pendingClass = undefined;
+        if (disposePanel) this.disposePanel();
         if (client) await client.stop();
     }
     public showDiagnostics(): void { this.output.show(true); }
@@ -72,9 +89,14 @@ export class PreviewManager {
     private async reloadAfterBuild(): Promise<void> {
         if (!this.client) return;
         await this.client.reload();
-        const mainClass = await this.client.mainClass();
-        await this.sendControl(this.client.root(), this.client.buildTool(), {command: 'reload', values: [mainClass]});
-        this.show({kind: 'reload-requested', message: mainClass});
+        const model = await this.readProjectModel(this.client);
+        const editor = vscode.window.activeTextEditor;
+        if (editor && isJavaFile(editor.document.fileName) && isWorkspaceFile(editor.document.fileName, this.client.root())) {
+            await this.presentActiveEditor(editor, model.classOutput);
+        } else {
+            await this.sendControl(this.client.root(), this.client.buildTool(), {command: 'reload', values: [model.mainClass]});
+            this.show({kind: 'reload-requested', message: model.mainClass});
+        }
     }
 
     private show(event: PreviewEvent): void {
@@ -85,13 +107,82 @@ export class PreviewManager {
     private startFramePolling(outputRoot: string): void {
         const frame = path.join(outputRoot, 'preview-frame.png');
         const interval = Math.max(100, vscode.workspace.getConfiguration('totalcross.livePreview').get<number>('framePollInterval', 500));
+        const selection = path.join(outputRoot, 'preview-selection.json');
         this.frameTimer = setInterval(async () => {
             if (!this.panel) return;
+            if (this.pendingClass) {
+                try {
+                    const marker = parseSelection(await fs.readFile(selection, 'utf8'));
+                    if (marker?.className !== this.pendingClass) return;
+                    const requested = this.pendingClass;
+                    this.pendingClass = undefined;
+                    if (!marker.selected) {
+                        this.show({kind: 'selection-failed', message: marker.error || requested});
+                        await this.clearPanel();
+                        return;
+                    }
+                    this.show({kind: 'selection-ready', message: requested});
+                } catch (_) { return; }
+            }
+            if (this.pollingInFlight) return;
+            this.pollingInFlight = true;
+            const generation = this.pollingGeneration;
             try {
                 const data = (await fs.readFile(frame)).toString('base64');
-                this.panel.webview.postMessage({type: 'frame', data: `data:image/png;base64,${data}`});
+                if (generation === this.pollingGeneration && this.panel) {
+                    this.panel.webview.postMessage({type: 'frame', data: `data:image/png;base64,${data}`});
+                }
             } catch (_) { /* The coordinator has not produced its first frame yet. */ }
+            finally { this.pollingInFlight = false; }
         }, interval);
+    }
+
+    private scheduleActiveEditorPreview(): void {
+        if (this.editorTimer) clearTimeout(this.editorTimer);
+        this.editorTimer = setTimeout(() => {
+            this.editorTimer = undefined;
+            this.previewActiveEditor().catch((error) => this.show({kind: 'error', message: error.message}));
+        }, 150);
+    }
+
+    private async previewActiveEditor(): Promise<void> {
+        const client = this.client;
+        const editor = vscode.window.activeTextEditor;
+        if (!client || !editor || !isJavaFile(editor.document.fileName) || !isWorkspaceFile(editor.document.fileName, client.root())) return;
+        const model = await this.readProjectModel(client);
+        await this.presentActiveEditor(editor, model.classOutput);
+    }
+
+    private async readProjectModel(client: PreviewClient): Promise<{mainClass: string; classOutput: string}> {
+        const compatible = client as PreviewClient & {projectModel?: () => Promise<{mainClass: string; classOutput: string}>};
+        if (compatible.projectModel) return compatible.projectModel();
+        return {mainClass: await client.mainClass(), classOutput: path.join(client.root(), 'build', 'classes', 'java', 'main')};
+    }
+
+    private async presentActiveEditor(editor: vscode.TextEditor, classOutput: string): Promise<void> {
+        const client = this.client;
+        if (!client) return;
+        const className = sourceClassName(editor.document.getText(), editor.document.fileName);
+        if (!className || !(await compiledClassExists(className, classOutput))) {
+            this.pendingClass = undefined;
+            await this.clearPanel();
+            return;
+        }
+        this.pendingClass = className;
+        this.pollingGeneration++;
+        await this.clearPanel();
+        await fs.rm(path.join(this.previewRoot(client), 'preview-selection.json'), {force: true});
+        await this.sendControl(client.root(), client.buildTool(), {command: 'show', values: [className]});
+        this.show({kind: 'selection-requested', message: className});
+    }
+
+    private previewRoot(client: PreviewClient): string {
+        return client.buildTool() === 'gradle' ? path.join(client.root(), 'build', 'totalcross') : path.join(client.root(), 'target', 'totalcross');
+    }
+
+    private async clearPanel(): Promise<void> {
+        this.pollingGeneration++;
+        if (this.panel) await this.panel.webview.postMessage({type: 'clear'});
     }
 
     private async applyDeviceProfile(root: string, buildTool: string): Promise<void> {
@@ -106,7 +197,7 @@ export class PreviewManager {
         await this.panel?.webview.postMessage({type: 'device', width, height, density, orientation});
     }
 
-    private stopFramePolling(): void { if (this.frameTimer) clearInterval(this.frameTimer); this.frameTimer = undefined; }
+    private stopFramePolling(): void { if (this.frameTimer) clearInterval(this.frameTimer); this.frameTimer = undefined; this.pollingGeneration++; this.pollingInFlight = false; }
 
     private async sendControl(root: string, buildTool: string, message: any): Promise<void> {
         if (!message || typeof message.command !== 'string') return;
@@ -135,7 +226,7 @@ const vscode = acquireVsCodeApi(); const frame = document.getElementById('frame'
 let device = {width:360,height:592,density:1,orientation:'portrait'};
 function intrinsicPointer(event) { const rect = frame.getBoundingClientRect(); return [Math.round((event.clientX - rect.left) * frame.naturalWidth / rect.width), Math.round((event.clientY - rect.top) * frame.naturalHeight / rect.height)]; }
 function sendResize() { vscode.postMessage({command:'resize', values:[device.width,device.height,device.density]}); }
-window.addEventListener('message', event => { if (event.data.type === 'frame') frame.src = event.data.data; if (event.data.type === 'device') { device = event.data; frame.style.width = device.width + 'px'; frame.style.height = device.height + 'px'; sendResize(); } });
+window.addEventListener('message', event => { if (event.data.type === 'frame') frame.src = event.data.data; if (event.data.type === 'clear') frame.removeAttribute('src'); if (event.data.type === 'device') { device = event.data; frame.style.width = device.width + 'px'; frame.style.height = device.height + 'px'; sendResize(); } });
 new ResizeObserver(sendResize).observe(frame);
 frame.addEventListener('pointerdown', event => { const point = intrinsicPointer(event); vscode.postMessage({command:'pointer', values:[point[0],point[1],event.button,true]}); });
 frame.addEventListener('pointerup', event => { const point = intrinsicPointer(event); vscode.postMessage({command:'pointer', values:[point[0],point[1],event.button,false]}); });

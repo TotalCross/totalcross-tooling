@@ -123,9 +123,10 @@ suite('Preview client', () => {
         try {
             const modelRoot = path.join(root, 'build', 'totalcross');
             await fs.mkdir(modelRoot, {recursive: true});
-            await fs.writeFile(path.join(modelRoot, 'project-model.json'), '{"mainClass":"example.App"}');
+            await fs.writeFile(path.join(modelRoot, 'project-model.json'), `{"mainClass":"example.App","classOutput":"${path.join(root, 'custom-classes')}"}`);
             const client = new PreviewClient({...layout, root, packageOutputRoot: modelRoot}, 'darwin');
             assert.strictEqual(await client.mainClass(), 'example.App');
+            assert.strictEqual((await client.projectModel()).classOutput, path.join(root, 'custom-classes'));
         } finally {
             await fs.rm(root, {recursive: true, force: true});
         }
