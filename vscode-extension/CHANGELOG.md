@@ -11,7 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Upcoming changes
-- Live UI preview
+- Canonical `TotalCross: Preview` now follows the active compiled Java
+  `MainWindow`, `Container`, or `Control` through the authenticated host/worker
+  pipeline. Invalid selections blank the panel without replacing a healthy
+  worker, and successful builds re-present the active class.
+- Preview configuration is project-owned in `totalcross-preview.json`; MainWindow
+  selection, explicit reload, panel-close shutdown, and serialized panel revival
+  use the same lifecycle manager.
 - `TotalCross: Preview` now runs its Java coordinator and worker headlessly,
   propagates the headless settings through the build launcher for compatibility
   with already published plugins, serializes overlapping start/stop requests,
