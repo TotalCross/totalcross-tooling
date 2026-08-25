@@ -2,11 +2,14 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 import * as assert from 'assert';
+import {ChildProcess} from 'child_process';
+import {EventEmitter} from 'events';
 import {promises as fs} from 'fs';
+import {PassThrough} from 'stream';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import {PreviewManager} from '../../preview-commands';
-import {PreviewClient, PreviewCommand, mavenExecutable, previewCommand} from '../../preview-client';
+import {PreviewClient, PreviewCommand, mavenExecutable, previewCommand, previewEnvironment} from '../../preview-client';
 import {ProjectLayout} from '../../project-layout';
 
 suite('Preview client', () => {
@@ -30,6 +33,37 @@ suite('Preview client', () => {
         assert.strictEqual(mavenExecutable('/project', 'darwin', () => false), 'mvn');
     });
 
+    test('forces the whole preview process tree into headless mode', () => {
+        const original = {JAVA_TOOL_OPTIONS: '-Xmx512m', CUSTOM_OPTION: 'preserved'};
+        const environment = previewEnvironment(original, 'darwin');
+
+        assert.deepStrictEqual(environment, {
+            JAVA_TOOL_OPTIONS: '-Xmx512m -Djava.awt.headless=true -Dapple.awt.UIElement=true',
+            CUSTOM_OPTION: 'preserved'
+        });
+        assert.deepStrictEqual(original, {JAVA_TOOL_OPTIONS: '-Xmx512m', CUSTOM_OPTION: 'preserved'});
+        assert.strictEqual(
+            previewEnvironment({}, 'linux').JAVA_TOOL_OPTIONS,
+            '-Djava.awt.headless=true'
+        );
+    });
+
+    test('passes the headless environment to the preview launcher', async () => {
+        const launch = fakeChildProcess();
+        let options: import('child_process').SpawnOptions | undefined;
+        const client = new PreviewClient(layout, 'darwin', (_executable, _args, spawnOptions) => {
+            options = spawnOptions;
+            return launch.child;
+        });
+
+        await client.start();
+
+        assert.strictEqual(options?.env?.JAVA_TOOL_OPTIONS?.endsWith(
+            '-Djava.awt.headless=true -Dapple.awt.UIElement=true'
+        ), true);
+        launch.events.emit('close', 0);
+    });
+
     test('reports build success only after the reload build completes', async () => {
         const client = new PreviewClient(layout, 'darwin');
         const events: string[] = [];
@@ -39,6 +73,49 @@ suite('Preview client', () => {
         await client.reload();
         assert.deepStrictEqual(commands, [{executable: './gradlew', args: ['totalcrossProjectModel', '--console=plain']}]);
         assert.deepStrictEqual(events, ['build-succeeded']);
+    });
+
+    test('waits for an in-flight preview launch before running the stop task', async () => {
+        const launch = fakeChildProcess();
+        const stop = fakeChildProcess();
+        const commands: PreviewCommand[] = [];
+        const client = new PreviewClient(layout, 'darwin', (executable, args) => {
+            commands.push({executable, args: [...args]});
+            return commands.length === 1 ? launch.child : stop.child;
+        });
+
+        await client.start();
+        const stopping = client.stop();
+        await Promise.resolve();
+        assert.strictEqual(commands.length, 1);
+
+        launch.events.emit('close', 0);
+        await until(() => commands.length === 2);
+        assert.deepStrictEqual(commands[1], {executable: './gradlew', args: ['totalcrossPreviewStop', '--console=plain']});
+        stop.events.emit('close', 0);
+        await stopping;
+    });
+
+    test('manager stop waits for the owned preview client', async () => {
+        const output = {appendLine: () => undefined, show: () => undefined} as unknown as vscode.OutputChannel;
+        const manager = new PreviewManager(output) as unknown as {
+            client?: {stop(): Promise<void>};
+            stop(): Promise<void>;
+        };
+        let release: (() => void) | undefined;
+        manager.client = {stop: () => new Promise<void>((resolve) => { release = resolve; })};
+        let firstFinished = false;
+        let secondFinished = false;
+        const firstStop = manager.stop().then(() => { firstFinished = true; });
+        const secondStop = manager.stop().then(() => { secondFinished = true; });
+
+        await Promise.resolve();
+        assert.strictEqual(firstFinished, false);
+        assert.strictEqual(secondFinished, false);
+        release!();
+        await Promise.all([firstStop, secondStop]);
+        assert.strictEqual(firstFinished, true);
+        assert.strictEqual(secondFinished, true);
     });
 
     test('reads a generated Gradle project model', async () => {
@@ -100,3 +177,18 @@ suite('Preview client', () => {
         assert.strictEqual(requested, false);
     });
 });
+
+function fakeChildProcess(): {child: ChildProcess; events: EventEmitter} {
+    const events = new EventEmitter();
+    const child = events as unknown as ChildProcess & {stdout: PassThrough; stderr: PassThrough; killed: boolean};
+    child.stdout = new PassThrough();
+    child.stderr = new PassThrough();
+    child.killed = false;
+    child.kill = () => { child.killed = true; return true; };
+    return {child, events};
+}
+
+async function until(condition: () => boolean): Promise<void> {
+    for (let attempt = 0; attempt < 20 && !condition(); attempt++) await new Promise((resolve) => setImmediate(resolve));
+    assert.ok(condition(), 'condition was not met');
+}

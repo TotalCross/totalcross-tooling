@@ -18,15 +18,18 @@ export class PreviewManager {
     private frameTimer?: NodeJS.Timeout;
     private panel?: vscode.WebviewPanel;
     private controlFile?: string;
+    private lifecycle: Promise<void> = Promise.resolve();
     public constructor(private readonly output = vscode.window.createOutputChannel('TotalCross Preview')) {}
 
-    public async start(): Promise<void> {
+    public start(): Promise<void> { return this.enqueue(() => this.startPreview()); }
+
+    private async startPreview(): Promise<void> {
         const folders = vscode.workspace.workspaceFolders || [];
         const folder = folders.length <= 1 ? folders[0] : await vscode.window.showWorkspaceFolderPick({ placeHolder: 'Select the TotalCross project to preview' });
         if (!folder) throw new Error('TotalCross project not found in this VS Code instance.');
         const layout = asLayout(await detectProjectLayout(folder.uri.fsPath, process.platform));
         if (!layout) throw new Error('Unsupported or mixed TotalCross project.');
-        this.disposePanel();
+        await this.stopPreview();
         this.panel = vscode.window.createWebviewPanel('totalcrossPreview', 'TotalCross Preview', vscode.ViewColumn.Beside,
             {enableScripts: true, retainContextWhenHidden: true});
         this.panel.webview.html = previewHtml(this.panel.webview);
@@ -46,7 +49,19 @@ export class PreviewManager {
     }
 
     public async run(): Promise<void> { await this.start(); }
-    public stop(): void { if (this.client) this.client.stop(); if (this.watcher) this.watcher.dispose(); this.stopFramePolling(); this.disposePanel(); }
+    public stop(): Promise<void> { return this.enqueue(() => this.stopPreview()); }
+
+    private async stopPreview(): Promise<void> {
+        const client = this.client;
+        this.client = undefined;
+        if (this.reloadTimer) clearTimeout(this.reloadTimer);
+        this.reloadTimer = undefined;
+        if (this.watcher) this.watcher.dispose();
+        this.watcher = undefined;
+        this.stopFramePolling();
+        this.disposePanel();
+        if (client) await client.stop();
+    }
     public showDiagnostics(): void { this.output.show(true); }
 
     private scheduleReload(): void {
@@ -102,6 +117,12 @@ export class PreviewManager {
         await fs.appendFile(file, `${message.command},${values.join(',')}\n`);
     }
 
+    private enqueue(operation: () => Promise<void>): Promise<void> {
+        const result = this.lifecycle.then(operation, operation);
+        this.lifecycle = result.catch(() => undefined);
+        return result;
+    }
+
     private disposePanel(): void { if (this.panel) this.panel.dispose(); this.panel = undefined; }
 }
 
@@ -129,6 +150,6 @@ export function registerPreviewCommands(context: vscode.ExtensionContext): Previ
     context.subscriptions.push(vscode.commands.registerCommand('extension.run', () => manager.run()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewStop', () => manager.stop()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewDiagnostics', () => manager.showDiagnostics()));
-    context.subscriptions.push({dispose: () => manager.stop()});
+    context.subscriptions.push({dispose: () => { void manager.stop().catch((error) => console.error('Unable to stop TotalCross preview:', error)); }});
     return manager;
 }
