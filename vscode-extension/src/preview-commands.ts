@@ -18,6 +18,7 @@ export class PreviewManager {
     private watcher?: vscode.FileSystemWatcher;
     private reloadTimer?: NodeJS.Timeout;
     private frameTimer?: NodeJS.Timeout;
+    private selectionTimer?: NodeJS.Timeout;
     private editorTimer?: NodeJS.Timeout;
     private editorListener?: vscode.Disposable;
     private panel?: vscode.WebviewPanel;
@@ -180,33 +181,42 @@ export class PreviewManager {
         const frame = path.join(outputRoot, 'preview-frame.png');
         const interval = Math.max(100, vscode.workspace.getConfiguration('totalcross.livePreview').get<number>('framePollInterval', 500));
         const selection = path.join(outputRoot, 'preview-selection.json');
-        this.frameTimer = setInterval(async () => {
-            if (!this.panel) return;
-            if (this.pendingClass) {
-                try {
-                    const marker = parseSelection(await fs.readFile(selection, 'utf8'));
-                    if (marker?.className !== this.pendingClass) return;
-                    const requested = this.pendingClass;
-                    this.pendingClass = undefined;
-                    if (!marker.selected) {
-                        this.show({kind: 'selection-failed', message: marker.error || requested});
-                        await this.clearPanel();
-                        return;
-                    }
-                    this.show({kind: 'selection-ready', message: requested});
-                } catch (_) { return; }
-            }
-            if (this.pollingInFlight) return;
-            this.pollingInFlight = true;
-            const generation = this.pollingGeneration;
-            try {
-                const data = (await fs.readFile(frame)).toString('base64');
-                if (generation === this.pollingGeneration && this.panel) {
-                    this.panel.webview.postMessage({type: 'frame', data: `data:image/png;base64,${data}`});
-                }
-            } catch (_) { /* The coordinator has not produced its first frame yet. */ }
-            finally { this.pollingInFlight = false; }
+        this.selectionTimer = setInterval(() => {
+            this.pollSelection(selection, frame).catch((error) => this.show({kind: 'error', message: error.message}));
+        }, Math.min(interval, 50));
+        this.frameTimer = setInterval(() => {
+            this.pollFrame(frame).catch((error) => this.show({kind: 'error', message: error.message}));
         }, interval);
+    }
+
+    private async pollSelection(selection: string, frame: string): Promise<void> {
+        if (!this.panel || !this.pendingClass) return;
+        try {
+            const marker = parseSelection(await fs.readFile(selection, 'utf8'));
+            if (marker?.className !== this.pendingClass) return;
+            const requested = this.pendingClass;
+            this.pendingClass = undefined;
+            if (!marker.selected) {
+                this.show({kind: 'selection-failed', message: marker.error || requested});
+                await this.clearPanel();
+                return;
+            }
+            this.show({kind: 'selection-ready', message: requested});
+            await this.pollFrame(frame);
+        } catch (_) { /* The coordinator has not written the selection marker yet. */ }
+    }
+
+    private async pollFrame(frame: string): Promise<void> {
+        if (!this.panel || this.pendingClass || this.pollingInFlight) return;
+        this.pollingInFlight = true;
+        const generation = this.pollingGeneration;
+        try {
+            const data = (await fs.readFile(frame)).toString('base64');
+            if (generation === this.pollingGeneration && this.panel) {
+                this.panel.webview.postMessage({type: 'frame', data: `data:image/png;base64,${data}`});
+            }
+        } catch (_) { /* The coordinator has not produced its first frame yet. */ }
+        finally { this.pollingInFlight = false; }
     }
 
     private scheduleActiveEditorPreview(): void {
@@ -314,7 +324,14 @@ export class PreviewManager {
         await this.panel?.webview.postMessage({type: 'device', width, height, density, orientation});
     }
 
-    private stopFramePolling(): void { if (this.frameTimer) clearInterval(this.frameTimer); this.frameTimer = undefined; this.pollingGeneration++; this.pollingInFlight = false; }
+    private stopFramePolling(): void {
+        if (this.frameTimer) clearInterval(this.frameTimer);
+        if (this.selectionTimer) clearInterval(this.selectionTimer);
+        this.frameTimer = undefined;
+        this.selectionTimer = undefined;
+        this.pollingGeneration++;
+        this.pollingInFlight = false;
+    }
 
     private async sendControl(root: string, buildTool: string, message: any): Promise<void> {
         if (!message || typeof message.command !== 'string') return;

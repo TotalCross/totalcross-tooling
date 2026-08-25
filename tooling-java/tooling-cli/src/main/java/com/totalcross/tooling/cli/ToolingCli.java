@@ -373,7 +373,9 @@ public final class ToolingCli {
         try {
           List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
           while (consumed < lines.size()) dispatch(lines.get(consumed++));
-          Thread.sleep(100);
+          // Keep editor selection responsive while avoiding a busy loop over
+          // the append-only control file.
+          Thread.sleep(50);
         } catch (InterruptedException interrupted) {
           Thread.currentThread().interrupt();
           return;
