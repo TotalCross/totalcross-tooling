@@ -37,6 +37,9 @@ The result remains based on the authenticated process protocol in `tooling-java`
 - Observation: The published preview contract does not expose presentation methods, but its simulator-backed session retains a private `Launcher` whose public compatibility methods match the retired server behavior.
   Evidence: `tc.preview.internal.SimulatorPreviewSession` owns `private final Launcher launcher`; `Launcher` exposes `preparePreviewMainWindowReload`, `replaceMainWindow`, `showContainer`, and `showControl`.
 
+- Observation: Frame polling and control-file reloads run on different CLI threads, so the main loop could retain the previous candidate while the control thread promoted and closed it.
+  Evidence: `PreviewReloadCoordinator.nextFrame` copied the active candidate before polling it, while `ControlLoop` called synchronized `reload` independently. The CLI now serializes candidate promotion and frame consumption and writes a selected frame before publishing success.
+
 ## Decision Log
 
 - Decision: Port capabilities onto the authenticated host/worker and control-file pipeline instead of reactivating `live-preview-server`.
@@ -177,3 +180,5 @@ The compatibility bridge may reflect on the SDK simulator implementation because
 Revision note (2026-08-25 19:36Z): Created after comparing the retired HTTP Live Preview with the canonical host/worker path and selecting an incremental, commit-by-commit port strategy.
 
 Revision note (2026-08-25 19:48Z): Recorded the implemented worker-selection protocol, published-SDK compatibility bridge, selection result file, and passing focused Java tests.
+
+Revision note (2026-08-25 19:52Z): Recorded and closed the cross-thread frame/promotion race discovered while designing stale-frame suppression in the extension.

@@ -93,27 +93,47 @@ public final class ToolingCli {
     try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(15))) {
       List<String> worker = workerCommand(toolingJdk.home(), !runWindow);
       String initialMainClass = mainClass;
+      Object frameAccess = new Object();
       if (!coordinator.reload(() -> candidate(worker, classpath, initialMainClass))) {
         throw new IllegalStateException("preview worker did not start: " + coordinator.lastFailure());
       }
       AwtPreviewWindow window = runWindow ? runWindow(coordinator, mainClass) : null;
       try (ControlLoop controls = controlFile == null ? null : new ControlLoop(coordinator, controlFile,
-          (nextMainClass, reloadArgs) -> coordinator.reload(() -> candidate(worker, classpath, nextMainClass, reloadArgs)),
+          (nextMainClass, reloadArgs) -> {
+            synchronized (frameAccess) {
+              return coordinator.reload(() -> candidate(worker, classpath, nextMainClass, reloadArgs));
+            }
+          },
           selectedClass -> {
-            boolean selected = coordinator.reload(() -> selectedCandidate(
-                worker, classpath, initialMainClass, selectedClass));
-            writeSelection(selectionFile, selectedClass, selected, coordinator.lastFailure());
-            return selected;
+            synchronized (frameAccess) {
+              boolean selected = coordinator.reload(() -> selectedCandidate(
+                  worker, classpath, initialMainClass, selectedClass));
+              String selectionError = coordinator.lastFailure();
+              if (selected && frameFile != null) {
+                com.totalcross.tooling.protocol.FrameData selectedFrame = coordinator.nextFrame(Duration.ofSeconds(1));
+                if (selectedFrame == null) {
+                  selected = false;
+                  selectionError = "selected preview did not provide its promoted frame";
+                } else {
+                  writeFrame(frameFile, selectedFrame);
+                }
+              }
+              writeSelection(selectionFile, selectedClass, selected, selectionError);
+              return selected;
+            }
           },
           error -> emit("error", outputProject, outputMainClass, error))) {
         if (controls != null) controls.start();
       emit("started", project, mainClass, null);
       boolean frame = false;
       while (coordinator.state() != com.totalcross.tooling.host.PreviewSessionState.CLOSED) {
-        com.totalcross.tooling.protocol.FrameData next = coordinator.nextFrame(Duration.ofMillis(250));
+        com.totalcross.tooling.protocol.FrameData next;
+        synchronized (frameAccess) {
+          next = coordinator.nextFrame(Duration.ofMillis(250));
+          if (next != null && frameFile != null) writeFrame(frameFile, next);
+        }
         if (next != null) {
           frame = true;
-          if (frameFile != null) writeFrame(frameFile, next);
           if (window != null) window.present(next);
           emit("frame", project, mainClass, null, frameFile == null ? null : frameFile.toString());
           if (once) break;
@@ -300,7 +320,7 @@ public final class ToolingCli {
 
   private static final class ControlLoop implements AutoCloseable {
     @FunctionalInterface interface ReloadHandler { boolean reload(String mainClass, String... args); }
-    @FunctionalInterface interface ShowHandler { boolean show(String className) throws IOException; }
+    @FunctionalInterface interface ShowHandler { boolean show(String className) throws Exception; }
     private final PreviewReloadCoordinator coordinator;
     private final Path file;
     private final ReloadHandler reload;
