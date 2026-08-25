@@ -64,6 +64,10 @@ public final class PreviewHost implements AutoCloseable {
     session.send(MessageType.KEY, 4, (keyCode + "," + pressed + "," + modifiers).getBytes(StandardCharsets.UTF_8));
   }
 
+  public void sendShow(String className) throws IOException {
+    session.send(MessageType.SHOW, 6, className.getBytes(StandardCharsets.UTF_8));
+  }
+
   /** Returns worker diagnostics when the child closes before the protocol reports an error. */
   public String workerDiagnostics() {
     if (worker != null && !worker.isAlive()) {

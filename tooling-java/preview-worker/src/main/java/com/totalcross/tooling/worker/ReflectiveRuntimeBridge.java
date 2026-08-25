@@ -3,6 +3,8 @@
 package com.totalcross.tooling.worker;
 
 import com.totalcross.tooling.protocol.FrameData;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -70,6 +72,54 @@ public final class ReflectiveRuntimeBridge implements WorkerRuntime {
 
   public void key(int keyCode, boolean pressed, int modifiers) {
     invoke("key", new Class<?>[] { int.class, boolean.class, int.class }, keyCode, pressed, modifiers);
+  }
+
+  public void show(String className) {
+    if (session == null) throw new IllegalStateException("preview session has not started");
+    try {
+      Class<?> selectedType = Class.forName(className, true, applicationLoader);
+      Class<?> mainWindowType = Class.forName("totalcross.ui.MainWindow", true, applicationLoader);
+      Class<?> containerType = Class.forName("totalcross.ui.Container", true, applicationLoader);
+      Class<?> controlType = Class.forName("totalcross.ui.Control", true, applicationLoader);
+      if (!controlType.isAssignableFrom(selectedType)) {
+        throw new IllegalArgumentException(className + " is not a TotalCross MainWindow, Container, or Control");
+      }
+      Constructor<?> constructor;
+      try {
+        constructor = selectedType.getDeclaredConstructor();
+      } catch (NoSuchMethodException error) {
+        throw new IllegalArgumentException(className + " does not have a no-argument constructor", error);
+      }
+      if (!constructor.canAccess(null)) {
+        throw new IllegalArgumentException(className + " does not have an accessible no-argument constructor");
+      }
+      Object launcher = simulatorLauncher();
+      if (mainWindowType.isAssignableFrom(selectedType)) {
+        launcher.getClass().getMethod("preparePreviewMainWindowReload").invoke(launcher);
+        Object selected = constructor.newInstance();
+        launcher.getClass().getMethod("replaceMainWindow", mainWindowType, String.class)
+            .invoke(launcher, selected, "");
+      } else if (containerType.isAssignableFrom(selectedType)) {
+        Object selected = constructor.newInstance();
+        launcher.getClass().getMethod("showContainer", containerType).invoke(launcher, selected);
+      } else {
+        Object selected = constructor.newInstance();
+        launcher.getClass().getMethod("showControl", controlType).invoke(launcher, selected);
+      }
+      invoke("pumpEvents", new Class<?>[0]);
+    } catch (ReflectiveOperationException e) {
+      throw commandFailure("unable to show " + className + " in the TotalCross preview", e);
+    }
+  }
+
+  private Object simulatorLauncher() throws ReflectiveOperationException {
+    Field launcher = session.getClass().getDeclaredField("launcher");
+    if (!launcher.trySetAccessible()) {
+      throw new IllegalAccessException("the preview session does not expose its simulator launcher");
+    }
+    Object value = launcher.get(session);
+    if (value == null) throw new IllegalStateException("the preview simulator launcher is unavailable");
+    return value;
   }
 
   public void close() {

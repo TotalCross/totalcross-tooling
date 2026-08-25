@@ -16,9 +16,11 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
   private final List<String> command;
   private final String applicationClasspath;
   private final String mainClass;
+  private final String selectedClass;
   private final String[] arguments;
   private final BlockingQueue<FrameData> frames = new LinkedBlockingQueue<>();
   private final CompletableFuture<FrameData> firstFrame = new CompletableFuture<>();
+  private final CompletableFuture<Void> selectedFrame = new CompletableFuture<>();
   private final AtomicReference<Throwable> failure = new AtomicReference<>();
   private final AtomicBoolean started = new AtomicBoolean();
   private final AtomicBoolean closed = new AtomicBoolean();
@@ -26,10 +28,16 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
 
   public ProcessWorkerCandidate(List<String> command, String applicationClasspath, String mainClass, String... arguments)
       throws IOException {
+    this(command, applicationClasspath, mainClass, null, arguments);
+  }
+
+  public ProcessWorkerCandidate(List<String> command, String applicationClasspath, String mainClass,
+      String selectedClass, String[] arguments) throws IOException {
     this.host = new PreviewHost();
     this.command = List.copyOf(command);
     this.applicationClasspath = applicationClasspath;
     this.mainClass = mainClass;
+    this.selectedClass = selectedClass == null || selectedClass.isBlank() ? null : selectedClass;
     this.arguments = arguments == null ? new String[0] : arguments.clone();
   }
 
@@ -49,10 +57,16 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
   @Override public void awaitFirstFrame(Duration timeout) throws Exception {
     try {
       firstFrame.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+      if (selectedClass != null) {
+        frames.clear();
+        host.sendShow(selectedClass);
+        selectedFrame.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+      }
     } catch (ExecutionException failure) {
       Throwable cause = failure.getCause();
       if (cause instanceof Exception exception) throw exception;
-      throw new IOException("worker failed before its first frame", cause);
+      throw new IOException(selectedClass == null ? "worker failed before its first frame"
+          : "worker failed before its selected frame", cause);
     }
   }
 
@@ -85,6 +99,13 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
           FrameData frame = FrameData.decode(message.payload());
           frames.offer(frame);
           firstFrame.complete(frame);
+        } else if (message.type() == MessageType.SHOW_READY) {
+          FrameData latest = null;
+          FrameData queued;
+          while ((queued = frames.poll()) != null) latest = queued;
+          if (latest == null) throw new IOException("worker acknowledged selection without a frame");
+          frames.offer(latest);
+          selectedFrame.complete(null);
         } else if (message.type() == MessageType.ERROR) {
           throw new IOException(new String(message.payload(), StandardCharsets.UTF_8));
         } else if (message.type() == MessageType.CLOSED) {
@@ -98,6 +119,9 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
   }
 
   private void fail(Throwable problem) {
-    if (failure.compareAndSet(null, problem)) firstFrame.completeExceptionally(problem);
+    if (failure.compareAndSet(null, problem)) {
+      firstFrame.completeExceptionally(problem);
+      selectedFrame.completeExceptionally(problem);
+    }
   }
 }

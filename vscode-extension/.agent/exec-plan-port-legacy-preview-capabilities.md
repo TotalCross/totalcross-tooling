@@ -12,6 +12,7 @@ The result remains based on the authenticated process protocol in `tooling-java`
 
 - [x] (2026-08-25 19:36Z) Compared `origin/main_live_preview_original` with the active extension and inventoried capabilities that were disabled by commit `612e658`.
 - [x] (2026-08-25 19:36Z) Read repository and nested instructions, inspected both relevant worktrees, and preserved the unrelated deploy edits and generated directories in `totalcross-tooling`.
+- [x] (2026-08-25 19:48Z) Added the authenticated `SHOW`/`SHOW_READY` exchange, SDK compatibility bridge, candidate gating, CLI `show` command, selection result file, and focused Java coverage.
 - [ ] Add authenticated worker protocol support for safely presenting `MainWindow`, `Container`, and `Control` targets, then connect it to the selected VS Code editor.
 - [ ] Stop the complete preview session when its panel closes and add deterministic lifecycle coverage.
 - [ ] Restore MainWindow discovery, project configuration, classpath overrides, and explicit configuration editing on the canonical preview path.
@@ -33,6 +34,9 @@ The result remains based on the authenticated process protocol in `tooling-java`
 - Observation: Closing the current webview stops frame polling but retains the client, file watcher, coordinator, and worker.
   Evidence: `PreviewManager.startPreview` registers `panel.onDidDispose` with only `stopFramePolling`, whereas the legacy panel called `stopProcess`.
 
+- Observation: The published preview contract does not expose presentation methods, but its simulator-backed session retains a private `Launcher` whose public compatibility methods match the retired server behavior.
+  Evidence: `tc.preview.internal.SimulatorPreviewSession` owns `private final Launcher launcher`; `Launcher` exposes `preparePreviewMainWindowReload`, `replaceMainWindow`, `showContainer`, and `showControl`.
+
 ## Decision Log
 
 - Decision: Port capabilities onto the authenticated host/worker and control-file pipeline instead of reactivating `live-preview-server`.
@@ -45,6 +49,14 @@ The result remains based on the authenticated process protocol in `tooling-java`
 
 - Decision: Keep configuration compatible with the existing `totalcross-preview.json` filename but define which fields the canonical path actually owns.
   Rationale: Conversion code already preserves this file. Reusing it avoids another migration format while allowing stale server-only fields to be retired explicitly.
+  Date/Author: 2026-08-25 / Codex
+
+- Decision: Append `SHOW` and `SHOW_READY` after every existing protocol enum value, and keep protocol version 1.
+  Rationale: The host and worker are distributed as one tooling runtime, and appending preserves every existing ordinal on the wire. A version bump would reject otherwise compatible host/worker pairs without adding a negotiation path.
+  Date/Author: 2026-08-25 / Codex
+
+- Decision: Publish selection completion through `preview-selection.json` beside the frame file.
+  Rationale: The previous active worker continues producing valid frames while a candidate is evaluated. An explicit class-scoped result lets the extension suppress those stale frames until the selected candidate succeeds and remain blank when selection fails.
   Date/Author: 2026-08-25 / Codex
 
 ## Outcomes & Retrospective
@@ -163,3 +175,5 @@ Protocol message additions must be versioned through `tooling-java/tooling-proto
 The compatibility bridge may reflect on the SDK simulator implementation because released SDKs do not yet expose show operations in `tc.preview.PreviewSession`. It must fail with a clear diagnostic when the session is not simulator-backed, and the limitation must be recorded for future SDK contract work.
 
 Revision note (2026-08-25 19:36Z): Created after comparing the retired HTTP Live Preview with the canonical host/worker path and selecting an incremental, commit-by-commit port strategy.
+
+Revision note (2026-08-25 19:48Z): Recorded the implemented worker-selection protocol, published-SDK compatibility bridge, selection result file, and passing focused Java tests.

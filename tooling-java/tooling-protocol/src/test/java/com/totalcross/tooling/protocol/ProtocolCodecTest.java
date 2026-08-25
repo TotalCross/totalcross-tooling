@@ -8,6 +8,13 @@ import org.junit.jupiter.api.Test;
 
 class ProtocolCodecTest {
   @Test
+  void appendsSelectionMessagesWithoutRenumberingTheExistingProtocol() {
+    assertEquals(12, MessageType.ERROR.ordinal());
+    assertEquals(13, MessageType.SHOW.ordinal());
+    assertEquals(14, MessageType.SHOW_READY.ordinal());
+  }
+
+  @Test
   void roundTripsBoundedMessageAndCopiesPayload() throws Exception {
     byte[] payload = { 1, 2, 3 };
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();

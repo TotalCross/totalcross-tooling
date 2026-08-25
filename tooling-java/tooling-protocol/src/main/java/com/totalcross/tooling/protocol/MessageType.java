@@ -4,5 +4,5 @@ package com.totalcross.tooling.protocol;
 
 public enum MessageType {
   HELLO, START, READY, FRAME, RESIZE, POINTER, KEY, RELOAD, RELOAD_READY,
-  DIAGNOSTIC, STOP, CLOSED, ERROR
+  DIAGNOSTIC, STOP, CLOSED, ERROR, SHOW, SHOW_READY
 }

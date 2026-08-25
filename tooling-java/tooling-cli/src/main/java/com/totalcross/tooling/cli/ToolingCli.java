@@ -83,6 +83,8 @@ public final class ToolingCli {
     boolean once = has(args, "--once");
     Path frameFile = optionPath(args, "--frame-file", null);
     Path controlFile = optionPath(args, "--control-file", null);
+    Path selectionFile = frameFile == null ? null : frameFile.resolveSibling("preview-selection.json");
+    if (selectionFile != null) Files.deleteIfExists(selectionFile);
     Path configuredJdk = optionPath(args, "--jdk-path", null);
     JdkInstallation toolingJdk = JdkCatalogResolver.production().resolve(
         new JdkRequest("17", configuredJdk, null));
@@ -97,6 +99,12 @@ public final class ToolingCli {
       AwtPreviewWindow window = runWindow ? runWindow(coordinator, mainClass) : null;
       try (ControlLoop controls = controlFile == null ? null : new ControlLoop(coordinator, controlFile,
           (nextMainClass, reloadArgs) -> coordinator.reload(() -> candidate(worker, classpath, nextMainClass, reloadArgs)),
+          selectedClass -> {
+            boolean selected = coordinator.reload(() -> selectedCandidate(
+                worker, classpath, initialMainClass, selectedClass));
+            writeSelection(selectionFile, selectedClass, selected, coordinator.lastFailure());
+            return selected;
+          },
           error -> emit("error", outputProject, outputMainClass, error))) {
         if (controls != null) controls.start();
       emit("started", project, mainClass, null);
@@ -136,6 +144,11 @@ public final class ToolingCli {
   private static ProcessWorkerCandidate candidate(List<String> worker, String classpath, String mainClass, String... args)
       throws IOException {
     return new ProcessWorkerCandidate(worker, classpath, mainClass, args);
+  }
+
+  private static ProcessWorkerCandidate selectedCandidate(List<String> worker, String classpath, String mainClass,
+      String selectedClass) throws IOException {
+    return new ProcessWorkerCandidate(worker, classpath, mainClass, selectedClass, new String[0]);
   }
 
   private static Path optionPath(String[] args, String name) { return optionPath(args, name, Path.of(".")); }
@@ -237,6 +250,15 @@ public final class ToolingCli {
     ImageIO.write(image, "png", file.toFile());
   }
 
+  private static void writeSelection(Path file, String className, boolean selected, String error) throws IOException {
+    if (file == null) return;
+    Path parent = file.toAbsolutePath().normalize().getParent();
+    if (parent != null && !Files.isDirectory(parent)) Files.createDirectories(parent);
+    String value = "{\"className\":\"" + escape(className) + "\",\"selected\":" + selected
+        + ",\"error\":\"" + escape(error == null ? "" : error) + "\"}";
+    Files.writeString(file, value, StandardCharsets.UTF_8);
+  }
+
   private static void stop(String[] args) throws IOException {
     long pid = 0;
     String value = option(args, "--pid", null);
@@ -267,7 +289,10 @@ public final class ToolingCli {
     System.out.println(value);
   }
 
-  private static String escape(String value) { return value.replace("\\", "\\\\").replace("\"", "\\\""); }
+  private static String escape(String value) {
+    return value.replace("\\", "\\\\").replace("\"", "\\\"")
+        .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+  }
 
   private static void usage() {
     System.out.println("usage: totalcross-tooling preview|run [--model <file>] [--project <path>] [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file> | convert-project analyze --project <path> [--plan <file>]");
@@ -275,19 +300,22 @@ public final class ToolingCli {
 
   private static final class ControlLoop implements AutoCloseable {
     @FunctionalInterface interface ReloadHandler { boolean reload(String mainClass, String... args); }
+    @FunctionalInterface interface ShowHandler { boolean show(String className) throws IOException; }
     private final PreviewReloadCoordinator coordinator;
     private final Path file;
     private final ReloadHandler reload;
+    private final ShowHandler show;
     private final java.util.function.Consumer<String> errors;
     private volatile boolean running = true;
     private int consumed;
     private Thread thread;
 
-    ControlLoop(PreviewReloadCoordinator coordinator, Path file, ReloadHandler reload,
+    ControlLoop(PreviewReloadCoordinator coordinator, Path file, ReloadHandler reload, ShowHandler show,
         java.util.function.Consumer<String> errors) throws IOException {
       this.coordinator = coordinator;
       this.file = file.toAbsolutePath().normalize();
       this.reload = reload;
+      this.show = show;
       this.errors = errors;
       Path parent = this.file.getParent();
       if (parent != null && !Files.isDirectory(parent)) Files.createDirectories(parent);
@@ -328,6 +356,10 @@ public final class ToolingCli {
           if (!reload.reload(values[1], java.util.Arrays.copyOfRange(values, 2, values.length))) {
             throw new IOException("preview reload failed: " + coordinator.lastFailure());
           }
+        }
+        case "show" -> {
+          if (values.length < 2 || values[1].isBlank()) throw new IOException("preview selection requires a class name");
+          if (!show.show(values[1])) throw new IOException("preview selection failed: " + coordinator.lastFailure());
         }
         case "stop" -> coordinator.close();
         default -> { }

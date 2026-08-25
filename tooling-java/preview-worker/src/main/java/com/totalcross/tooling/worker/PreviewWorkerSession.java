@@ -61,13 +61,19 @@ public final class PreviewWorkerSession implements AutoCloseable {
           String[] values = text(message).split(",");
           runtime.key(Integer.parseInt(values[0]), Boolean.parseBoolean(values[1]), Integer.parseInt(values[2]));
         }
+        case SHOW -> {
+          long previousFrames = frameCount();
+          runtime.show(text(message));
+          awaitFrameAfter(previousFrames, "selected component");
+          send(MessageType.SHOW_READY, message.requestId(), new byte[0]);
+        }
         case RELOAD -> {
           String value = text(message);
           long previousFrames = frameCount();
           runtime.close();
           String[] values = value.split("\\n", -1);
           runtime.start(values[0], java.util.Arrays.copyOfRange(values, 1, values.length), this::sendFrame);
-          awaitFrameAfterReload(previousFrames);
+          awaitFrameAfter(previousFrames, "reload");
           send(MessageType.RELOAD_READY, message.requestId(), new byte[0]);
         }
         case STOP -> { }
@@ -95,17 +101,17 @@ public final class PreviewWorkerSession implements AutoCloseable {
     synchronized (frameMonitor) { return frameCount; }
   }
 
-  private void awaitFrameAfterReload(long previousFrames) throws IOException {
+  private void awaitFrameAfter(long previousFrames, String operation) throws IOException {
     long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(15);
     synchronized (frameMonitor) {
       while (frameCount <= previousFrames) {
         long remaining = deadline - System.nanoTime();
-        if (remaining <= 0) throw new IOException("preview reload did not produce a first frame");
+        if (remaining <= 0) throw new IOException("preview " + operation + " did not produce a first frame");
         try {
           java.util.concurrent.TimeUnit.NANOSECONDS.timedWait(frameMonitor, remaining);
         } catch (InterruptedException interrupted) {
           Thread.currentThread().interrupt();
-          throw new IOException("preview reload was interrupted", interrupted);
+          throw new IOException("preview " + operation + " was interrupted", interrupted);
         }
       }
     }

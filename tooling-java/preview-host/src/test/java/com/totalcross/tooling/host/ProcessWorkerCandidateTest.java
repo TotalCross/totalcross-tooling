@@ -31,6 +31,21 @@ class ProcessWorkerCandidateTest {
     }
   }
 
+  @Test
+  void promotesAWorkerOnlyAfterTheSelectedClassProducesAFrame() throws Exception {
+    try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(3))) {
+      ProcessWorkerCandidate candidate = new ProcessWorkerCandidate(
+          List.of(javaExecutable(), "-cp", System.getProperty("java.class.path"),
+              FakeWorkerMain.class.getName(), "selection"),
+          "", "example.MainWindow", "example.Screen", new String[0]);
+
+      assertTrue(coordinator.reload(() -> candidate));
+      FrameData frame = coordinator.nextFrame(Duration.ofSeconds(1));
+      assertNotNull(frame);
+      assertArrayEquals(new int[] { 0xffff0000 }, frame.pixels());
+    }
+  }
+
   private static ProcessWorkerCandidate candidate(String mode) throws IOException {
     return new ProcessWorkerCandidate(List.of(javaExecutable(), "-cp", System.getProperty("java.class.path"),
         FakeWorkerMain.class.getName(), mode), "", "example.MainWindow");
@@ -63,10 +78,15 @@ class ProcessWorkerCandidateTest {
         while ((message = ProtocolCodec.read(input)) != null) {
           if (message.type() == MessageType.START) {
             send(output, token, MessageType.READY, message.requestId(), new byte[0]);
-            if ("frame".equals(mode)) {
+            if ("frame".equals(mode) || "selection".equals(mode)) {
               FrameData frame = new FrameData(1, 1, 1, 1, new int[] { 0xff00ff00 });
               send(output, token, MessageType.FRAME, 0, frame.encode());
             }
+          }
+          if (message.type() == MessageType.SHOW && "selection".equals(mode)) {
+            FrameData frame = new FrameData(1, 1, 1, 1, new int[] { 0xffff0000 });
+            send(output, token, MessageType.FRAME, 0, frame.encode());
+            send(output, token, MessageType.SHOW_READY, message.requestId(), new byte[0]);
           }
           if (message.type() == MessageType.STOP) break;
         }
