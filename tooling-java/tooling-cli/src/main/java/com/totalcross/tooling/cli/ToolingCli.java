@@ -7,6 +7,7 @@ import com.totalcross.tooling.host.*;
 import com.totalcross.tooling.host.AwtPreviewWindow;
 import com.totalcross.tooling.build.ProjectModel;
 import com.totalcross.tooling.build.ProjectModelCodec;
+import com.totalcross.tooling.preview.PreviewConfiguration;
 import com.totalcross.tooling.jdk.JdkCatalogResolver;
 import com.totalcross.tooling.jdk.JdkRequest;
 import com.totalcross.tooling.jdk.JdkInstallation;
@@ -73,13 +74,18 @@ public final class ToolingCli {
     if (project == null) project = model == null ? (session == null ? Path.of(".") : session.getParent()) : model.project();
     if (model == null && session != null) project = sessionProject(session, project);
     if (!Files.isDirectory(project)) throw new IllegalArgumentException("project does not exist: " + project);
+    Path configFile = optionPath(args, "--config", project.resolve("totalcross-preview.json"));
+    PreviewConfiguration configuration = PreviewConfiguration.read(configFile, project);
     String mainClass = option(args, "--main", null);
     if ((mainClass == null || mainClass.isBlank()) && model != null) mainClass = model.mainClass();
+    if (configuration.mainWindow() != null && !configuration.mainWindow().isBlank() && option(args, "--main", null) == null) {
+      mainClass = configuration.mainWindow();
+    }
     if ((mainClass == null || mainClass.isBlank()) && session != null) mainClass = sessionMainClass(session);
     if (mainClass == null || mainClass.isBlank()) mainClass = discoverMainClass(project);
     String explicitClasspath = option(args, "--classpath", null);
     if ((explicitClasspath == null || explicitClasspath.isBlank()) && model != null) explicitClasspath = modelClasspath(model);
-    String classpath = applicationClasspath(project, explicitClasspath);
+    String classpath = applicationClasspath(project, explicitClasspath, configuration.classpath());
     boolean once = has(args, "--once");
     Path frameFile = optionPath(args, "--frame-file", null);
     Path controlFile = optionPath(args, "--control-file", null);
@@ -92,22 +98,27 @@ public final class ToolingCli {
     String outputMainClass = mainClass;
     try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(15))) {
       List<String> worker = workerCommand(toolingJdk.home(), !runWindow);
-      String initialMainClass = mainClass;
+      String[] sessionRoot = {mainClass};
       Object frameAccess = new Object();
-      if (!coordinator.reload(() -> candidate(worker, classpath, initialMainClass))) {
+      if (!coordinator.reload(() -> candidate(worker, classpath, sessionRoot[0],
+          configuration.launcherArgs().toArray(String[]::new)))) {
         throw new IllegalStateException("preview worker did not start: " + coordinator.lastFailure());
       }
       AwtPreviewWindow window = runWindow ? runWindow(coordinator, mainClass) : null;
       try (ControlLoop controls = controlFile == null ? null : new ControlLoop(coordinator, controlFile,
           (nextMainClass, reloadArgs) -> {
             synchronized (frameAccess) {
-              return coordinator.reload(() -> candidate(worker, classpath, nextMainClass, reloadArgs));
+              boolean reloaded = coordinator.reload(() -> candidate(worker, classpath, nextMainClass,
+                  reloadArgs.length == 0 && !configuration.launcherArgs().isEmpty()
+                      ? configuration.launcherArgs().toArray(String[]::new) : reloadArgs));
+              if (reloaded) sessionRoot[0] = nextMainClass;
+              return reloaded;
             }
           },
           selectedClass -> {
             synchronized (frameAccess) {
               boolean selected = coordinator.reload(() -> selectedCandidate(
-                  worker, classpath, initialMainClass, selectedClass));
+                  worker, classpath, sessionRoot[0], selectedClass));
               String selectionError = coordinator.lastFailure();
               if (selected && frameFile != null) {
                 com.totalcross.tooling.protocol.FrameData selectedFrame = coordinator.nextFrame(Duration.ofSeconds(1));
@@ -204,13 +215,14 @@ public final class ToolingCli {
     throw new IOException("Cannot discover MainWindow.class; pass --main <class>");
   }
 
-  private static String applicationClasspath(Path project, String explicit) throws IOException {
+  private static String applicationClasspath(Path project, String explicit, List<Path> configured) throws IOException {
     List<Path> entries = new ArrayList<>();
     if (explicit != null && !explicit.isBlank()) {
       for (String value : explicit.split(java.util.regex.Pattern.quote(File.pathSeparator))) {
         if (!value.isBlank()) entries.add(Path.of(value));
       }
     }
+    entries.addAll(configured);
     entries.add(project.resolve("build/classes/java/main"));
     entries.add(project.resolve("build/resources/main"));
     entries.add(project.resolve("target/classes"));
@@ -315,7 +327,7 @@ public final class ToolingCli {
   }
 
   private static void usage() {
-    System.out.println("usage: totalcross-tooling preview|run [--model <file>] [--project <path>] [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file> | convert-project analyze --project <path> [--plan <file>]");
+    System.out.println("usage: totalcross-tooling preview|run [--model <file>] [--project <path>] [--config <file>] [--session <file>] [--main <class>] [--classpath <path>] [--jdk-path <home>] [--frame-file <png>] [--control-file <file>] [--once] | stop --pid <pid> | stop --session <file> | convert-project analyze --project <path> [--plan <file>]");
   }
 
   private static final class ControlLoop implements AutoCloseable {

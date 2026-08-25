@@ -153,6 +153,7 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
         if ("preview".equals(mode)) command.add("-Djava.awt.headless=true");
         command.addAll(List.of("-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
             "--model", frame.resolveSibling("project-model.json").toString(), "--jdk-path", toolingJdk.toString(),
+            "--config", frame.getParent().getParent().resolve("totalcross-preview.json").toString(),
             "--frame-file", frame.toString(), "--control-file", control.toString()));
         return List.copyOf(command);
     }
