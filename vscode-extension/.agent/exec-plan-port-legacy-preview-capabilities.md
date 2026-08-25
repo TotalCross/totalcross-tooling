@@ -27,7 +27,8 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 - [ ] Add deterministic panel-disposal coverage in the integration suite.
 - [x] (2026-08-25 20:15Z) Added canonical `totalcross-preview.json` loading to the Java coordinator and both build plugins, merged model-authoritative entries with compatible classpath overrides, and restored MainWindow discovery, selection, config editing, and launcher command registration in the extension.
 - [ ] Add deterministic coverage for configured MainWindow startup, ambiguous Quick Pick input, atomic config preservation, and paths containing spaces.
-- [ ] Restore explicit reload and serialized panel revival without reintroducing the legacy HTTP service.
+- [x] (2026-08-25 20:20Z) Routed explicit reload through the existing lifecycle queue, added fallback startup when no session is active, and registered a `totalcrossPreview` serializer that revives the same manager for the serialized workspace.
+- [ ] Add deterministic tests for queued reload versus stop, multi-root revival, failed revival cleanup, and duplicate-panel/process avoidance.
 - [ ] Remove or clearly retire inactive legacy activation code, stale settings, tests, and documentation after every supported capability has a canonical owner.
 - [ ] Run focused and broad validation, exercise the real sample when possible, and finalize the Editorial Report.
 

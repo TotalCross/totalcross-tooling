@@ -36,6 +36,7 @@
 		"onCommand:extension.previewStop",
 		"onCommand:extension.previewSelectMainWindow",
 		"onCommand:extension.previewOpenConfig",
+		"onWebviewPanel:totalcrossPreview",
 		"onCommand:extension.previewDiagnostics"
 	],
 	"main": "./out/extension.js",

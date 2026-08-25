@@ -31,15 +31,15 @@ export class PreviewManager {
 
     public start(): Promise<void> { return this.enqueue(() => this.startPreview()); }
 
-    private async startPreview(): Promise<void> {
+    private async startPreview(existingPanel?: vscode.WebviewPanel, selectedFolder?: vscode.WorkspaceFolder): Promise<void> {
         const folders = vscode.workspace.workspaceFolders || [];
-        const folder = folders.length <= 1 ? folders[0] : await vscode.window.showWorkspaceFolderPick({ placeHolder: 'Select the TotalCross project to preview' });
+        const folder = selectedFolder || (folders.length <= 1 ? folders[0] : await vscode.window.showWorkspaceFolderPick({ placeHolder: 'Select the TotalCross project to preview' }));
         if (!folder) throw new Error('TotalCross project not found in this VS Code instance.');
         const layout = asLayout(await detectProjectLayout(folder.uri.fsPath, process.platform));
         if (!layout) throw new Error('Unsupported or mixed TotalCross project.');
         await this.ensurePreviewConfiguration(layout.root);
         await this.stopPreview();
-        this.panel = vscode.window.createWebviewPanel('totalcrossPreview', 'TotalCross Preview', vscode.ViewColumn.Beside,
+        this.panel = existingPanel || vscode.window.createWebviewPanel('totalcrossPreview', 'TotalCross Preview', vscode.ViewColumn.Beside,
             {enableScripts: true, retainContextWhenHidden: true});
         this.panel.webview.html = previewHtml(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((message) => this.sendControl(layout.root, layout.buildTool, message));
@@ -67,7 +67,23 @@ export class PreviewManager {
 
     public async run(): Promise<void> { await this.start(); }
     public stop(): Promise<void> { return this.requestStop(true); }
-    public reload(): Promise<void> { return this.enqueue(() => this.reloadAfterBuild()); }
+    public reload(): Promise<void> { return this.enqueue(async () => this.client ? this.reloadAfterBuild() : this.startPreview()); }
+    public revive(panel: vscode.WebviewPanel, state: unknown): Promise<void> {
+        const workspace = typeof state === 'object' && state !== null && typeof (state as {workspace?: unknown}).workspace === 'string'
+            ? vscode.Uri.parse((state as {workspace: string}).workspace) : undefined;
+        const folder = workspace ? vscode.workspace.getWorkspaceFolder(workspace) : undefined;
+        return this.enqueue(async () => {
+            if (!folder) {
+                panel.dispose();
+                throw new Error('The workspace for the serialized TotalCross preview is no longer open.');
+            }
+            await this.startPreview(panel, folder);
+        });
+    }
+    public serializeState(): {workspace?: string; presentation?: {className?: string}} {
+        const folder = this.client ? vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this.client.root())) : undefined;
+        return {workspace: folder?.uri.toString(), presentation: {className: this.pendingClass}};
+    }
     public async openPreviewConfig(): Promise<void> {
         const folder = await this.selectWorkspaceFolder();
         if (!folder) return;
@@ -320,6 +336,9 @@ export function registerPreviewCommands(context: vscode.ExtensionContext): Previ
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewStop', () => manager.stop()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewSelectMainWindow', () => manager.selectPreviewMainWindow()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewOpenConfig', () => manager.openPreviewConfig()));
+    context.subscriptions.push(vscode.window.registerWebviewPanelSerializer('totalcrossPreview', {
+        deserializeWebviewPanel: (panel, state) => manager.revive(panel, state)
+    }));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewDiagnostics', () => manager.showDiagnostics()));
     context.subscriptions.push({dispose: () => { void manager.stop().catch((error) => console.error('Unable to stop TotalCross preview:', error)); }});
     return manager;
