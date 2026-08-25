@@ -32,7 +32,10 @@
 		"onCommand:extension.convertToTotalCrossProject",
 		"onCommand:extension.preview",
 		"onCommand:extension.run",
+		"onCommand:extension.previewReload",
 		"onCommand:extension.previewStop",
+		"onCommand:extension.previewSelectMainWindow",
+		"onCommand:extension.previewOpenConfig",
 		"onCommand:extension.previewDiagnostics"
 	],
 	"main": "./out/extension.js",
@@ -75,8 +78,20 @@
 				"title": "TotalCross: Run"
 			},
 			{
+				"command": "extension.previewReload",
+				"title": "TotalCross: Reload Preview"
+			},
+			{
 				"command": "extension.previewStop",
 				"title": "TotalCross: Stop Preview"
+			},
+			{
+				"command": "extension.previewSelectMainWindow",
+				"title": "TotalCross: Select Preview MainWindow"
+			},
+			{
+				"command": "extension.previewOpenConfig",
+				"title": "TotalCross: Open Preview Config"
 			},
 			{
 				"command": "extension.previewDiagnostics",

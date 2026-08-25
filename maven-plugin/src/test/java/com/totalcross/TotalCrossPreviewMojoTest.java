@@ -41,6 +41,7 @@ class TotalCrossPreviewMojoTest {
         assertFalse(TotalCrossPreviewMojo.previewCommand(selectedJdk, "run",
                 Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt")).contains("-Djava.awt.headless=true"));
         assertEquals("/tmp/project-model.json", command.get(command.indexOf("--model") + 1));
+        assertEquals("/totalcross-preview.json", command.get(command.indexOf("--config") + 1));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }
 

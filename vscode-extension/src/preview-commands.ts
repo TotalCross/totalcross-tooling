@@ -7,6 +7,7 @@ import * as path from 'path';
 import {detectProjectLayout, ProjectLayout, MixedProjectLayout} from './project-layout';
 import {PreviewClient, PreviewEvent} from './preview-client';
 import {compiledClassExists, isJavaFile, isWorkspaceFile, parseSelection, sourceClassName} from './preview-editor';
+import {configPath, discoverMainWindowCandidates, PreviewConfiguration, readPreviewConfiguration, writePreviewConfiguration} from './preview-config';
 
 function asLayout(value: ProjectLayout | MixedProjectLayout | undefined): ProjectLayout | undefined {
     return value && value.buildTool !== 'mixed' ? value : undefined;
@@ -36,6 +37,7 @@ export class PreviewManager {
         if (!folder) throw new Error('TotalCross project not found in this VS Code instance.');
         const layout = asLayout(await detectProjectLayout(folder.uri.fsPath, process.platform));
         if (!layout) throw new Error('Unsupported or mixed TotalCross project.');
+        await this.ensurePreviewConfiguration(layout.root);
         await this.stopPreview();
         this.panel = vscode.window.createWebviewPanel('totalcrossPreview', 'TotalCross Preview', vscode.ViewColumn.Beside,
             {enableScripts: true, retainContextWhenHidden: true});
@@ -56,7 +58,7 @@ export class PreviewManager {
         await this.applyDeviceProfile(layout.root, layout.buildTool);
         this.startFramePolling(previewRoot);
         this.editorListener = vscode.window.onDidChangeActiveTextEditor(() => this.scheduleActiveEditorPreview());
-        this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, '**/*.{java,xml,properties,gradle,gradle.kts,pom.xml}'));
+        this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, '**/*.{java,xml,properties,gradle,gradle.kts,pom.xml,totalcross-preview.json}'));
         this.watcher.onDidChange(() => this.scheduleReload());
         this.watcher.onDidCreate(() => this.scheduleReload());
         this.watcher.onDidDelete(() => this.scheduleReload());
@@ -65,6 +67,33 @@ export class PreviewManager {
 
     public async run(): Promise<void> { await this.start(); }
     public stop(): Promise<void> { return this.requestStop(true); }
+    public reload(): Promise<void> { return this.enqueue(() => this.reloadAfterBuild()); }
+    public async openPreviewConfig(): Promise<void> {
+        const folder = await this.selectWorkspaceFolder();
+        if (!folder) return;
+        const file = configPath(folder.uri.fsPath);
+        await this.ensurePreviewConfiguration(folder.uri.fsPath);
+        await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(file));
+    }
+
+    public async selectPreviewMainWindow(): Promise<void> {
+        const folder = await this.selectWorkspaceFolder();
+        if (!folder) return;
+        const candidates = await discoverMainWindowCandidates(folder.uri.fsPath);
+        if (candidates.length === 0) {
+            vscode.window.showInformationMessage('No TotalCross MainWindow class was found in this workspace.');
+            return;
+        }
+        const selected = await vscode.window.showQuickPick(candidates.map((candidate) => ({label: candidate.className, description: candidate.file, candidate})), {
+            title: 'Select the TotalCross Preview MainWindow'
+        });
+        if (!selected) return;
+        const file = configPath(folder.uri.fsPath);
+        const configuration = await readPreviewConfiguration(file);
+        configuration.mainWindow = selected.candidate.className;
+        await writePreviewConfiguration(file, configuration);
+        if (this.client) await this.sendControl(this.client.root(), this.client.buildTool(), {command: 'reload', values: [configuration.mainWindow]});
+    }
 
     private requestStop(disposePanel: boolean): Promise<void> {
         if (this.stopCompletion) return this.stopCompletion;
@@ -166,6 +195,37 @@ export class PreviewManager {
         await this.presentActiveEditor(editor, model.classOutput);
     }
 
+    private async selectWorkspaceFolder(): Promise<vscode.WorkspaceFolder | undefined> {
+        const folders = vscode.workspace.workspaceFolders || [];
+        return folders.length <= 1 ? folders[0] : vscode.window.showWorkspaceFolderPick({placeHolder: 'Select the TotalCross project'});
+    }
+
+    private async ensurePreviewConfiguration(root: string): Promise<PreviewConfiguration> {
+        const file = configPath(root);
+        const configuration = await readPreviewConfiguration(file);
+        if (configuration.mainWindow && /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+$/.test(configuration.mainWindow)) return configuration;
+        const candidates = await discoverMainWindowCandidates(root);
+        const preferred = candidates.filter((candidate) => candidate.preferred);
+        const selectable = preferred.length === 1 ? preferred : candidates.length === 1 ? candidates : candidates;
+        if (selectable.length === 1) {
+            configuration.mainWindow = selectable[0].className;
+            await writePreviewConfiguration(file, configuration);
+            return configuration;
+        }
+        if (selectable.length > 1) {
+            const selected = await vscode.window.showQuickPick(selectable.map((candidate) => ({label: candidate.className, description: candidate.file, candidate})), {
+                title: 'Select the TotalCross Preview MainWindow'
+            });
+            if (selected) {
+                configuration.mainWindow = selected.candidate.className;
+                await writePreviewConfiguration(file, configuration);
+            }
+        } else {
+            await writePreviewConfiguration(file, configuration);
+        }
+        return configuration;
+    }
+
     private async readProjectModel(client: PreviewClient): Promise<{mainClass: string; classOutput: string}> {
         const compatible = client as PreviewClient & {projectModel?: () => Promise<{mainClass: string; classOutput: string}>};
         if (compatible.projectModel) return compatible.projectModel();
@@ -256,7 +316,10 @@ export function registerPreviewCommands(context: vscode.ExtensionContext): Previ
     const manager = new PreviewManager();
     context.subscriptions.push(vscode.commands.registerCommand('extension.preview', () => manager.start()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.run', () => manager.run()));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.previewReload', () => manager.reload()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewStop', () => manager.stop()));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.previewSelectMainWindow', () => manager.selectPreviewMainWindow()));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.previewOpenConfig', () => manager.openPreviewConfig()));
     context.subscriptions.push(vscode.commands.registerCommand('extension.previewDiagnostics', () => manager.showDiagnostics()));
     context.subscriptions.push({dispose: () => { void manager.stop().catch((error) => console.error('Unable to stop TotalCross preview:', error)); }});
     return manager;

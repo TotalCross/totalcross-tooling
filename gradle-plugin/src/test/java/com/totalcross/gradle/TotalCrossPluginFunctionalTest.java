@@ -220,6 +220,7 @@ class TotalCrossPluginFunctionalTest {
         assertTrue(run.contains("run"));
         assertFalse(run.contains("-Djava.awt.headless=true"));
         assertEquals("/tmp/project-model.json", command.get(command.indexOf("--model") + 1));
+        assertEquals("/totalcross-preview.json", command.get(command.indexOf("--config") + 1));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }
 

@@ -25,7 +25,8 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 - [ ] Add deterministic lifecycle coverage for editor selection and re-presentation after a build.
 - [x] (2026-08-25 20:08Z) Made panel disposal, manual stop, replacement, and extension disposal converge on one idempotent stop promise; owned watchers, editor listeners, timers, and polling are released before the client stop task.
 - [ ] Add deterministic panel-disposal coverage in the integration suite.
-- [ ] Restore MainWindow discovery, project configuration, classpath overrides, and explicit configuration editing on the canonical preview path.
+- [x] (2026-08-25 20:15Z) Added canonical `totalcross-preview.json` loading to the Java coordinator and both build plugins, merged model-authoritative entries with compatible classpath overrides, and restored MainWindow discovery, selection, config editing, and launcher command registration in the extension.
+- [ ] Add deterministic coverage for configured MainWindow startup, ambiguous Quick Pick input, atomic config preservation, and paths containing spaces.
 - [ ] Restore explicit reload and serialized panel revival without reintroducing the legacy HTTP service.
 - [ ] Remove or clearly retire inactive legacy activation code, stale settings, tests, and documentation after every supported capability has a canonical owner.
 - [ ] Run focused and broad validation, exercise the real sample when possible, and finalize the Editorial Report.
@@ -74,7 +75,7 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 
 ## Outcomes & Retrospective
 
-The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, and focused Java tests are complete. The extension now reads the generated project model, follows the active Java editor with a debounced `show` request, blanks while a matching selection marker is pending or failed, and suppresses stale frame posts. Panel disposal now owns the same idempotent stop path as manual and extension shutdown. Canonical configuration, explicit reload, revival, and legacy retirement remain planned below.
+The authenticated protocol, disposable selected candidates, reflective SDK presentation, candidate/frame ordering, focused Java tests, canonical configuration loading, and MainWindow selection are complete. The extension reads the generated project model, follows the active Java editor with a debounced `show` request, blanks while a matching selection marker is pending or failed, and suppresses stale frame posts. Panel disposal owns the same idempotent stop path as manual and extension shutdown. Explicit reload, revival, and legacy retirement remain planned below.
 
 ## Editorial Report
 
