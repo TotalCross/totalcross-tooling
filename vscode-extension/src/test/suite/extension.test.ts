@@ -6,26 +6,25 @@
 
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import {activateLivePreview, deactivateLivePreview} from '../../live-preview';
+import {activate} from '../../extension';
 
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
 
-	test('registers Live Preview commands on activation', async () => {
+	test('registers canonical Preview commands on activation', async () => {
 		const context = {subscriptions: [] as vscode.Disposable[]} as vscode.ExtensionContext;
-		const disposable = activateLivePreview(context);
+		activate(context);
 		const commands = await vscode.commands.getCommands(true);
 		for (const command of [
-			'totalcross.startPreview',
-			'totalcross.openLivePreview',
-			'totalcross.stopPreview',
-			'totalcross.reloadPreview',
-			'totalcross.openPreviewConfig'
+			'extension.preview',
+			'extension.previewReload',
+			'extension.previewStop',
+			'extension.previewSelectMainWindow',
+			'extension.previewOpenConfig'
 		]) {
 			assert.ok(commands.includes(command), `Expected registered command ${command}`);
 		}
 		await new Promise((resolve) => setTimeout(resolve, 0));
-		disposable.dispose();
-		deactivateLivePreview();
+		for (const disposable of context.subscriptions.splice(0)) disposable.dispose();
 	});
 });

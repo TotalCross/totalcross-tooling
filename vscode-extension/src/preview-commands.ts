@@ -26,6 +26,7 @@ export class PreviewManager {
     private stopCompletion?: Promise<void>;
     private pendingClass?: string;
     private revivalClass?: string;
+    private editorGeneration = 0;
     private pollingGeneration = 0;
     private pollingInFlight = false;
     public constructor(private readonly output = vscode.window.createOutputChannel('TotalCross Preview')) {}
@@ -52,7 +53,8 @@ export class PreviewManager {
         });
         const previewRoot = layout.buildTool === 'gradle' ? layout.packageOutputRoot : path.join(layout.packageOutputRoot, 'totalcross');
         this.controlFile = path.join(previewRoot, 'preview-control.txt');
-        this.client = new PreviewClient(layout);
+        const jvmArgs = vscode.workspace.getConfiguration('totalcross.livePreview').get<string[]>('jvmArgs', []);
+        this.client = new PreviewClient(layout, process.platform, undefined, jvmArgs);
         this.client.onEvent((event) => this.show(event));
         await this.client.start();
         await this.client.ready();
@@ -208,17 +210,19 @@ export class PreviewManager {
 
     private scheduleActiveEditorPreview(): void {
         if (this.editorTimer) clearTimeout(this.editorTimer);
+        const generation = ++this.editorGeneration;
         this.editorTimer = setTimeout(() => {
             this.editorTimer = undefined;
-            this.previewActiveEditor().catch((error) => this.show({kind: 'error', message: error.message}));
+            this.previewActiveEditor(generation).catch((error) => this.show({kind: 'error', message: error.message}));
         }, 150);
     }
 
-    private async previewActiveEditor(): Promise<void> {
+    private async previewActiveEditor(generation: number): Promise<void> {
         const client = this.client;
         const editor = vscode.window.activeTextEditor;
         if (!client || !editor || !isJavaFile(editor.document.fileName) || !isWorkspaceFile(editor.document.fileName, client.root())) return;
         const model = await this.readProjectModel(client);
+        if (generation !== this.editorGeneration || client !== this.client) return;
         await this.presentActiveEditor(editor, model.classOutput);
     }
 

@@ -107,11 +107,6 @@
 					"default": "0.1.0-beta.1",
 					"description": "Released version of com.totalcross.application used in new projects."
 				},
-				"totalcross.livePreview.javaCommand": {
-					"type": "string",
-					"default": "java",
-					"description": "Java executable used to start the local TotalCross preview service."
-				},
 				"totalcross.livePreview.jvmArgs": {
 					"type": "array",
 					"items": {
@@ -119,11 +114,6 @@
 					},
 					"default": [],
 					"description": "Additional JVM arguments for the preview service."
-				},
-				"totalcross.livePreview.port": {
-					"type": "number",
-					"default": 0,
-					"description": "Local port for the preview service. Use 0 to select a free port."
 				},
 				"totalcross.livePreview.width": {
 					"type": "number",
@@ -150,20 +140,10 @@
 					"default": 1,
 					"description": "Preview device pixel density sent to the worker."
 				},
-				"totalcross.livePreview.deviceProfile": {
-					"type": "string",
-					"default": "android",
-					"description": "Device profile label written to the project preview configuration."
-				},
 				"totalcross.livePreview.framePollInterval": {
 					"type": "number",
 					"default": 500,
 					"description": "Milliseconds between Webview frame refreshes."
-				},
-				"totalcross.livePreview.controlTimeout": {
-					"type": "number",
-					"default": 30000,
-					"description": "Milliseconds allowed for local preview control requests."
 				}
 			}
 		}

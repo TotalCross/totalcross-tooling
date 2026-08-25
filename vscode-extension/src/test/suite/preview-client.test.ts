@@ -48,6 +48,11 @@ suite('Preview client', () => {
         );
     });
 
+    test('forwards supported JVM arguments through the headless launcher environment', () => {
+        assert.strictEqual(previewEnvironment({}, 'linux', ['-Xmx512m']).JAVA_TOOL_OPTIONS,
+            '-Xmx512m -Djava.awt.headless=true');
+    });
+
     test('passes the headless environment to the preview launcher', async () => {
         const launch = fakeChildProcess();
         let options: import('child_process').SpawnOptions | undefined;

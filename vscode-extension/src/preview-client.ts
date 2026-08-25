@@ -11,8 +11,8 @@ export interface PreviewCommand { executable: string; args: string[]; }
 export interface PreviewProjectModel { mainClass: string; classOutput: string; }
 export type PreviewProcessSpawner = (executable: string, args: readonly string[], options: SpawnOptions) => ChildProcess;
 
-export function previewEnvironment(environment: NodeJS.ProcessEnv, platform: NodeJS.Platform): NodeJS.ProcessEnv {
-    const requiredOptions = ['-Djava.awt.headless=true'];
+export function previewEnvironment(environment: NodeJS.ProcessEnv, platform: NodeJS.Platform, additionalOptions: string[] = []): NodeJS.ProcessEnv {
+    const requiredOptions = [...additionalOptions, '-Djava.awt.headless=true'];
     if (platform === 'darwin') requiredOptions.push('-Dapple.awt.UIElement=true');
     const inheritedOptions = environment.JAVA_TOOL_OPTIONS?.trim();
     return {
@@ -52,7 +52,8 @@ export class PreviewClient {
     public constructor(
         private readonly layout: ProjectLayout,
         private readonly platform: NodeJS.Platform = process.platform,
-        private readonly spawnProcess: PreviewProcessSpawner = spawn
+        private readonly spawnProcess: PreviewProcessSpawner = spawn,
+        private readonly jvmArgs: string[] = []
     ) {}
 
     public onEvent(listener: (event: PreviewEvent) => void): void { this.listeners.push(listener); }
@@ -65,7 +66,7 @@ export class PreviewClient {
         const child = this.spawnProcess(command.executable, command.args, {
             cwd: this.layout.root,
             shell: false,
-            env: previewEnvironment(process.env, this.platform)
+            env: previewEnvironment(process.env, this.platform, this.jvmArgs)
         });
         this.process = child;
         child.stdout!.on('data', (chunk: Buffer) => this.readOutput(chunk.toString()));
