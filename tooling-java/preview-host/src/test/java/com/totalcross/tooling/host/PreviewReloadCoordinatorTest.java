@@ -26,6 +26,7 @@ class PreviewReloadCoordinatorTest {
     return new PreviewReloadCoordinator.Candidate() {
       public void awaitReady(Duration timeout) {}
       public void awaitFirstFrame(Duration timeout) {}
+      public void show(String className) {}
       public void close() { closed.incrementAndGet(); }
     };
   }

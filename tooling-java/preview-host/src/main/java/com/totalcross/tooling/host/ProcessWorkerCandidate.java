@@ -20,7 +20,8 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
   private final String[] arguments;
   private final BlockingQueue<FrameData> frames = new LinkedBlockingQueue<>();
   private final CompletableFuture<FrameData> firstFrame = new CompletableFuture<>();
-  private final CompletableFuture<Void> selectedFrame = new CompletableFuture<>();
+  private final Object showMonitor = new Object();
+  private CompletableFuture<Void> pendingShow;
   private final AtomicReference<Throwable> failure = new AtomicReference<>();
   private final AtomicBoolean started = new AtomicBoolean();
   private final AtomicBoolean closed = new AtomicBoolean();
@@ -59,8 +60,7 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
       firstFrame.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
       if (selectedClass != null) {
         frames.clear();
-        host.sendShow(selectedClass);
-        selectedFrame.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        show(selectedClass, timeout);
       }
     } catch (ExecutionException failure) {
       Throwable cause = failure.getCause();
@@ -82,7 +82,29 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
   @Override public void resize(int width, int height, double density) throws IOException { host.sendResize(width, height, density); }
   @Override public void pointer(int x, int y, int button, boolean pressed) throws IOException { host.sendPointer(x, y, button, pressed); }
   @Override public void key(int keyCode, boolean pressed, int modifiers) throws IOException { host.sendKey(keyCode, pressed, modifiers); }
+  @Override public void show(String className) throws Exception { show(className, Duration.ofSeconds(15)); }
   @Override public long processId() { return host.workerProcessId(); }
+
+  private void show(String className, Duration timeout) throws Exception {
+    CompletableFuture<Void> ready = new CompletableFuture<>();
+    synchronized (showMonitor) {
+      if (pendingShow != null) throw new IOException("preview selection is already in progress");
+      pendingShow = ready;
+      try {
+        host.sendShow(className);
+      } catch (IOException failure) {
+        pendingShow = null;
+        throw failure;
+      }
+    }
+    try {
+      ready.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+    } finally {
+      synchronized (showMonitor) {
+        if (pendingShow == ready) pendingShow = null;
+      }
+    }
+  }
 
   @Override public void close() {
     if (!closed.compareAndSet(false, true)) return;
@@ -105,7 +127,9 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
           while ((queued = frames.poll()) != null) latest = queued;
           if (latest == null) throw new IOException("worker acknowledged selection without a frame");
           frames.offer(latest);
-          selectedFrame.complete(null);
+          CompletableFuture<Void> ready;
+          synchronized (showMonitor) { ready = pendingShow; }
+          if (ready != null) ready.complete(null);
         } else if (message.type() == MessageType.ERROR) {
           throw new IOException(new String(message.payload(), StandardCharsets.UTF_8));
         } else if (message.type() == MessageType.CLOSED) {
@@ -121,7 +145,9 @@ public final class ProcessWorkerCandidate implements PreviewReloadCoordinator.Ca
   private void fail(Throwable problem) {
     if (failure.compareAndSet(null, problem)) {
       firstFrame.completeExceptionally(problem);
-      selectedFrame.completeExceptionally(problem);
+      synchronized (showMonitor) {
+        if (pendingShow != null) pendingShow.completeExceptionally(problem);
+      }
     }
   }
 }

@@ -46,6 +46,22 @@ class ProcessWorkerCandidateTest {
     }
   }
 
+  @Test
+  void showsAClassThroughTheActiveWorkerWithoutReplacingIt() throws Exception {
+    try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(3))) {
+      assertTrue(coordinator.reload(() -> candidate("selection")));
+      long active = coordinator.activeProcessId();
+      assertNotNull(coordinator.nextFrame(Duration.ofSeconds(1)));
+
+      coordinator.show("example.Screen");
+
+      FrameData frame = coordinator.nextFrame(Duration.ofSeconds(1));
+      assertNotNull(frame);
+      assertArrayEquals(new int[] { 0xffff0000 }, frame.pixels());
+      assertEquals(active, coordinator.activeProcessId());
+    }
+  }
+
   private static ProcessWorkerCandidate candidate(String mode) throws IOException {
     return new ProcessWorkerCandidate(List.of(javaExecutable(), "-cp", System.getProperty("java.class.path"),
         FakeWorkerMain.class.getName(), mode), "", "example.MainWindow");

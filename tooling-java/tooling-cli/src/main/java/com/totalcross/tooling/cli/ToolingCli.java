@@ -117,9 +117,14 @@ public final class ToolingCli {
           },
           selectedClass -> {
             synchronized (frameAccess) {
-              boolean selected = coordinator.reload(() -> selectedCandidate(
-                  worker, classpath, sessionRoot[0], selectedClass));
-              String selectionError = coordinator.lastFailure();
+              boolean selected = true;
+              String selectionError = "";
+              try {
+                coordinator.show(selectedClass);
+              } catch (Exception failure) {
+                selected = false;
+                selectionError = failure.getMessage() == null ? failure.getClass().getName() : failure.getMessage();
+              }
               if (selected && frameFile != null) {
                 com.totalcross.tooling.protocol.FrameData selectedFrame = coordinator.nextFrame(Duration.ofSeconds(1));
                 if (selectedFrame == null) {
@@ -175,11 +180,6 @@ public final class ToolingCli {
   private static ProcessWorkerCandidate candidate(List<String> worker, String classpath, String mainClass, String... args)
       throws IOException {
     return new ProcessWorkerCandidate(worker, classpath, mainClass, args);
-  }
-
-  private static ProcessWorkerCandidate selectedCandidate(List<String> worker, String classpath, String mainClass,
-      String selectedClass) throws IOException {
-    return new ProcessWorkerCandidate(worker, classpath, mainClass, selectedClass, new String[0]);
   }
 
   private static Path optionPath(String[] args, String name) { return optionPath(args, name, Path.of(".")); }

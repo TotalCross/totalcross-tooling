@@ -14,6 +14,7 @@ public final class PreviewReloadCoordinator implements AutoCloseable {
     default void resize(int width, int height, double density) throws Exception { }
     default void pointer(int x, int y, int button, boolean pressed) throws Exception { }
     default void key(int keyCode, boolean pressed, int modifiers) throws Exception { }
+    void show(String className) throws Exception;
     default long processId() { return -1; }
     @Override void close();
   }
@@ -59,6 +60,7 @@ public final class PreviewReloadCoordinator implements AutoCloseable {
   public void resize(int width, int height, double density) throws Exception { active().resize(width, height, density); }
   public void pointer(int x, int y, int button, boolean pressed) throws Exception { active().pointer(x, y, button, pressed); }
   public void key(int keyCode, boolean pressed, int modifiers) throws Exception { active().key(keyCode, pressed, modifiers); }
+  public void show(String className) throws Exception { active().show(className); }
 
   private synchronized Candidate active() {
     if (active == null) throw new IllegalStateException("preview has no promoted worker");
