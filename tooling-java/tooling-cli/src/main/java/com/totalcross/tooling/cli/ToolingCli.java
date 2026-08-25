@@ -135,7 +135,7 @@ public final class ToolingCli {
           },
           error -> emit("error", outputProject, outputMainClass, error))) {
         if (controls != null) controls.start();
-      emit("started", project, mainClass, null);
+      emitStarted(project, mainClass);
       boolean frame = false;
       while (coordinator.state() != com.totalcross.tooling.host.PreviewSessionState.CLOSED) {
         com.totalcross.tooling.protocol.FrameData next;
@@ -318,6 +318,13 @@ public final class ToolingCli {
     String value = "{\"event\":\"" + escape(event) + "\",\"project\":\"" + escape(project.toString())
         + "\",\"mainClass\":\"" + escape(mainClass) + "\",\"error\":\"" + escape(error == null ? "" : error)
         + "\",\"frameFile\":\"" + escape(frameFile == null ? "" : frameFile) + "\"}";
+    System.out.println(value);
+  }
+
+  private static void emitStarted(Path project, String mainClass) {
+    String value = "{\"event\":\"started\",\"project\":\"" + escape(project.toString())
+        + "\",\"mainClass\":\"" + escape(mainClass)
+        + "\",\"error\":\"\",\"frameFile\":\"\",\"selectionSupported\":true}";
     System.out.println(value);
   }
 

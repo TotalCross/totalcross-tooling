@@ -9,7 +9,7 @@ import {PassThrough} from 'stream';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import {PreviewManager} from '../../preview-commands';
-import {PreviewClient, PreviewCommand, mavenExecutable, previewCommand, previewEnvironment} from '../../preview-client';
+import {PreviewClient, PreviewCommand, PreviewEvent, mavenExecutable, previewCommand, previewEnvironment} from '../../preview-client';
 import {ProjectLayout} from '../../project-layout';
 
 suite('Preview client', () => {
@@ -67,6 +67,15 @@ suite('Preview client', () => {
             '-Djava.awt.headless=true -Dapple.awt.UIElement=true'
         ), true);
         launch.events.emit('close', 0);
+    });
+
+    test('recognizes the selected-target capability advertised by the coordinator', () => {
+        const client = new PreviewClient(layout, 'darwin');
+        client.onEvent(() => undefined);
+        (client as unknown as {emit(event: PreviewEvent): void}).emit({kind: 'started', selectionSupported: true});
+        assert.strictEqual(client.supportsSelection(), true);
+        (client as unknown as {emit(event: PreviewEvent): void}).emit({kind: 'started'});
+        assert.strictEqual(client.supportsSelection(), false);
     });
 
     test('reports build success only after the reload build completes', async () => {

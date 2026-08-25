@@ -48,6 +48,7 @@ export class PreviewClient {
     private stopCompletion?: Promise<void>;
     private readonly listeners: Array<(event: PreviewEvent) => void> = [];
     private lastEvent?: PreviewEvent;
+    private selectionSupported = false;
 
     public constructor(
         private readonly layout: ProjectLayout,
@@ -143,6 +144,7 @@ export class PreviewClient {
     }
 
     public diagnostics(): PreviewEvent | undefined { return this.lastEvent; }
+    public supportsSelection(): boolean { return this.selectionSupported; }
 
     private readOutput(output: string): void {
         output.split(/\r?\n/).filter((line) => line.trim()).forEach((line) => {
@@ -182,6 +184,7 @@ export class PreviewClient {
 
     private emit(event: PreviewEvent): void {
         this.lastEvent = event;
+        if (event.kind === 'started') this.selectionSupported = event.selectionSupported === true;
         this.listeners.forEach((listener) => listener(event));
     }
 }

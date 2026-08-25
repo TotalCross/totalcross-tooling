@@ -273,6 +273,12 @@ export class PreviewManager {
     private async presentClassName(className: string | undefined, classOutput: string): Promise<void> {
         const client = this.client;
         if (!client) return;
+        if (!client.supportsSelection()) {
+            this.pendingClass = undefined;
+            await this.clearPanel();
+            this.show({kind: 'error', message: 'The TotalCross preview plugin is outdated and does not support editor selection. Update the Gradle/Maven tooling and restart Preview.'});
+            return;
+        }
         if (!className || !(await compiledClassExists(className, classOutput))) {
             this.pendingClass = undefined;
             await this.clearPanel();

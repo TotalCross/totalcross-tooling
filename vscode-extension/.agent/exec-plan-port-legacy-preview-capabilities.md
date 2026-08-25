@@ -32,6 +32,7 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 - [x] (2026-08-25 20:23Z) Restored the serialized presentation class during revival when its compiled output is still available, while disposing a panel whose workspace can no longer be resolved.
 - [x] (2026-08-25 20:25Z) Removed inactive `live-preview.ts`, `live-preview-utils.ts`, and their test, replaced direct legacy activation coverage with `extension.activate`, removed stale HTTP settings, and updated README and CHANGELOG.
 - [x] (2026-08-25 20:27Z) Ran focused and broad validation, staged current tooling modules under a unique temporary version for both plugin suites, verified the VSIX, and finalized this Editorial Report; a compatible real sample was not available for manual rendering acceptance.
+- [x] (2026-08-25 20:46Z) Added an explicit `selectionSupported` capability marker to the coordinator startup event and a regression guard in the extension, preventing an outdated `0.1.0-beta.1` plugin from leaving the panel blank without an actionable diagnostic.
 
 ## Surprises & Discoveries
 
@@ -58,6 +59,9 @@ The next implementer should start with Milestone 1 below. The only expected dirt
 
 - Observation: The existing extension dependency audit is not clean in the current lockfile.
   Evidence: `npm run audit` reported two high-severity transitive issues in `brace-expansion` and `js-yaml`; no dependency update was authorized or needed for this feature.
+
+- Observation: The available sample was still launching cached `0.1.0-beta.1` tooling, while the source tree contains the selection protocol added by this port.
+  Evidence: its coordinator command omitted `--config`, its startup event omitted `selectionSupported`, and it never created `build/totalcross/preview-selection.json`; the same sample copied to `/tmp/tc-preview-selection.vU6XMz` and run with staged `0.1.0-preview-port` tooling emitted `selectionSupported:true` and wrote `{"className":"totalcross.sample.components.Home","selected":true,"error":""}` after `show,totalcross.sample.components.Home`.
 
 ## Decision Log
 
