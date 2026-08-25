@@ -213,9 +213,12 @@ class TotalCrossPluginFunctionalTest {
 
         String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
         assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
-        assertEquals("preview", command.get(4));
-        assertEquals("run", TotalCrossPreviewTask.previewCommand(selectedJdk, "run",
-                Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt")).get(4));
+        assertTrue(command.contains("-Djava.awt.headless=true"));
+        assertTrue(command.contains("preview"));
+        List<String> run = TotalCrossPreviewTask.previewCommand(selectedJdk, "run",
+                Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt"));
+        assertTrue(run.contains("run"));
+        assertFalse(run.contains("-Djava.awt.headless=true"));
         assertEquals("/tmp/project-model.json", command.get(command.indexOf("--model") + 1));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }

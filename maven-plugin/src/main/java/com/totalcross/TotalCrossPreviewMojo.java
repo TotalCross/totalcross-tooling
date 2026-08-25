@@ -14,6 +14,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -147,9 +148,13 @@ public class TotalCrossPreviewMojo extends AbstractMojo {
     static List<String> previewCommand(Path toolingJdk, String mode, Path frame, Path control) throws Exception {
         String java = toolingJdk.resolve("bin").resolve(
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
-        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
+        List<String> command = new ArrayList<>();
+        command.add(java);
+        if ("preview".equals(mode)) command.add("-Djava.awt.headless=true");
+        command.addAll(List.of("-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
             "--model", frame.resolveSibling("project-model.json").toString(), "--jdk-path", toolingJdk.toString(),
-            "--frame-file", frame.toString(), "--control-file", control.toString());
+            "--frame-file", frame.toString(), "--control-file", control.toString()));
+        return List.copyOf(command);
     }
 
     private long launchCoordinator(List<String> command, Path project, Path log) throws Exception {

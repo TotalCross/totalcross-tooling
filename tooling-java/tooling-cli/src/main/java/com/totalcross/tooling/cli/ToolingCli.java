@@ -89,8 +89,7 @@ public final class ToolingCli {
     Path outputProject = project;
     String outputMainClass = mainClass;
     try (PreviewReloadCoordinator coordinator = new PreviewReloadCoordinator(Duration.ofSeconds(15))) {
-      List<String> worker = List.of(javaExecutable(toolingJdk.home()), "-cp", runtimeClasspath(),
-          PreviewWorkerMain.class.getName());
+      List<String> worker = workerCommand(toolingJdk.home(), !runWindow);
       String initialMainClass = mainClass;
       if (!coordinator.reload(() -> candidate(worker, classpath, initialMainClass))) {
         throw new IllegalStateException("preview worker did not start: " + coordinator.lastFailure());
@@ -208,6 +207,14 @@ public final class ToolingCli {
   static String javaExecutable(Path home) {
     String name = System.getProperty("os.name", "").toLowerCase().startsWith("windows") ? "java.exe" : "java";
     return home.resolve("bin").resolve(name).toString();
+  }
+
+  static List<String> workerCommand(Path toolingJdk, boolean headless) throws Exception {
+    List<String> command = new ArrayList<>();
+    command.add(javaExecutable(toolingJdk));
+    if (headless) command.add("-Djava.awt.headless=true");
+    command.addAll(List.of("-cp", runtimeClasspath(), PreviewWorkerMain.class.getName()));
+    return List.copyOf(command);
   }
 
   private static Path sessionProject(Path session, Path fallback) throws IOException {

@@ -4,6 +4,8 @@
 package com.totalcross;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +35,11 @@ class TotalCrossPreviewMojoTest {
 
         String java = System.getProperty("os.name", "").toLowerCase().contains("win") ? "java.exe" : "java";
         assertEquals(selectedJdk.resolve("bin").resolve(java).toString(), command.get(0));
-        assertEquals("preview", command.get(4));
+        assertTrue(command.contains("-Djava.awt.headless=true"));
+        assertTrue(command.contains("preview"));
         assertEquals("run", new TotalCrossRunMojo().commandName());
+        assertFalse(TotalCrossPreviewMojo.previewCommand(selectedJdk, "run",
+                Path.of("/tmp/frame.png"), Path.of("/tmp/control.txt")).contains("-Djava.awt.headless=true"));
         assertEquals("/tmp/project-model.json", command.get(command.indexOf("--model") + 1));
         assertEquals(selectedJdk.toString(), command.get(command.indexOf("--jdk-path") + 1));
     }

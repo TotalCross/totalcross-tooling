@@ -27,6 +27,17 @@ class ToolingCliTest {
   }
 
   @Test
+  void makesOnlyPreviewWorkersHeadless() throws Exception {
+    Path selectedJdk = Path.of("/tmp/selected-jdk");
+    List<String> preview = ToolingCli.workerCommand(selectedJdk, true);
+    List<String> run = ToolingCli.workerCommand(selectedJdk, false);
+
+    assertTrue(preview.contains("-Djava.awt.headless=true"));
+    assertFalse(run.contains("-Djava.awt.headless=true"));
+    assertEquals(com.totalcross.tooling.worker.PreviewWorkerMain.class.getName(), preview.get(preview.size() - 1));
+  }
+
+  @Test
   void usesTheModelClasspathWithoutDirectoryDiscovery() {
     Path project = Path.of("/tmp/model-project");
     ProjectModel model = new ProjectModel(BuildTool.GRADLE, project, List.of(), List.of(),

@@ -10,6 +10,7 @@ import com.totalcross.tooling.jdk.JdkRequest;
 import java.io.IOException;
 import java.nio.file.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -106,9 +107,13 @@ public abstract class TotalCrossPreviewTask extends DefaultTask {
     static List<String> previewCommand(Path toolingJdk, String mode, Path frame, Path control) throws Exception {
         String java = toolingJdk.resolve("bin").resolve(
             System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java").toString();
-        return List.of(java, "-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
+        List<String> command = new ArrayList<>();
+        command.add(java);
+        if ("preview".equals(mode)) command.add("-Djava.awt.headless=true");
+        command.addAll(List.of("-cp", ToolingCli.runtimeClasspath(), ToolingCli.class.getName(), mode,
             "--model", frame.resolveSibling("project-model.json").toString(), "--jdk-path", toolingJdk.toString(),
-            "--frame-file", frame.toString(), "--control-file", control.toString());
+            "--frame-file", frame.toString(), "--control-file", control.toString()));
+        return List.copyOf(command);
     }
 
     private boolean awaitFirstFrame(Process process, Path frame) throws InterruptedException, IOException {
