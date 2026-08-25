@@ -146,9 +146,43 @@ export class PreviewClient {
     public diagnostics(): PreviewEvent | undefined { return this.lastEvent; }
     public supportsSelection(): boolean { return this.selectionSupported; }
 
+    /**
+     * The build plugins detach the coordinator and redirect its structured
+     * output to preview.log. Read the startup event after the launcher task
+     * completes so capability detection does not depend on Gradle/Maven
+     * forwarding the detached process' stdout.
+     */
+    public async loadSelectionCapability(): Promise<void> {
+        const outputRoot = this.layout.buildTool === 'gradle'
+            ? this.layout.packageOutputRoot : path.join(this.layout.packageOutputRoot, 'totalcross');
+        const logFile = path.join(outputRoot, 'preview.log');
+        const deadline = Date.now() + 2000;
+        do {
+            try {
+                const startup = (await fs.readFile(logFile, 'utf8'))
+                    .split(/\r?\n/)
+                    .map((line) => {
+                        try { return JSON.parse(line); } catch (_) { return undefined; }
+                    })
+                    .find((event) => event && (event.event === 'started' || event.kind === 'started'));
+                if (startup) {
+                    this.emit({...startup, kind: startup.kind || startup.event});
+                    return;
+                }
+            } catch (_) {
+                // The build task may have completed just before the log file
+                // becomes visible. Retry briefly before reporting no support.
+            }
+            await new Promise((resolve) => setTimeout(resolve, 50));
+        } while (Date.now() < deadline);
+    }
+
     private readOutput(output: string): void {
         output.split(/\r?\n/).filter((line) => line.trim()).forEach((line) => {
-            try { this.emit(JSON.parse(line)); }
+            try {
+                const event = JSON.parse(line);
+                this.emit({...event, kind: event.kind || event.event});
+            }
             catch (_) { this.emit({kind: 'diagnostic', message: line}); }
         });
     }

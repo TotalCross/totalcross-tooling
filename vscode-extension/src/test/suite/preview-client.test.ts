@@ -78,6 +78,21 @@ suite('Preview client', () => {
         assert.strictEqual(client.supportsSelection(), false);
     });
 
+    test('loads the selected-target capability from the detached coordinator log', async () => {
+        const root = await fs.mkdtemp('/tmp/totalcross-preview-capability-');
+        try {
+            const outputRoot = path.join(root, 'build', 'totalcross');
+            await fs.mkdir(outputRoot, {recursive: true});
+            await fs.writeFile(path.join(outputRoot, 'preview.log'),
+                '{"event":"started","selectionSupported":true}\n');
+            const client = new PreviewClient({...layout, root, packageOutputRoot: outputRoot}, 'darwin');
+            await client.loadSelectionCapability();
+            assert.strictEqual(client.supportsSelection(), true);
+        } finally {
+            await fs.rm(root, {recursive: true, force: true});
+        }
+    });
+
     test('reports build success only after the reload build completes', async () => {
         const client = new PreviewClient(layout, 'darwin');
         const events: string[] = [];

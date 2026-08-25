@@ -58,6 +58,7 @@ export class PreviewManager {
         this.client.onEvent((event) => this.show(event));
         await this.client.start();
         await this.client.ready();
+        await this.client.loadSelectionCapability();
         await this.applyDeviceProfile(layout.root, layout.buildTool);
         this.startFramePolling(previewRoot);
         this.editorListener = vscode.window.onDidChangeActiveTextEditor(() => this.scheduleActiveEditorPreview());
