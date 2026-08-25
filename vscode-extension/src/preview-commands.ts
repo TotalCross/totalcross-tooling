@@ -22,6 +22,7 @@ export class PreviewManager {
     private panel?: vscode.WebviewPanel;
     private controlFile?: string;
     private lifecycle: Promise<void> = Promise.resolve();
+    private stopCompletion?: Promise<void>;
     private pendingClass?: string;
     private pollingGeneration = 0;
     private pollingInFlight = false;
@@ -40,9 +41,11 @@ export class PreviewManager {
             {enableScripts: true, retainContextWhenHidden: true});
         this.panel.webview.html = previewHtml(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((message) => this.sendControl(layout.root, layout.buildTool, message));
-        this.panel.onDidDispose(() => {
+        const panel = this.panel;
+        panel.onDidDispose(() => {
+            if (this.panel !== panel) return;
             this.panel = undefined;
-            void this.enqueue(() => this.stopPreview(false)).catch((error) => this.show({kind: 'error', message: error.message}));
+            void this.requestStop(false).catch((error) => this.show({kind: 'error', message: error.message}));
         });
         const previewRoot = layout.buildTool === 'gradle' ? layout.packageOutputRoot : path.join(layout.packageOutputRoot, 'totalcross');
         this.controlFile = path.join(previewRoot, 'preview-control.txt');
@@ -61,7 +64,17 @@ export class PreviewManager {
     }
 
     public async run(): Promise<void> { await this.start(); }
-    public stop(): Promise<void> { return this.enqueue(() => this.stopPreview()); }
+    public stop(): Promise<void> { return this.requestStop(true); }
+
+    private requestStop(disposePanel: boolean): Promise<void> {
+        if (this.stopCompletion) return this.stopCompletion;
+        const result = this.enqueue(() => this.stopPreview(disposePanel));
+        this.stopCompletion = result.finally(() => {
+            if (this.stopCompletion === completion) this.stopCompletion = undefined;
+        });
+        const completion = this.stopCompletion;
+        return completion;
+    }
 
     private async stopPreview(disposePanel = true): Promise<void> {
         const client = this.client;
@@ -214,7 +227,11 @@ export class PreviewManager {
         return result;
     }
 
-    private disposePanel(): void { if (this.panel) this.panel.dispose(); this.panel = undefined; }
+    private disposePanel(): void {
+        const panel = this.panel;
+        this.panel = undefined;
+        panel?.dispose();
+    }
 }
 
 function previewHtml(webview: vscode.Webview): string {

@@ -106,8 +106,11 @@ suite('Preview client', () => {
         manager.client = {stop: () => new Promise<void>((resolve) => { release = resolve; })};
         let firstFinished = false;
         let secondFinished = false;
-        const firstStop = manager.stop().then(() => { firstFinished = true; });
-        const secondStop = manager.stop().then(() => { secondFinished = true; });
+        const firstRequest = manager.stop();
+        const secondRequest = manager.stop();
+        assert.strictEqual(firstRequest, secondRequest);
+        const firstStop = firstRequest.then(() => { firstFinished = true; });
+        const secondStop = secondRequest.then(() => { secondFinished = true; });
 
         await Promise.resolve();
         assert.strictEqual(firstFinished, false);
